@@ -37,6 +37,7 @@ const rows: BaseTuple[] = [
   ["Zalmi X", "Zalmi Developments", "Pine Avenue Road", "Commercial", "2028", "Approved", 15, 55, 0, "Quarterly", 2.5, 30000, 729, 4671, "/images/zalmi-x.webp"],
   ["Pearl One Capital", "ABS Developers", "DHA Phase 2", ["Residential", "Commercial"], "2029", "Approved", 5, 85, 10, "Monthly", 3, 26000, 625, 1668.75, "/images/pearl-one-capital.webp"],
   ["Pearl One Courtyard", "ABS Developers", "Bahria Town", "Residential", "2029", "Approved", 7, 83, 10, "Monthly", 2, 30000, 500, 1000, "/images/pearl-one-courtyard.webp"],
+  ["Classic Atrium", "Classic Living", "Bahria Town", "Residential", "2030", "Approved", 10, 48, 13, "Monthly", 4, 17500, 350, 2500, "/images/classic-atrium.webp"],
 ];
 
 // Non-Lahore projects. Keyed by name; everything else defaults to "Lahore".
@@ -176,6 +177,16 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
   "Pearl One Courtyard": [
     { group: "1 Bed Apartment", name: "General", rate: 30000, sizes: [500] },
     { group: "2 Bed Apartment", name: "General", rate: 30000, sizes: [800, 1000] },
+  ],
+  // Classic Atrium · residential apartments, flat 17,500/sqft across all types.
+  // Sizes are the approximate covered areas published in the payment plan.
+  "Classic Atrium": [
+    { name: "Studio Apartment", rate: 17500, sizes: [350] },
+    { name: "1 Bed Apartment", rate: 17500, sizes: [500] },
+    { name: "2 Bed Apartment", rate: 17500, sizes: [800] },
+    { name: "3 Bed Apartment", rate: 17500, sizes: [1100] },
+    { name: "3 Bed Lawn Apartment", rate: 17500, sizes: [1650] },
+    { name: "3 Bed Penthouse", rate: 17500, sizes: [2500] },
   ],
 };
 
@@ -368,6 +379,32 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
+  // Classic Atrium: down payment + equal payment after 2 months + 48 monthly
+  // + 7 half-yearly balloons + final payment on possession. The developer quotes
+  // fixed rupee amounts per unit, so the percentages are indicative — derived
+  // from the 350 sqft studio (total 6,125,000; ÷100 = 61,250). 9.71 + 9.71 +
+  // (0.571%×48 = 27.4%) + (5.71%×7 = 40%) + 13.14 = 100%.
+  "Classic Atrium": {
+    milestones: [
+      { label: "Down payment (at booking)", pct: 595000 / 61250 },
+      { label: "Payment after 2 months", pct: 595000 / 61250 },
+      { label: "Last payment (on possession)", pct: 805000 / 61250 },
+    ],
+    installments: [
+      {
+        label: "Monthly installment",
+        pct: 35000 / 61250,
+        count: 48,
+        note: "48 monthly installments (≈27% on the 350 sqft studio)",
+      },
+      {
+        label: "Half-yearly balloon payment",
+        pct: 350000 / 61250,
+        count: 7,
+        note: "7 half-yearly balloons (≈40% on the 350 sqft studio)",
+      },
+    ],
+  },
 };
 
 // Optional plan caveats, shown beneath the breakdown. Keyed by project name.
@@ -384,6 +421,8 @@ const PLAN_NOTES: Record<string, string> = {
     "A 5% premium factor applies to corner units and a further 5% to front-facing units. Prices are subject to change without prior notice.",
   "Pearl One Courtyard":
     "LDA approved · Tower 1, Bahria Town Lahore, Tipu Sultan Main Boulevard. All apartments are sold at a flat PKR 30,000/sq ft; areas are gross & approximate. The down payment and final instalment are fixed rupee amounts that vary by unit, so the percentages shown are indicative (based on the entry 1-bed unit). Down payment at booking is PKR 1,000,000 for the 1-bed and PKR 1,500,000 for the 2-bed units. The schedule runs as a down payment, 11 monthly instalments (1 May 2026 – 1 Mar 2027), a yearly instalment on 1 Apr 2027, 11 more monthly instalments (1 May 2027 – 1 Mar 2028), and a final instalment on 1 Apr 2028. Down payment is due by 30 April 2026, failing which the booking is cancelled.",
+  "Classic Atrium":
+    "LDA approved · Tipu Sultan Block, Bahria Town Lahore, by Classic Living; possession in 2030. All apartments are sold at a flat PKR 17,500/sq ft; areas are gross & approximate. The booking/down payment and the payment due after 2 months are fixed rupee amounts that vary by unit, so the percentages shown are indicative (based on the 350 sq ft studio). The schedule runs as a down payment at booking, an equal payment after 2 months, 48 monthly installments, 7 half-yearly balloon payments, and a final payment on possession. Indicative amounts per unit (down / after 2 months / monthly ×48 / balloon ×7 / final) — Studio 350 sq ft: 595,000 / 595,000 / 35,000 / 350,000 / 805,000. 1-Bed 500 sq ft: 1,095,000 / 1,095,000 / 45,000 / 470,000 / 1,110,000. 2-Bed 800 sq ft: 1,495,000 / 1,495,000 / 79,500 / 699,000 / 2,301,000. 3-Bed 1,100 sq ft: 1,695,000 / 1,695,000 / 99,500 / 1,075,000 / 3,559,000. 3-Bed Lawn 1,650 sq ft: 2,895,000 / 2,895,000 / 149,000 / 1,590,000 / 4,801,000. 3-Bed Penthouse 2,500 sq ft: 4,495,000 / 4,495,000 / 225,000 / 2,495,000 / 6,495,000. Payment plan is subject to availability of units.",
   "Pearl One Capital":
     "Approved by CDA and DHA. Eid-ul-Fitr offer — valid till Eid-ul-Fitr 2026. Booking & down payment is a flat PKR 1,000,000 across all unit sizes, followed by 36 equal monthly installments and a final balloon payment on possession (the percentages shown are indicative splits of the total). A corner unit adds 10%, a front unit adds 10%, and front & corner adds 15% — already reflected in the per-sqft rate. All areas are gross & approximate. Instalment plan starts from April 2026 and is subject to availability of units. No discount on full cash payment. Commercial units (offices & shops) and luxury single & double-storey penthouses (LA-A, LA-B, LA-C) are also available — payment plans for these on request.",
 };

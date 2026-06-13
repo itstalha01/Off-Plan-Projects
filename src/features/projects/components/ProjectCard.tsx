@@ -54,8 +54,13 @@ function ProjectCardBase({ project, index, onOpen }: ProjectCardProps) {
       className="animate-fade-up group relative flex flex-col overflow-hidden rounded-2xl border border-ink/10 bg-paper transition-all duration-300 hover:-translate-y-1 hover:border-gold/40 hover:shadow-[0_18px_40px_-20px_rgba(19,17,13,0.35)]"
       style={{ animationDelay: `${Math.min(index, 12) * 55}ms` }}
     >
-      {/* Cover photo — zooms on hover */}
-      <div className="relative aspect-[16/10] w-full overflow-hidden bg-cream">
+      {/* Cover photo — zooms on hover, click opens the payment plan */}
+      <button
+        type="button"
+        onClick={() => onOpen(project)}
+        aria-label={`View payment plan for ${project.name}`}
+        className="relative aspect-[16/10] w-full cursor-pointer overflow-hidden bg-cream focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
+      >
         <Image
           src={project.img ?? DEFAULT_PROJECT_IMG}
           alt={`${project.name} by ${project.dev}`}
@@ -71,7 +76,7 @@ function ProjectCardBase({ project, index, onOpen }: ProjectCardProps) {
         >
           {badge.label}
         </span>
-      </div>
+      </button>
 
       <div className="flex flex-1 flex-col p-6">
         <div>
