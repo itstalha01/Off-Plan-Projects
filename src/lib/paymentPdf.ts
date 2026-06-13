@@ -42,8 +42,12 @@ function typeLabel(project: Project): string {
   return Array.isArray(project.type) ? project.type.join(" · ") : project.type;
 }
 
-/** Build and trigger a download of a branded payment-plan PDF for the current selection. */
-export function downloadPaymentPlanPdf(data: PaymentPlanPdf): void {
+/** Build a branded payment-plan PDF for the current selection, returning the
+ *  jsPDF document and a slugified filename. Shared by the download and share paths. */
+function buildPaymentPlanPdf(data: PaymentPlanPdf): {
+  doc: jsPDF;
+  filename: string;
+} {
   const { project, category, size, rate, total, milestones, installments } =
     data;
   const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -235,7 +239,24 @@ export function downloadPaymentPlanPdf(data: PaymentPlanPdf): void {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
-  doc.save(
-    `payment-plan-${slug(project.name)}-${slug(category.name)}-${size}sqft.pdf`
-  );
+  const filename = `payment-plan-${slug(project.name)}-${slug(
+    category.name
+  )}-${size}sqft.pdf`;
+
+  return { doc, filename };
+}
+
+/** Build and trigger a download of a branded payment-plan PDF for the current selection. */
+export function downloadPaymentPlanPdf(data: PaymentPlanPdf): void {
+  const { doc, filename } = buildPaymentPlanPdf(data);
+  doc.save(filename);
+}
+
+/** Build the payment-plan PDF as a File, for sharing via the Web Share API
+ *  (e.g. straight into WhatsApp on a consultant's phone). */
+export function paymentPlanPdfFile(data: PaymentPlanPdf): File {
+  const { doc, filename } = buildPaymentPlanPdf(data);
+  return new File([doc.output("blob")], filename, {
+    type: "application/pdf",
+  });
 }

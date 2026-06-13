@@ -106,7 +106,7 @@ export function Hero() {
               className="group inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3.5 text-sm font-semibold text-paper transition-colors hover:bg-gold-deep"
             >
               <MessageCircle className="size-4" />
-              Find my project on WhatsApp
+              Connect to the Advisor
               <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </a>
             <a

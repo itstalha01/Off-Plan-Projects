@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Download, MessageCircle } from "lucide-react";
+import { Download, MessageCircle, Send } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -10,8 +10,12 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { formatPKR, formatRate } from "@/lib/format";
-import { whatsappLink } from "@/lib/whatsapp";
-import { downloadPaymentPlanPdf } from "@/lib/paymentPdf";
+import { whatsappLink, whatsappShareLink } from "@/lib/whatsapp";
+import {
+  downloadPaymentPlanPdf,
+  paymentPlanPdfFile,
+  type PaymentPlanPdf,
+} from "@/lib/paymentPdf";
 import type { Category, Project } from "../types/project";
 import { UnitSizeSlider } from "./UnitSizeSlider";
 
@@ -199,6 +203,48 @@ function PaymentCalculator({ project }: { project: Project }) {
     [project, total]
   );
 
+  function pdfData(c: Category): PaymentPlanPdf {
+    return {
+      project,
+      category: c,
+      size: effectiveSize,
+      rate: effectiveRate,
+      total,
+      milestones,
+      installments,
+    };
+  }
+
+  // Share the payment plan with the client over WhatsApp. On phones (where the
+  // consultant has WhatsApp), the native share sheet attaches the actual PDF and
+  // lets them pick the client. WhatsApp's URL scheme can't attach files, so on
+  // desktop / unsupported browsers we download the PDF and open WhatsApp with a
+  // prefilled message for the consultant to attach manually.
+  async function shareViaWhatsApp(c: Category) {
+    const data = pdfData(c);
+    const summary =
+      `Indicative payment plan — ${project.name} (${c.name}, ` +
+      `${effectiveSize.toLocaleString()} sqft). Total ${formatPKR(total)}.`;
+
+    try {
+      const file = paymentPlanPdfFile(data);
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: `Payment plan — ${project.name}`,
+          text: summary,
+        });
+        return;
+      }
+    } catch (err) {
+      // User dismissed the share sheet — don't fall through to the download.
+      if ((err as Error)?.name === "AbortError") return;
+    }
+
+    downloadPaymentPlanPdf(data);
+    window.open(whatsappShareLink(summary), "_blank", "noopener,noreferrer");
+  }
+
   return (
     <div className="flex max-h-[68vh] flex-col overflow-y-auto pr-1">
       {/* Step 1 — choose a category (only when there is more than one) */}
@@ -373,17 +419,15 @@ function PaymentCalculator({ project }: { project: Project }) {
             </a>
             <button
               type="button"
-              onClick={() =>
-                downloadPaymentPlanPdf({
-                  project,
-                  category,
-                  size: effectiveSize,
-                  rate: effectiveRate,
-                  total,
-                  milestones,
-                  installments,
-                })
-              }
+              onClick={() => shareViaWhatsApp(category)}
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#1da851]"
+            >
+              <Send className="size-4" />
+              Share via WhatsApp
+            </button>
+            <button
+              type="button"
+              onClick={() => downloadPaymentPlanPdf(pdfData(category))}
               className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-ink/20 px-5 text-sm font-semibold text-ink transition-colors hover:border-ink/40 hover:bg-cream/60"
             >
               <Download className="size-4" />
