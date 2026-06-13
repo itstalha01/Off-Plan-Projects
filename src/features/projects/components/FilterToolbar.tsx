@@ -54,7 +54,7 @@ export function FilterToolbar() {
   return (
     <div
       id="areas"
-      className="sticky top-16 z-30 border-b border-ink/10 bg-cream/95 backdrop-blur-md"
+      className="z-30 border-b border-ink/10 bg-cream/95 backdrop-blur-md sm:sticky sm:top-16"
     >
       <div className="mx-auto w-full max-w-7xl px-5 py-4 sm:px-8">
         {/* Row 1 — search + selects */}

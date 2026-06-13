@@ -210,7 +210,7 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
   "Emirates Mall & Residency": {
     milestones: [
       { label: "Booking", pct: 10 },
-      { label: "Payment at digging", pct: 10 },
+      { label: "Payment at confirmation", pct: 10 },
       { label: "On possession", pct: 15 },
     ],
     installments: [

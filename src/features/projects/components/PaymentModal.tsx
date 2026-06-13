@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MessageCircle } from "lucide-react";
+import { Download, MessageCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 import { formatPKR, formatRate } from "@/lib/format";
 import { whatsappLink } from "@/lib/whatsapp";
+import { downloadPaymentPlanPdf } from "@/lib/paymentPdf";
 import type { Category, Project } from "../types/project";
 import { UnitSizeSlider } from "./UnitSizeSlider";
 
@@ -355,15 +356,40 @@ function PaymentCalculator({ project }: { project: Project }) {
             developer at booking.
           </p>
 
-          <a
-            href={advisorWhatsapp(project, category, effectiveSize, effectiveRate)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-5 inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-gold px-5 text-sm font-semibold text-ink transition-colors hover:bg-gold-deep hover:text-paper"
-          >
-            <MessageCircle className="size-4" />
-            Request full schedule on WhatsApp
-          </a>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <a
+              href={advisorWhatsapp(
+                project,
+                category,
+                effectiveSize,
+                effectiveRate
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-gold px-5 text-sm font-semibold text-ink transition-colors hover:bg-gold-deep hover:text-paper"
+            >
+              <MessageCircle className="size-4" />
+              Connect to the advisor
+            </a>
+            <button
+              type="button"
+              onClick={() =>
+                downloadPaymentPlanPdf({
+                  project,
+                  category,
+                  size: effectiveSize,
+                  rate: effectiveRate,
+                  total,
+                  milestones,
+                  installments,
+                })
+              }
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-ink/20 px-5 text-sm font-semibold text-ink transition-colors hover:border-ink/40 hover:bg-cream/60"
+            >
+              <Download className="size-4" />
+              Download payment plan (PDF)
+            </button>
+          </div>
         </>
       ) : (
         <p className="mt-5 rounded-xl bg-cream/60 px-4 py-6 text-center text-sm text-brown">
