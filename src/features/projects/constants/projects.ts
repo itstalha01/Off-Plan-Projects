@@ -40,7 +40,7 @@ const rows: BaseTuple[] = [
 // Projects with multiple purchasable layouts. Keyed by project name.
 const CATEGORY_OVERRIDES: Record<string, Category[]> = {
   // Real data from the developer's published payment plan.
-  // Bahria Sky 2 — launch (discounted) base rate per floor. Main-Boulevard /
+  // Bahria Sky 2 · launch (discounted) base rate per floor. Main-Boulevard /
   // 60-ft-facing / corner / atrium units are priced higher (see note); sizes
   // are gross sqft read from the plan.
   // Full per-sub-category breakdown. Rates are the discounted launch rates,
@@ -86,15 +86,15 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { group: "Third Floor", name: "Main Boulevard & Corner", rate: 31050, sizes: [494] },
     { group: "Third Floor", name: "Kiosk (Atrium Facing)", rate: 29700, sizes: [143] },
 
-    { group: "Fourth Floor — Food Court", name: "Kiosk", rate: 36000, sizes: [136, 169, 182, 188, 201] },
-    { group: "Fourth Floor — Food Court", name: "Kiosk & Corner", rate: 39600, sizes: [117, 175, 195] },
-    { group: "Fourth Floor — Food Court", name: "Kiosk (Atrium Facing)", rate: 39600, sizes: [104, 149, 169, 182, 188] },
-    { group: "Fourth Floor — Food Court", name: "Kiosk, Corner & Atrium", rate: 43200, sizes: [91, 136, 188, 195] },
-    { group: "Fourth Floor — Food Court", name: "Standard", rate: 36000, sizes: [292] },
-    { group: "Fourth Floor — Food Court", name: "Facing 60ft Road", rate: 39600, sizes: [182, 195, 227, 292, 299, 325] },
-    { group: "Fourth Floor — Food Court", name: "Facing 60ft Road & Corner", rate: 41400, sizes: [266] },
-    { group: "Fourth Floor — Food Court", name: "Main Boulevard", rate: 39600, sizes: [227, 234, 435] },
-    { group: "Fourth Floor — Food Court", name: "Main Boulevard & Corner", rate: 41400, sizes: [494] },
+    { group: "Fourth Floor · Food Court", name: "Kiosk", rate: 36000, sizes: [136, 169, 182, 188, 201] },
+    { group: "Fourth Floor · Food Court", name: "Kiosk & Corner", rate: 39600, sizes: [117, 175, 195] },
+    { group: "Fourth Floor · Food Court", name: "Kiosk (Atrium Facing)", rate: 39600, sizes: [104, 149, 169, 182, 188] },
+    { group: "Fourth Floor · Food Court", name: "Kiosk, Corner & Atrium", rate: 43200, sizes: [91, 136, 188, 195] },
+    { group: "Fourth Floor · Food Court", name: "Standard", rate: 36000, sizes: [292] },
+    { group: "Fourth Floor · Food Court", name: "Facing 60ft Road", rate: 39600, sizes: [182, 195, 227, 292, 299, 325] },
+    { group: "Fourth Floor · Food Court", name: "Facing 60ft Road & Corner", rate: 41400, sizes: [266] },
+    { group: "Fourth Floor · Food Court", name: "Main Boulevard", rate: 39600, sizes: [227, 234, 435] },
+    { group: "Fourth Floor · Food Court", name: "Main Boulevard & Corner", rate: 41400, sizes: [494] },
 
     { group: "Apartments (5th–13th)", name: "Standard", rate: 15500, sizes: [533, 539, 591, 650] },
     { group: "Apartments (5th–13th)", name: "Facing 60ft Road", rate: 17050, sizes: [397, 442, 546, 559, 572, 624, 663, 702, 708] },
@@ -102,19 +102,19 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { group: "Apartments (5th–13th)", name: "Main Boulevard", rate: 17050, sizes: [604, 611] },
     { group: "Apartments (5th–13th)", name: "Main Boulevard & Corner", rate: 17825, sizes: [1274, 1287] },
 
-    { group: "14th Floor — Apartments", name: "Standard", rate: 22500, sizes: [2483] },
-    { group: "14th Floor — Apartments", name: "Facing 60ft Road", rate: 24750, sizes: [2993] },
-    { group: "14th Floor — Apartments", name: "Main Boulevard & Corner", rate: 25875, sizes: [2330, 2737, 3381] },
+    { group: "14th Floor · Apartments", name: "Standard", rate: 22500, sizes: [2483] },
+    { group: "14th Floor · Apartments", name: "Facing 60ft Road", rate: 24750, sizes: [2993] },
+    { group: "14th Floor · Apartments", name: "Main Boulevard & Corner", rate: 25875, sizes: [2330, 2737, 3381] },
   ],
-  // Emirates Mall — rate is flat per floor; a +10% corner / Main-Boulevard
+  // Emirates Mall · rate is flat per floor; a +10% corner / Main-Boulevard
   // factor applies to some units (see disclaimer).
   "Emirates Mall & Residency": [
-    { name: "Ground Floor — Showrooms", rate: 55000, sizes: [341, 372, 420, 617, 677, 680, 714, 717, 800, 890] },
-    { name: "Ground Floor — Shops", rate: 55000, sizes: [101, 107, 138, 145, 157, 167, 168, 173, 174, 175, 181, 205, 228, 292, 295, 315, 332] },
-    { name: "Mezzanine — Shops", rate: 40000, sizes: [139, 153, 190, 207, 219, 235, 263, 295, 310, 327, 409, 437, 460] },
-    { name: "First Floor — Shops", rate: 35000, sizes: [146, 148, 151, 160, 172, 186, 196, 206, 208, 213, 214, 218, 222, 231, 239, 252, 253, 258, 301, 306, 328, 350, 365, 400, 406, 560, 699] },
-    { name: "Second Floor — Shops", rate: 32000, sizes: [146, 148, 151, 160, 172, 186, 196, 206, 208, 213, 214, 218, 222, 231, 239, 252, 253, 258, 301, 306, 328, 350, 365, 400, 406, 560, 699] },
-    { name: "Third Floor — Shops", rate: 30000, sizes: [135, 139, 141, 149, 160, 173, 182, 191, 215, 235, 240, 260, 280, 285, 326, 372, 378, 521, 651] },
+    { name: "Ground Floor · Showrooms", rate: 55000, sizes: [341, 372, 420, 617, 677, 680, 714, 717, 800, 890] },
+    { name: "Ground Floor · Shops", rate: 55000, sizes: [101, 107, 138, 145, 157, 167, 168, 173, 174, 175, 181, 205, 228, 292, 295, 315, 332] },
+    { name: "Mezzanine · Shops", rate: 40000, sizes: [139, 153, 190, 207, 219, 235, 263, 295, 310, 327, 409, 437, 460] },
+    { name: "First Floor · Shops", rate: 35000, sizes: [146, 148, 151, 160, 172, 186, 196, 206, 208, 213, 214, 218, 222, 231, 239, 252, 253, 258, 301, 306, 328, 350, 365, 400, 406, 560, 699] },
+    { name: "Second Floor · Shops", rate: 32000, sizes: [146, 148, 151, 160, 172, 186, 196, 206, 208, 213, 214, 218, 222, 231, 239, 252, 253, 258, 301, 306, 328, 350, 365, 400, 406, 560, 699] },
+    { name: "Third Floor · Shops", rate: 30000, sizes: [135, 139, 141, 149, 160, 173, 182, 191, 215, 235, 240, 260, 280, 285, 326, 372, 378, 521, 651] },
     { name: "Signature Apartments", rate: 17000, sizes: [343, 402, 412, 451, 463, 492, 502, 513, 599, 613, 630, 795, 1000, 1079, 1084, 1293] },
     { name: "Hotel Suites", rate: 17000, sizes: [284, 296, 303, 315, 338, 405] },
   ],
@@ -130,18 +130,18 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { name: "Second Floor", rate: 28000, sizes: [225, 425, 525, 780] },
     { name: "Office (3 to 7 Floor)", rate: 24000, sizes: [750, 950, 1250, 2250] },
   ],
-  // Zalmi X — sizes are the published covered areas of office stacks 301-901
+  // Zalmi X · sizes are the published covered areas of office stacks 301-901
   // through 306-906; the commercial outlet spans Ground + 1st + 2nd floor.
   "Zalmi X": [
     { name: "Corporate Offices (3rd–9th Floor)", rate: 30000, sizes: [729, 751, 892, 1073, 1128, 1265] },
     { name: "Commercial Outlet (Ground, 1st & 2nd)", rate: 62000, sizes: [4671] },
   ],
-  // Falah Technology Tower — published office sizes from the payment plan,
+  // Falah Technology Tower · published office sizes from the payment plan,
   // flat 26,000/sqft rate. Co-working is sold per chair (see plan note).
   "Falah Technology Tower": [
     { name: "Corporate Offices", rate: 26000, sizes: [375, 870, 974, 1038, 1149, 1163, 1200, 1316, 1410, 1531, 1620, 1779, 1811, 2003] },
   ],
-  // The Ark — published office sizes from the payment plan; the 8,897 sqft
+  // The Ark · published office sizes from the payment plan; the 8,897 sqft
   // unit at the premium rate is the signature restaurant space.
   "The Ark": [
     { name: "Corporate Offices", rate: 31000, sizes: [637, 661, 690, 718, 808, 829, 937, 980, 1033, 1040, 1092, 1302, 1345] },
@@ -387,12 +387,12 @@ export function lowestRate(p: Project): number {
   return Math.min(...p.categories.map((c) => c.rate));
 }
 
-/** Cheapest possible total price (PKR) — smallest size of the cheapest entry. */
+/** Cheapest possible total price (PKR) · smallest size of the cheapest entry. */
 export function lowestTotal(p: Project): number {
   return Math.min(...p.categories.map((c) => Math.min(...c.sizes) * c.rate));
 }
 
-/** The sqft size of the cheapest unit — i.e. the size the entry price is for. */
+/** The sqft size of the cheapest unit · i.e. the size the entry price is for. */
 export function entrySize(p: Project): number {
   let best = Infinity;
   let size = 0;
@@ -413,7 +413,7 @@ export function highestTotal(p: Project): number {
   return Math.max(...p.categories.map((c) => Math.max(...c.sizes) * c.rate));
 }
 
-/** Entry price in millions — used by the budget filter. */
+/** Entry price in millions · used by the budget filter. */
 export function entryPriceMillions(p: Project): number {
   return lowestTotal(p) / 1_000_000;
 }

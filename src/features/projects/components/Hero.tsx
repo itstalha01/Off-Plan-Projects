@@ -11,7 +11,7 @@ import {
 import { Facade, Plus, Sunburst } from "./BuildingArt";
 
 const HERO_WHATSAPP = whatsappLink(
-  "Hi Banaao, I'd like help finding a Lahore off-plan project that fits me."
+  "Hi Clearstoreys, I'd like help finding a Lahore off-plan project that fits me."
 );
 
 function Stat({ value, label }: { value: string; label: string }) {
@@ -71,7 +71,16 @@ export function Hero() {
         {/* Right: headline + CTA */}
         <div className="order-1 flex flex-col justify-center lg:order-2">
           <p className="font-serif text-lg italic text-gold-deep">
-            Lahore off-plan, made simple —
+            Lahore commercial off-plan, made simple
+          </p>
+
+          <p
+            dir="rtl"
+            lang="ur"
+            className="mt-3 text-left text-3xl font-bold leading-[2] text-ink sm:text-4xl"
+            style={{ fontFamily: "var(--font-urdu)" }}
+          >
+            صاف بات، <span className="text-gold">بلند عمارت</span>
           </p>
 
           <h1 className="mt-3 font-sans text-5xl font-extrabold uppercase leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
@@ -83,7 +92,7 @@ export function Hero() {
           </h1>
 
           <p className="mt-6 max-w-md text-base leading-relaxed text-brown">
-            Payment plans, possession timelines and approval status — laid bare.
+            Payment plans, possession timelines and approval status, laid bare.
             Tell us your budget, we&rsquo;ll match you to the towers worth your
             money.
           </p>

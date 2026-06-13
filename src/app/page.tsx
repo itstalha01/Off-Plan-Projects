@@ -18,15 +18,15 @@ export default function HomePage() {
         <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-4 px-5 py-10 sm:flex-row sm:items-center sm:px-8">
           <div>
             <p className="font-serif text-xl font-semibold">
-              Banaao<span className="text-gold">.</span>
+              Clearstoreys<span className="text-gold">.</span>
             </p>
             <p className="mt-1 text-sm text-paper/60">
-              Lahore off-plan investment, decoded.
+              Lahore commercial off-plan, decoded.
             </p>
           </div>
           <a
             href={whatsappLink(
-              "Hi Banaao, I'd like to talk about Lahore off-plan investment options."
+              "Hi Clearstoreys, I'd like to talk about Lahore off-plan investment options."
             )}
             target="_blank"
             rel="noopener noreferrer"

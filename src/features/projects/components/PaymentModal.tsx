@@ -20,7 +20,7 @@ function advisorWhatsapp(
   size: number
 ): string {
   return whatsappLink(
-    `Hi Banaao, I'd like the full payment schedule and to book a viewing for ${project.name} (${project.dev}, ${project.area}) — ${category.name}, roughly ${size.toLocaleString()} sqft.`
+    `Hi Clearstoreys, I'd like the full payment schedule and to book a viewing for ${project.name} (${project.dev}, ${project.area}), ${category.name}, roughly ${size.toLocaleString()} sqft.`
   );
 }
 

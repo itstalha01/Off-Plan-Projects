@@ -4,11 +4,12 @@ import { useState } from "react";
 import { Menu, MessageCircle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { whatsappLink } from "@/lib/whatsapp";
+import { Logo } from "@/components/shared/Logo";
 
 const isExternal = (href: string) => href.startsWith("http");
 
 const ADVISOR_WHATSAPP = whatsappLink(
-  "Hi Banaao, I'd like to speak to an advisor about Lahore off-plan investments."
+  "Hi Clearstoreys, I'd like to speak to an advisor about Lahore off-plan investments."
 );
 
 const NAV_LINKS = [
@@ -23,12 +24,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur-md">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 sm:px-8">
-        <a
-          href="#top"
-          className="font-serif text-2xl font-semibold tracking-tight text-ink"
-        >
-          Banaao
-          <span className="text-gold">.</span>
+        <a href="#top" aria-label="Clearstoreys home">
+          <Logo className="flex items-center gap-2.5" />
         </a>
 
         <nav className="hidden items-center gap-8 md:flex">

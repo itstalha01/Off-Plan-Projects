@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Hanken_Grotesk } from "next/font/google";
+import { Fraunces, Hanken_Grotesk, Noto_Nastaliq_Urdu } from "next/font/google";
 import { Providers } from "@/components/providers";
 import "./globals.css";
 
@@ -16,10 +16,17 @@ const hanken = Hanken_Grotesk({
   display: "swap",
 });
 
+const nastaliq = Noto_Nastaliq_Urdu({
+  subsets: ["arabic"],
+  weight: ["500", "700"],
+  variable: "--font-nastaliq",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Banaao — Lahore Off-Plan Investment Portal",
+  title: "Clearstoreys · Lahore Commercial Off-Plan",
   description:
-    "Off-plan, decoded. A curated portal for Lahore off-plan real estate investment — payment plans, possession timelines and LDA status, made transparent.",
+    "Clearstoreys is a curated portal for Lahore commercial off-plan real estate. Payment plans, possession timelines and LDA status, laid bare.",
 };
 
 export default function RootLayout({
@@ -30,7 +37,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${hanken.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${hanken.variable} ${nastaliq.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-paper text-ink font-sans">
         <Providers>{children}</Providers>
