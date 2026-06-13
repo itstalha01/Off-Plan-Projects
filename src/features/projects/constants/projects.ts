@@ -38,6 +38,7 @@ const rows: BaseTuple[] = [
   ["Pearl One Capital", "ABS Developers", "DHA Phase 2", ["Residential", "Commercial"], "2029", "Approved", 5, 85, 10, "Monthly", 3, 26000, 625, 1668.75, "/images/pearl-one-capital.webp"],
   ["Pearl One Courtyard", "ABS Developers", "Bahria Town", "Residential", "2029", "Approved", 7, 83, 10, "Monthly", 2, 30000, 500, 1000, "/images/pearl-one-courtyard.webp"],
   ["Classic Atrium", "Classic Living", "Bahria Town", "Residential", "2030", "Approved", 10, 48, 13, "Monthly", 4, 17500, 350, 2500, "/images/classic-atrium.webp"],
+  ["Skyline Boulevard", "Brother Developers", "Raiwind Road", ["Commercial", "Residential"], "2030", "Approved", 15, 45, 15, "Monthly", 3.5, 15000, 100, 4668, "/images/skyline-boulevard.jpg"],
 ];
 
 // Non-Lahore projects. Keyed by name; everything else defaults to "Lahore".
@@ -187,6 +188,26 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { name: "3 Bed Apartment", rate: 17500, sizes: [1100] },
     { name: "3 Bed Lawn Apartment", rate: 17500, sizes: [1650] },
     { name: "3 Bed Penthouse", rate: 17500, sizes: [2500] },
+  ],
+  // Skyline Boulevard · Brother Developers, Al Kabir Downtown, Main Raiwind Road.
+  // Rates shown are the general per-sqft rates published per floor; corner /
+  // premium ("category") units carry a higher rate (see plan note). Sizes are
+  // the gross areas from the developer's payment plan. Ground-floor kiosks and
+  // shops are quoted at their own per-sqft rates.
+  "Skyline Boulevard": [
+    { group: "Lower Ground", name: "Kiosk", rate: 22000, sizes: [100] },
+    { group: "Lower Ground", name: "Shops", rate: 22000, sizes: [113, 150, 204, 246, 286, 345] },
+
+    { group: "Ground Floor", name: "Kiosk", rate: 44000, sizes: [110] },
+    { group: "Ground Floor", name: "Shops (Facing Downtown)", rate: 40000, sizes: [250, 310, 368, 406, 442, 557, 614] },
+    { group: "Ground Floor", name: "Triple-Height Premium Outlets (Main Boulevard)", rate: 35000, sizes: [2255, 2329, 4668] },
+
+    { group: "1st & 2nd Floor", name: "Kiosk", rate: 25000, sizes: [113] },
+    { group: "1st & 2nd Floor", name: "Shops", rate: 25000, sizes: [260, 318, 343, 383, 425, 478] },
+
+    { group: "Luxury Apartments", name: "1 Bed", rate: 15000, sizes: [431, 445, 481, 495, 533, 548, 555, 570, 586, 621, 680] },
+    { group: "Luxury Apartments", name: "2 Bed", rate: 15000, sizes: [851, 937, 1004] },
+    { group: "Luxury Apartments", name: "3 Bed", rate: 15000, sizes: [1381] },
   ],
 };
 
@@ -405,6 +426,31 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
+  // Skyline Boulevard: 15 booking + 15 confirmation + (42 monthly = 25%)
+  // + (half-yearly after every 6 months = 20% over 7 payments) + 10 grey
+  // structure + 15 possession = 100%. Pay over 3.5 years, possession in 3 years.
+  "Skyline Boulevard": {
+    milestones: [
+      { label: "Booking", pct: 15 },
+      { label: "Confirmation (within 45 days)", pct: 15 },
+      { label: "On grey structure", pct: 10 },
+      { label: "On possession", pct: 15 },
+    ],
+    installments: [
+      {
+        label: "Monthly installment",
+        pct: 25 / 42,
+        count: 42,
+        note: "42 monthly installments (25%)",
+      },
+      {
+        label: "Half-yearly installment",
+        pct: 20 / 7,
+        count: 7,
+        note: "after every 6 months (20%)",
+      },
+    ],
+  },
 };
 
 // Optional plan caveats, shown beneath the breakdown. Keyed by project name.
@@ -423,6 +469,8 @@ const PLAN_NOTES: Record<string, string> = {
     "LDA approved · Tower 1, Bahria Town Lahore, Tipu Sultan Main Boulevard. All apartments are sold at a flat PKR 30,000/sq ft; areas are gross & approximate. The down payment and final instalment are fixed rupee amounts that vary by unit, so the percentages shown are indicative (based on the entry 1-bed unit). Down payment at booking is PKR 1,000,000 for the 1-bed and PKR 1,500,000 for the 2-bed units. The schedule runs as a down payment, 11 monthly instalments (1 May 2026 – 1 Mar 2027), a yearly instalment on 1 Apr 2027, 11 more monthly instalments (1 May 2027 – 1 Mar 2028), and a final instalment on 1 Apr 2028. Down payment is due by 30 April 2026, failing which the booking is cancelled.",
   "Classic Atrium":
     "LDA approved · Tipu Sultan Block, Bahria Town Lahore, by Classic Living; possession in 2030. All apartments are sold at a flat PKR 17,500/sq ft; areas are gross & approximate. The booking/down payment and the payment due after 2 months are fixed rupee amounts that vary by unit, so the percentages shown are indicative (based on the 350 sq ft studio). The schedule runs as a down payment at booking, an equal payment after 2 months, 48 monthly installments, 7 half-yearly balloon payments, and a final payment on possession. Indicative amounts per unit (down / after 2 months / monthly ×48 / balloon ×7 / final) — Studio 350 sq ft: 595,000 / 595,000 / 35,000 / 350,000 / 805,000. 1-Bed 500 sq ft: 1,095,000 / 1,095,000 / 45,000 / 470,000 / 1,110,000. 2-Bed 800 sq ft: 1,495,000 / 1,495,000 / 79,500 / 699,000 / 2,301,000. 3-Bed 1,100 sq ft: 1,695,000 / 1,695,000 / 99,500 / 1,075,000 / 3,559,000. 3-Bed Lawn 1,650 sq ft: 2,895,000 / 2,895,000 / 149,000 / 1,590,000 / 4,801,000. 3-Bed Penthouse 2,500 sq ft: 4,495,000 / 4,495,000 / 225,000 / 2,495,000 / 6,495,000. Payment plan is subject to availability of units.",
+  "Skyline Boulevard":
+    "LDA approved · Al Kabir Downtown, Main Raiwind Road, Lahore, by Brother Developers. Pay over 3.5 years with possession in 3 years. Rates shown are the general per-sqft rates published per floor; corner and premium (“category”) units carry a higher rate — Lower Ground 24,200, Ground Floor shops 44,000, 1st & 2nd Floor 27,500, and apartments 16,500 per sq ft. Triple-height main-boulevard premium outlets are quoted at 35,000 (up to 49,500 for prime positions). The schedule runs as 15% booking, 15% on confirmation within 45 days, 42 monthly installments (25%), a half-yearly installment after every 6 months (20%), 10% on grey structure, and 15% on possession. Areas are gross & approximate and prices are subject to availability of units.",
   "Pearl One Capital":
     "Approved by CDA and DHA. Eid-ul-Fitr offer — valid till Eid-ul-Fitr 2026. Booking & down payment is a flat PKR 1,000,000 across all unit sizes, followed by 36 equal monthly installments and a final balloon payment on possession (the percentages shown are indicative splits of the total). A corner unit adds 10%, a front unit adds 10%, and front & corner adds 15% — already reflected in the per-sqft rate. All areas are gross & approximate. Instalment plan starts from April 2026 and is subject to availability of units. No discount on full cash payment. Commercial units (offices & shops) and luxury single & double-storey penthouses (LA-A, LA-B, LA-C) are also available — payment plans for these on request.",
 };
