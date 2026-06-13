@@ -14,7 +14,6 @@ const ADVISOR_WHATSAPP = whatsappLink(
 const NAV_LINKS = [
   { label: "Projects", href: "#projects" },
   { label: "Areas", href: "#areas" },
-  { label: "Calculator", href: "#projects" },
   { label: "Contact", href: ADVISOR_WHATSAPP },
 ];
 
