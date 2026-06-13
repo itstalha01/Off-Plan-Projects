@@ -3,6 +3,7 @@ import { MAX_ENTRY_PRICE } from "../constants/projects";
 
 export type FilterState = {
   search: string;
+  city: string; // "" = any
   area: string; // "" = any
   type: string; // "" = any
   possession: string; // "" = any year
@@ -12,6 +13,7 @@ export type FilterState = {
 
 type FilterActions = {
   setSearch: (v: string) => void;
+  setCity: (v: string) => void;
   setArea: (v: string) => void;
   setType: (v: string) => void;
   setPossession: (v: string) => void;
@@ -22,6 +24,7 @@ type FilterActions = {
 
 const initialState: FilterState = {
   search: "",
+  city: "",
   area: "",
   type: "",
   possession: "",
@@ -32,6 +35,7 @@ const initialState: FilterState = {
 export const useFilterStore = create<FilterState & FilterActions>((set) => ({
   ...initialState,
   setSearch: (search) => set({ search }),
+  setCity: (city) => set({ city }),
   setArea: (area) => set({ area }),
   setType: (type) => set({ type }),
   setPossession: (possession) => set({ possession }),

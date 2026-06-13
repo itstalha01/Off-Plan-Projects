@@ -21,12 +21,12 @@ export default function HomePage() {
               Clearstoreys<span className="text-gold">.</span>
             </p>
             <p className="mt-1 text-sm text-paper/60">
-              Lahore commercial off-plan, decoded.
+              Pakistan commercial off-plan, decoded.
             </p>
           </div>
           <a
             href={whatsappLink(
-              "Hi Clearstoreys, I'd like to talk about Lahore off-plan investment options."
+              "Hi Clearstoreys, I'd like to talk about Pakistan off-plan investment options."
             )}
             target="_blank"
             rel="noopener noreferrer"

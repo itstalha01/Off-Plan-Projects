@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   AREAS,
+  CITIES,
   MAX_ENTRY_PRICE,
   MIN_ENTRY_PRICE,
   POSSESSION_YEARS,
@@ -34,6 +35,7 @@ function ChevronAdornment() {
 
 export function FilterToolbar() {
   const search = useFilterStore((s) => s.search);
+  const city = useFilterStore((s) => s.city);
   const area = useFilterStore((s) => s.area);
   const type = useFilterStore((s) => s.type);
   const possession = useFilterStore((s) => s.possession);
@@ -41,6 +43,7 @@ export function FilterToolbar() {
   const approvedOnly = useFilterStore((s) => s.approvedOnly);
 
   const setSearch = useFilterStore((s) => s.setSearch);
+  const setCity = useFilterStore((s) => s.setCity);
   const setArea = useFilterStore((s) => s.setArea);
   const setType = useFilterStore((s) => s.setType);
   const setPossession = useFilterStore((s) => s.setPossession);
@@ -55,7 +58,7 @@ export function FilterToolbar() {
     >
       <div className="mx-auto w-full max-w-7xl px-5 py-4 sm:px-8">
         {/* Row 1 — search + selects */}
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <label className="flex flex-col gap-1.5">
             <span className={labelClass}>Search</span>
             <div className="relative">
@@ -67,6 +70,25 @@ export function FilterToolbar() {
                 placeholder="Project, developer or area"
                 className="h-11 w-full rounded-lg border border-ink/15 bg-paper pl-9 pr-3 text-sm font-medium text-ink outline-none transition-colors placeholder:font-normal placeholder:text-brown/60 hover:border-ink/30 focus:border-gold focus:ring-2 focus:ring-gold/30"
               />
+            </div>
+          </label>
+
+          <label className="flex flex-col gap-1.5">
+            <span className={labelClass}>City</span>
+            <div className="relative">
+              <select
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className={selectClass}
+              >
+                <option value="">All cities</option>
+                {CITIES.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </select>
+              <ChevronAdornment />
             </div>
           </label>
 

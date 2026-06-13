@@ -35,7 +35,13 @@ const rows: BaseTuple[] = [
   ["Falah Technology Tower", "Falah Developers", "Main Defence Road", "Commercial", "2028", "Approved", 10, 55, 25, "Monthly", 2.6, 26000, 375, 2003, "/images/falah-tower.jpg"],
   ["Curve – Pine Avenue Downtown", "HF Developers", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 24000, 225, 2250, "/images/curve.webp"],
   ["Zalmi X", "Zalmi Developments", "Pine Avenue Road", "Commercial", "2028", "Approved", 15, 55, 0, "Quarterly", 2.5, 30000, 729, 4671, "/images/zalmi-x.webp"],
+  ["Pearl One Capital", "ABS Developers", "DHA Phase 2", ["Residential", "Commercial"], "2029", "Approved", 5, 85, 10, "Monthly", 3, 26000, 625, 1668.75, "/images/pearl-one-capital.webp"],
 ];
+
+// Non-Lahore projects. Keyed by name; everything else defaults to "Lahore".
+const CITY_OVERRIDES: Record<string, string> = {
+  "Pearl One Capital": "Islamabad",
+};
 
 // Projects with multiple purchasable layouts. Keyed by project name.
 const CATEGORY_OVERRIDES: Record<string, Category[]> = {
@@ -146,6 +152,23 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
   "The Ark": [
     { name: "Corporate Offices", rate: 31000, sizes: [637, 661, 690, 718, 808, 829, 937, 980, 1033, 1040, 1092, 1302, 1345] },
     { name: "Signature Restaurant", rate: 40000, sizes: [8897] },
+  ],
+  // Pearl One Capital · residential apartments. Base rate is 26,000/sqft; the
+  // location premium is baked into each sub-category's effective rate —
+  // Front +10% and Corner +10% → 28,600, Front & Corner +15% → 29,900.
+  // Sizes are the gross areas published in the developer's payment plan.
+  "Pearl One Capital": [
+    { group: "1 Bed Apartment", name: "General", rate: 26000, sizes: [625, 770] },
+    { group: "1 Bed Apartment", name: "Front", rate: 28600, sizes: [630, 635, 715, 716.25, 728.75, 731.25, 741.25, 743.75, 768.75] },
+    { group: "1 Bed Apartment", name: "Corner", rate: 28600, sizes: [727.5] },
+
+    { group: "2 Bed Apartment", name: "General", rate: 26000, sizes: [1015, 1128.75] },
+    { group: "2 Bed Apartment", name: "Front", rate: 28600, sizes: [1083.75, 1093.75, 1095, 1101.25, 1125, 1175, 1187.5] },
+    { group: "2 Bed Apartment", name: "Corner", rate: 28600, sizes: [1282.5] },
+    { group: "2 Bed Apartment", name: "Front & Corner", rate: 29900, sizes: [1200] },
+
+    { group: "3 Bed Apartment", name: "General", rate: 26000, sizes: [1668.75] },
+    { group: "3 Bed Apartment", name: "Front & Corner", rate: 29900, sizes: [1490] },
   ],
 };
 
@@ -295,6 +318,24 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
+  // Pearl One Capital: flat PKR 1,000,000 booking + 36 monthly installments
+  // + final balloon on possession. The developer quotes a fixed booking amount
+  // (not a %), so the 5% shown is indicative; the exact flat figure is in the
+  // plan note. 5 + (2.36% × 36 = 85%) + 10 = 100% over 36 months.
+  "Pearl One Capital": {
+    milestones: [
+      { label: "Booking & down payment", pct: 5 },
+      { label: "On possession", pct: 10 },
+    ],
+    installments: [
+      {
+        label: "Monthly installment",
+        pct: 85 / 36,
+        count: 36,
+        note: "36 monthly installments (85%)",
+      },
+    ],
+  },
 };
 
 // Optional plan caveats, shown beneath the breakdown. Keyed by project name.
@@ -309,6 +350,8 @@ const PLAN_NOTES: Record<string, string> = {
     "Corner corporate offices (stacks 303-903 & 304-904) are charged 5% extra. 5% discount on full cash payment. Prices are exclusive of taxes and government dues.",
   "The Ark":
     "A 5% premium factor applies to corner units and a further 5% to front-facing units. Prices are subject to change without prior notice.",
+  "Pearl One Capital":
+    "Approved by CDA and DHA. Eid-ul-Fitr offer — valid till Eid-ul-Fitr 2026. Booking & down payment is a flat PKR 1,000,000 across all unit sizes, followed by 36 equal monthly installments and a final balloon payment on possession (the percentages shown are indicative splits of the total). A corner unit adds 10%, a front unit adds 10%, and front & corner adds 15% — already reflected in the per-sqft rate. All areas are gross & approximate. Instalment plan starts from April 2026 and is subject to availability of units. No discount on full cash payment. Commercial units (offices & shops) and luxury single & double-storey penthouses (LA-A, LA-B, LA-C) are also available — payment plans for these on request.",
 };
 
 /** Generate an explicit, ascending list of snap sizes between min and max. */
@@ -362,6 +405,7 @@ export const PROJECTS: Project[] = rows.map(
   ([name, dev, area, type, poss, lda, book, dur, possP, bfreq, yrs, rate, minU, maxU, img]) => ({
     name,
     dev,
+    city: CITY_OVERRIDES[name] ?? "Lahore",
     area,
     type,
     poss,
@@ -421,6 +465,12 @@ export function entryPriceMillions(p: Project): number {
 // Fallback cover used until a project gets its own photo (set `img` on the row).
 export const DEFAULT_PROJECT_IMG = "/images/hero-tower.jpg";
 
+// Cities, with Lahore (the home market) pinned first and the rest sorted.
+export const CITIES = [
+  ...new Set(PROJECTS.map((p) => p.city)),
+].sort((a, b) =>
+  a === "Lahore" ? -1 : b === "Lahore" ? 1 : a.localeCompare(b)
+);
 export const AREAS = [...new Set(PROJECTS.map((p) => p.area))].sort();
 export const TYPES = [...new Set(PROJECTS.flatMap(typesOf))].sort();
 export const POSSESSION_YEARS = [...new Set(PROJECTS.map((p) => p.poss))].sort();

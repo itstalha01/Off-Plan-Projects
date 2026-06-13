@@ -24,9 +24,9 @@ const nastaliq = Noto_Nastaliq_Urdu({
 });
 
 export const metadata: Metadata = {
-  title: "Clearstoreys · Lahore Commercial Off-Plan",
+  title: "Clearstoreys · Pakistan Commercial Off-Plan",
   description:
-    "Clearstoreys is a curated portal for Lahore commercial off-plan real estate. Payment plans, possession timelines and LDA status, laid bare.",
+    "Clearstoreys is a curated portal for Pakistan commercial off-plan real estate. Payment plans, possession timelines and approval status, laid bare.",
 };
 
 export default function RootLayout({

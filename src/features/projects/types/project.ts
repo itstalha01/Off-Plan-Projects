@@ -44,6 +44,7 @@ export type Plan = {
 export type Project = {
   name: string;
   dev: string;
+  city: string; // e.g. "Lahore", "Islamabad"
   area: string;
   type: ProjectType | ProjectType[]; // one or more (e.g. mixed-use)
   poss: string; // possession year e.g. "2027"

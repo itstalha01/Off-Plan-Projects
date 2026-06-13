@@ -3,6 +3,7 @@ import { ArrowUpRight, MessageCircle } from "lucide-react";
 import { whatsappLink } from "@/lib/whatsapp";
 import {
   AREAS,
+  CITIES,
   POSSESSION_YEARS,
   PRICE_BAND_MAX,
   PRICE_BAND_MIN,
@@ -11,7 +12,7 @@ import {
 import { Facade, Plus, Sunburst } from "./BuildingArt";
 
 const HERO_WHATSAPP = whatsappLink(
-  "Hi Clearstoreys, I'd like help finding a Lahore off-plan project that fits me."
+  "Hi Clearstoreys, I'd like help finding a Pakistan off-plan project that fits me."
 );
 
 function Stat({ value, label }: { value: string; label: string }) {
@@ -45,7 +46,7 @@ export function Hero() {
             <div className="relative h-[360px] overflow-hidden rounded-[24px] shadow-xl sm:h-[460px] lg:h-[560px]">
               <Image
                 src="/images/hero-tower.jpg"
-                alt="A modern Lahore high-rise residential tower with a rooftop garden"
+                alt="A modern Pakistani high-rise residential tower with a rooftop garden"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 420px"
@@ -63,7 +64,7 @@ export function Hero() {
               <Facade className="h-8 w-12" />
             </span>
             <span className="text-xs font-medium text-brown">
-              {PROJECTS.length} curated towers across Lahore
+              {PROJECTS.length} curated towers across {CITIES.join(" & ")}
             </span>
           </div>
         </div>
@@ -71,7 +72,7 @@ export function Hero() {
         {/* Right: headline + CTA */}
         <div className="order-1 flex flex-col justify-center lg:order-2">
           <p className="font-serif text-lg italic text-gold-deep">
-            Lahore commercial off-plan, made simple
+            Pakistan commercial off-plan, made simple
           </p>
 
           <p

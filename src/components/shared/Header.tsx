@@ -9,7 +9,7 @@ import { Logo } from "@/components/shared/Logo";
 const isExternal = (href: string) => href.startsWith("http");
 
 const ADVISOR_WHATSAPP = whatsappLink(
-  "Hi Clearstoreys, I'd like to speak to an advisor about Lahore off-plan investments."
+  "Hi Clearstoreys, I'd like to speak to an advisor about Pakistan off-plan investments."
 );
 
 const NAV_LINKS = [

@@ -5,6 +5,7 @@ import type { Project, ProjectType } from "../types/project";
 
 export function useFilteredProjects(): Project[] {
   const search = useFilterStore((s) => s.search);
+  const city = useFilterStore((s) => s.city);
   const area = useFilterStore((s) => s.area);
   const type = useFilterStore((s) => s.type);
   const possession = useFilterStore((s) => s.possession);
@@ -16,9 +17,10 @@ export function useFilteredProjects(): Project[] {
 
     return PROJECTS.filter((p) => {
       if (q) {
-        const haystack = `${p.name} ${p.dev} ${p.area}`.toLowerCase();
+        const haystack = `${p.name} ${p.dev} ${p.city} ${p.area}`.toLowerCase();
         if (!haystack.includes(q)) return false;
       }
+      if (city && p.city !== city) return false;
       if (area && p.area !== area) return false;
       if (type && !typesOf(p).includes(type as ProjectType)) return false;
       if (possession && p.poss !== possession) return false;
@@ -26,5 +28,5 @@ export function useFilteredProjects(): Project[] {
       if (approvedOnly && p.lda !== "Approved") return false;
       return true;
     });
-  }, [search, area, type, possession, maxEntryPrice, approvedOnly]);
+  }, [search, city, area, type, possession, maxEntryPrice, approvedOnly]);
 }
