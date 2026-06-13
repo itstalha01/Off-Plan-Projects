@@ -17,10 +17,58 @@ import { UnitSizeSlider } from "./UnitSizeSlider";
 function advisorWhatsapp(
   project: Project,
   category: Category,
-  size: number
+  size: number,
+  rate: number
 ): string {
+  const ratePart =
+    rate !== category.rate ? ` at a custom rate of ${formatRate(rate)}` : "";
   return whatsappLink(
-    `Hi Clearstoreys, I'd like the full payment schedule and to book a viewing for ${project.name} (${project.dev}, ${project.area}), ${category.name}, roughly ${size.toLocaleString()} sqft.`
+    `Hi Clearstoreys, I'd like the full payment schedule and to book a viewing for ${project.name} (${project.dev}, ${project.area}), ${category.name}, roughly ${size.toLocaleString()} sqft${ratePart}.`
+  );
+}
+
+/** Parse a free-typed override field; returns null unless it's a positive number. */
+function parsePositive(input: string): number | null {
+  const n = Number(input);
+  return input.trim() !== "" && Number.isFinite(n) && n > 0 ? n : null;
+}
+
+function CustomNumberField({
+  label,
+  suffix,
+  placeholder,
+  value,
+  onChange,
+  active,
+}: {
+  label: string;
+  suffix: string;
+  placeholder: string;
+  value: string;
+  onChange: (value: string) => void;
+  active: boolean;
+}) {
+  return (
+    <label
+      className={cn(
+        "flex items-center justify-between gap-3 rounded-xl border px-3 py-2 transition-colors",
+        active ? "border-gold bg-gold/10" : "border-ink/15"
+      )}
+    >
+      <span className="text-xs font-medium text-brown">{label}</span>
+      <span className="flex items-baseline gap-1">
+        <input
+          type="number"
+          inputMode="numeric"
+          min={1}
+          value={value}
+          placeholder={placeholder}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-24 bg-transparent text-right text-sm font-semibold text-ink outline-none placeholder:font-normal placeholder:text-brown/40 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        />
+        <span className="text-xs text-brown/60">{suffix}</span>
+      </span>
+    </label>
   );
 }
 
@@ -89,6 +137,9 @@ function PaymentCalculator({ project }: { project: Project }) {
   const [size, setSize] = useState(
     single ? project.categories[0].sizes[0] : 0
   );
+  // Free-typed overrides for off-plan sizes / revised (old) rates.
+  const [customSize, setCustomSize] = useState("");
+  const [customRate, setCustomRate] = useState("");
 
   const category = catIndex >= 0 ? project.categories[catIndex] : null;
 
@@ -109,9 +160,24 @@ function PaymentCalculator({ project }: { project: Project }) {
   function selectCategory(i: number) {
     setCatIndex(i);
     setSize(project.categories[i].sizes[0]);
+    setCustomSize("");
+    setCustomRate("");
   }
 
-  const total = category ? size * category.rate : 0;
+  // Picking a listed size clears any custom size so the two never conflict.
+  function pickSize(s: number) {
+    setSize(s);
+    setCustomSize("");
+  }
+
+  // A typed override wins over the published value, letting a consultant quote
+  // an off-plan size or an old/revised rate. Everything below derives from these.
+  const parsedSize = parsePositive(customSize);
+  const parsedRate = parsePositive(customRate);
+  const effectiveSize = parsedSize ?? size;
+  const effectiveRate = category ? parsedRate ?? category.rate : 0;
+
+  const total = category ? effectiveSize * effectiveRate : 0;
   const fixedSize = category ? category.sizes.length === 1 : false;
 
   const milestones = useMemo(
@@ -184,7 +250,7 @@ function PaymentCalculator({ project }: { project: Project }) {
                 {single ? "Unit size" : `${category.name} · size`}
               </span>
               <span className="font-serif text-lg font-semibold text-ink">
-                {size.toLocaleString()} sqft
+                {effectiveSize.toLocaleString()} sqft
               </span>
             </div>
 
@@ -197,17 +263,17 @@ function PaymentCalculator({ project }: { project: Project }) {
                 <UnitSizeSlider
                   sizes={category.sizes}
                   value={size}
-                  onChange={setSize}
+                  onChange={pickSize}
                 />
                 <div className="mt-2 flex justify-between">
                   {category.sizes.map((s) => (
                     <button
                       key={s}
                       type="button"
-                      onClick={() => setSize(s)}
+                      onClick={() => pickSize(s)}
                       className={cn(
                         "text-[11px] font-medium transition-colors",
-                        s === size
+                        s === size && !parsedSize
                           ? "text-gold-deep"
                           : "text-brown/60 hover:text-brown"
                       )}
@@ -218,12 +284,38 @@ function PaymentCalculator({ project }: { project: Project }) {
                 </div>
               </div>
             )}
+
+            {/* Custom size — quote a sqft that isn't in the published list. */}
+            <div className="mt-4">
+              <CustomNumberField
+                label="Custom size"
+                suffix="sqft"
+                placeholder={size ? size.toLocaleString() : "Enter sqft"}
+                value={customSize}
+                onChange={setCustomSize}
+                active={parsedSize != null}
+              />
+            </div>
           </div>
 
-          <div className="mt-5 rounded-xl bg-cream/60 px-4">
+          {/* Custom rate — quote on an old/revised rate per sqft. */}
+          <div className="mt-5">
+            <CustomNumberField
+              label="Custom rate"
+              suffix="/sqft"
+              placeholder={category.rate.toLocaleString()}
+              value={customRate}
+              onChange={setCustomRate}
+              active={parsedRate != null}
+            />
+          </div>
+
+          <div className="mt-3 rounded-xl bg-cream/60 px-4">
             <Row
               label="Total unit price"
-              sub={`${size.toLocaleString()} sqft × ${formatRate(category.rate)}`}
+              sub={`${effectiveSize.toLocaleString()} sqft × ${formatRate(
+                effectiveRate
+              )}`}
               value={formatPKR(total)}
               lead
             />
@@ -264,7 +356,7 @@ function PaymentCalculator({ project }: { project: Project }) {
           </p>
 
           <a
-            href={advisorWhatsapp(project, category, size)}
+            href={advisorWhatsapp(project, category, effectiveSize, effectiveRate)}
             target="_blank"
             rel="noopener noreferrer"
             className="mt-5 inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-gold px-5 text-sm font-semibold text-ink transition-colors hover:bg-gold-deep hover:text-paper"

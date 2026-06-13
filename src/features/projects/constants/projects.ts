@@ -36,6 +36,7 @@ const rows: BaseTuple[] = [
   ["Curve – Pine Avenue Downtown", "HF Developers", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 24000, 225, 2250, "/images/curve.webp"],
   ["Zalmi X", "Zalmi Developments", "Pine Avenue Road", "Commercial", "2028", "Approved", 15, 55, 0, "Quarterly", 2.5, 30000, 729, 4671, "/images/zalmi-x.webp"],
   ["Pearl One Capital", "ABS Developers", "DHA Phase 2", ["Residential", "Commercial"], "2029", "Approved", 5, 85, 10, "Monthly", 3, 26000, 625, 1668.75, "/images/pearl-one-capital.webp"],
+  ["Pearl One Courtyard", "ABS Developers", "Bahria Town", "Residential", "2029", "Approved", 7, 83, 10, "Monthly", 2, 30000, 500, 1000, "/images/pearl-one-courtyard.webp"],
 ];
 
 // Non-Lahore projects. Keyed by name; everything else defaults to "Lahore".
@@ -169,6 +170,12 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
 
     { group: "3 Bed Apartment", name: "General", rate: 26000, sizes: [1668.75] },
     { group: "3 Bed Apartment", name: "Front & Corner", rate: 29900, sizes: [1490] },
+  ],
+  // Pearl One Courtyard · Tower 1 general apartments, flat 30,000/sqft. Sizes
+  // are the gross areas published in the developer's payment plans.
+  "Pearl One Courtyard": [
+    { group: "1 Bed Apartment", name: "General", rate: 30000, sizes: [500] },
+    { group: "2 Bed Apartment", name: "General", rate: 30000, sizes: [800, 1000] },
   ],
 };
 
@@ -336,6 +343,31 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
+  // Pearl One Courtyard: flat-amount schedule (down payment + final instalment
+  // are fixed PKR figures, so the percentages shown are based on the entry
+  // 1-bed unit — see plan note). Down payment + 11 monthly + yearly instalment
+  // + 11 monthly + final instalment over ~24 months.
+  "Pearl One Courtyard": {
+    milestones: [
+      { label: "Down payment (at booking)", pct: 100 / 15 },
+      { label: "Yearly instalment (1 Apr 2027)", pct: 100 / 15 },
+      { label: "Final instalment (1 Apr 2028)", pct: 9.5 },
+    ],
+    installments: [
+      {
+        label: "Monthly instalment · Year 1",
+        pct: 3.5,
+        count: 11,
+        note: "11 monthly (May 2026 – Mar 2027)",
+      },
+      {
+        label: "Monthly instalment · Year 2",
+        pct: 3.5,
+        count: 11,
+        note: "11 monthly (May 2027 – Mar 2028)",
+      },
+    ],
+  },
 };
 
 // Optional plan caveats, shown beneath the breakdown. Keyed by project name.
@@ -350,6 +382,8 @@ const PLAN_NOTES: Record<string, string> = {
     "Corner corporate offices (stacks 303-903 & 304-904) are charged 5% extra. 5% discount on full cash payment. Prices are exclusive of taxes and government dues.",
   "The Ark":
     "A 5% premium factor applies to corner units and a further 5% to front-facing units. Prices are subject to change without prior notice.",
+  "Pearl One Courtyard":
+    "LDA approved · Tower 1, Bahria Town Lahore, Tipu Sultan Main Boulevard. All apartments are sold at a flat PKR 30,000/sq ft; areas are gross & approximate. The down payment and final instalment are fixed rupee amounts that vary by unit, so the percentages shown are indicative (based on the entry 1-bed unit). Down payment at booking is PKR 1,000,000 for the 1-bed and PKR 1,500,000 for the 2-bed units. The schedule runs as a down payment, 11 monthly instalments (1 May 2026 – 1 Mar 2027), a yearly instalment on 1 Apr 2027, 11 more monthly instalments (1 May 2027 – 1 Mar 2028), and a final instalment on 1 Apr 2028. Down payment is due by 30 April 2026, failing which the booking is cancelled.",
   "Pearl One Capital":
     "Approved by CDA and DHA. Eid-ul-Fitr offer — valid till Eid-ul-Fitr 2026. Booking & down payment is a flat PKR 1,000,000 across all unit sizes, followed by 36 equal monthly installments and a final balloon payment on possession (the percentages shown are indicative splits of the total). A corner unit adds 10%, a front unit adds 10%, and front & corner adds 15% — already reflected in the per-sqft rate. All areas are gross & approximate. Instalment plan starts from April 2026 and is subject to availability of units. No discount on full cash payment. Commercial units (offices & shops) and luxury single & double-storey penthouses (LA-A, LA-B, LA-C) are also available — payment plans for these on request.",
 };
