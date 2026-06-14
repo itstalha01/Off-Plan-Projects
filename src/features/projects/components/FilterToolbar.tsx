@@ -13,7 +13,7 @@ import {
 import { useFilterStore } from "../store/filterStore";
 
 const selectClass =
-  "h-11 w-full appearance-none rounded-lg border border-ink/15 bg-paper px-3 pr-9 text-sm font-medium text-ink outline-none transition-colors hover:border-ink/30 focus:border-gold focus:ring-2 focus:ring-gold/30";
+  "h-11 w-full appearance-none rounded-lg border border-ink/15 bg-paper px-3 pr-9 text-base font-medium text-ink outline-none transition-colors hover:border-ink/30 focus:border-gold focus:ring-2 focus:ring-gold/30 sm:text-sm";
 
 const labelClass =
   "text-[11px] font-semibold uppercase tracking-[0.12em] text-brown";
@@ -68,7 +68,7 @@ export function FilterToolbar() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Project, developer or area"
-                className="h-11 w-full rounded-lg border border-ink/15 bg-paper pl-9 pr-3 text-sm font-medium text-ink outline-none transition-colors placeholder:font-normal placeholder:text-brown/60 hover:border-ink/30 focus:border-gold focus:ring-2 focus:ring-gold/30"
+                className="h-11 w-full rounded-lg border border-ink/15 bg-paper pl-9 pr-3 text-base font-medium text-ink outline-none transition-colors placeholder:font-normal placeholder:text-brown/60 hover:border-ink/30 focus:border-gold focus:ring-2 focus:ring-gold/30 sm:text-sm"
               />
             </div>
           </label>

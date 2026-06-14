@@ -39,6 +39,7 @@ const rows: BaseTuple[] = [
   ["Pearl One Courtyard", "ABS Developers", "Bahria Town", "Residential", "2029", "Approved", 7, 83, 10, "Monthly", 2, 30000, 500, 1000, "/images/pearl-one-courtyard.webp"],
   ["Classic Atrium", "Classic Living", "Bahria Town", "Residential", "2030", "Approved", 10, 48, 13, "Monthly", 4, 17500, 350, 2500, "/images/classic-atrium.webp"],
   ["Skyline Boulevard", "Brother Developers", "Raiwind Road", ["Commercial", "Residential"], "2030", "Approved", 15, 45, 15, "Monthly", 3.5, 15000, 100, 4668, "/images/skyline-boulevard.jpg"],
+  ["Icon Mall & Tower", "Athar Associates", "Bahria Town", ["Commercial", "Residential"], "2031", "Approved", 10, 60, 20, "Monthly", 4.5, 19000, 318, 1318, "/images/icon-mall.jpg"],
 ];
 
 // Non-Lahore projects. Keyed by name; everything else defaults to "Lahore".
@@ -208,6 +209,24 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { group: "Luxury Apartments", name: "1 Bed", rate: 15000, sizes: [431, 445, 481, 495, 533, 548, 555, 570, 586, 621, 680] },
     { group: "Luxury Apartments", name: "2 Bed", rate: 15000, sizes: [851, 937, 1004] },
     { group: "Luxury Apartments", name: "3 Bed", rate: 15000, sizes: [1381] },
+  ],
+  // Icon Mall & Tower · Athar Associates, Bahria Town Lahore. Commercial floors
+  // are quoted at a flat per-sqft rate per floor; Tower 1 apartments price by
+  // bed type & view. Sizes are net areas from the developer's payment plan.
+  "Icon Mall & Tower": [
+    { group: "Ground Floor", name: "Shops", rate: 75000, sizes: [382, 444, 459, 503, 506, 515, 584, 647, 656, 768, 793, 806, 820, 826] },
+    { group: "First Floor", name: "Shops", rate: 45000, sizes: [374, 444, 768] },
+    { group: "Second Floor", name: "Shops", rate: 37500, sizes: [415, 438, 442, 475, 501, 505, 551, 568, 569, 584, 642, 656, 741, 793, 814, 820, 828, 1022, 1092, 1261, 1318] },
+    { group: "Third Floor", name: "Food Court", rate: 65000, sizes: [321, 329, 497, 547, 678] },
+
+    { group: "Tower 1 Apartments", name: "Studio (Standard)", rate: 19000, sizes: [318, 323, 338, 341, 402] },
+    { group: "Tower 1 Apartments", name: "Studio (Pool / Courtyard View)", rate: 20500, sizes: [330] },
+    { group: "Tower 1 Apartments", name: "1 Bed (Courtyard View)", rate: 20500, sizes: [565, 572, 615, 627, 635, 731] },
+    { group: "Tower 1 Apartments", name: "1 Bed (Ring Road)", rate: 20500, sizes: [604] },
+    { group: "Tower 1 Apartments", name: "2 Bed (Courtyard View)", rate: 20500, sizes: [881, 949] },
+    { group: "Tower 1 Apartments", name: "2 Bed (Ring Road)", rate: 20500, sizes: [865, 906] },
+    { group: "Tower 1 Apartments", name: "3 Bed (Pool / Courtyard / Ring Road)", rate: 20500, sizes: [1101] },
+    { group: "Tower 1 Apartments", name: "3 Bed (Ring Road)", rate: 20500, sizes: [1272] },
   ],
 };
 
@@ -451,6 +470,23 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
+  // Icon Mall & Tower: 10 booking + 10 confirmation (after 2 months)
+  // + (54 monthly = 60%) + 20 completion = 100%. Pay over 4.5 years (54 months).
+  "Icon Mall & Tower": {
+    milestones: [
+      { label: "Booking", pct: 10 },
+      { label: "Confirmation (after 2 months)", pct: 10 },
+      { label: "On completion", pct: 20 },
+    ],
+    installments: [
+      {
+        label: "Monthly installment",
+        pct: 60 / 54,
+        count: 54,
+        note: "54 monthly installments (60%)",
+      },
+    ],
+  },
 };
 
 // Optional plan caveats, shown beneath the breakdown. Keyed by project name.
@@ -471,6 +507,8 @@ const PLAN_NOTES: Record<string, string> = {
     "LDA approved · Tipu Sultan Block, Bahria Town Lahore, by Classic Living; possession in 2030. All apartments are sold at a flat PKR 17,500/sq ft; areas are gross & approximate. The booking/down payment and the payment due after 2 months are fixed rupee amounts that vary by unit, so the percentages shown are indicative (based on the 350 sq ft studio). The schedule runs as a down payment at booking, an equal payment after 2 months, 48 monthly installments, 7 half-yearly balloon payments, and a final payment on possession. Indicative amounts per unit (down / after 2 months / monthly ×48 / balloon ×7 / final) — Studio 350 sq ft: 595,000 / 595,000 / 35,000 / 350,000 / 805,000. 1-Bed 500 sq ft: 1,095,000 / 1,095,000 / 45,000 / 470,000 / 1,110,000. 2-Bed 800 sq ft: 1,495,000 / 1,495,000 / 79,500 / 699,000 / 2,301,000. 3-Bed 1,100 sq ft: 1,695,000 / 1,695,000 / 99,500 / 1,075,000 / 3,559,000. 3-Bed Lawn 1,650 sq ft: 2,895,000 / 2,895,000 / 149,000 / 1,590,000 / 4,801,000. 3-Bed Penthouse 2,500 sq ft: 4,495,000 / 4,495,000 / 225,000 / 2,495,000 / 6,495,000. Payment plan is subject to availability of units.",
   "Skyline Boulevard":
     "LDA approved · Al Kabir Downtown, Main Raiwind Road, Lahore, by Brother Developers. Pay over 3.5 years with possession in 3 years. Rates shown are the general per-sqft rates published per floor; corner and premium (“category”) units carry a higher rate — Lower Ground 24,200, Ground Floor shops 44,000, 1st & 2nd Floor 27,500, and apartments 16,500 per sq ft. Triple-height main-boulevard premium outlets are quoted at 35,000 (up to 49,500 for prime positions). The schedule runs as 15% booking, 15% on confirmation within 45 days, 42 monthly installments (25%), a half-yearly installment after every 6 months (20%), 10% on grey structure, and 15% on possession. Areas are gross & approximate and prices are subject to availability of units.",
+  "Icon Mall & Tower":
+    "LDA approved · Bahria Town Lahore, by Athar Associates; delivery in 2031. The 4.5-year payment plan is the same across all floors: 10% booking, 10% confirmation (after 2 months), 54 monthly installments (60%), and 20% on completion. Commercial units are sold at a flat per-sqft rate per floor — Ground 75,000, First 45,000, Second 37,500, and Third-floor food court 65,000. Tower 1 apartments (non-furnished) are 19,000/sq ft for standard studios and 20,500/sq ft for courtyard-view, ring-road and pool-view units. Areas are net & approximate and prices are subject to availability of units.",
   "Pearl One Capital":
     "Approved by CDA and DHA. Eid-ul-Fitr offer — valid till Eid-ul-Fitr 2026. Booking & down payment is a flat PKR 1,000,000 across all unit sizes, followed by 36 equal monthly installments and a final balloon payment on possession (the percentages shown are indicative splits of the total). A corner unit adds 10%, a front unit adds 10%, and front & corner adds 15% — already reflected in the per-sqft rate. All areas are gross & approximate. Instalment plan starts from April 2026 and is subject to availability of units. No discount on full cash payment. Commercial units (offices & shops) and luxury single & double-storey penthouses (LA-A, LA-B, LA-C) are also available — payment plans for these on request.",
 };
