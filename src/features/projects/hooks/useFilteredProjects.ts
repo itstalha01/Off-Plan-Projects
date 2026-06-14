@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 import {
+  entryDownPaymentMillions,
+  entryMonthlyInstallment,
   entryPriceMillions,
   lowestTotal,
   PROJECTS,
@@ -27,7 +29,10 @@ export function useFilteredProjects(): Project[] {
   const area = useFilterStore((s) => s.area);
   const type = useFilterStore((s) => s.type);
   const possession = useFilterStore((s) => s.possession);
+  const budgetMode = useFilterStore((s) => s.budgetMode);
   const maxEntryPrice = useFilterStore((s) => s.maxEntryPrice);
+  const maxDownPayment = useFilterStore((s) => s.maxDownPayment);
+  const maxMonthly = useFilterStore((s) => s.maxMonthly);
   const approvedOnly = useFilterStore((s) => s.approvedOnly);
 
   return useMemo(() => {
@@ -42,9 +47,25 @@ export function useFilteredProjects(): Project[] {
       if (area && p.area !== area) return false;
       if (type && !typesOf(p).includes(type as ProjectType)) return false;
       if (possession && p.poss !== possession) return false;
-      if (entryPriceMillions(p) > maxEntryPrice) return false;
+      if (budgetMode === "down") {
+        if (entryDownPaymentMillions(p) > maxDownPayment) return false;
+      } else if (entryPriceMillions(p) > maxEntryPrice) {
+        return false;
+      }
+      if (entryMonthlyInstallment(p) > maxMonthly) return false;
       if (approvedOnly && p.lda !== "Approved") return false;
       return true;
     }).sort(byLocation);
-  }, [search, city, area, type, possession, maxEntryPrice, approvedOnly]);
+  }, [
+    search,
+    city,
+    area,
+    type,
+    possession,
+    budgetMode,
+    maxEntryPrice,
+    maxDownPayment,
+    maxMonthly,
+    approvedOnly,
+  ]);
 }

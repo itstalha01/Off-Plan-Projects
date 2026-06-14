@@ -1,5 +1,6 @@
 import type {
   Category,
+  Installment,
   LdaStatus,
   Plan,
   Project,
@@ -685,6 +686,61 @@ export function entryPriceMillions(p: Project): number {
   return lowestTotal(p) / 1_000_000;
 }
 
+// Milestones whose label marks a back-loaded payment (due at/near possession,
+// not part of the upfront cash a prospect needs to book). These are excluded
+// from the down-payment figure.
+const BACKLOADED_MILESTONE = /possession|completion|grey structure|handover|final/i;
+
+/**
+ * Upfront down payment (PKR) for the cheapest entry unit · the lump-sum
+ * milestones due at booking (booking + down payment + confirmation, etc.),
+ * excluding payments back-loaded to possession/completion.
+ */
+export function entryDownPayment(p: Project): number {
+  const pct = p.plan.milestones
+    .filter((m) => !BACKLOADED_MILESTONE.test(m.label))
+    .reduce((sum, m) => sum + m.pct, 0);
+  return (lowestTotal(p) * pct) / 100;
+}
+
+/** Entry down payment in millions · used by the down-payment budget filter. */
+export function entryDownPaymentMillions(p: Project): number {
+  return entryDownPayment(p) / 1_000_000;
+}
+
+// Months between payments for a recurring stream, inferred from its label/note.
+// "month" is checked first so a monthly stream split across years (e.g.
+// "Monthly instalment · Year 1") isn't mistaken for a yearly one.
+function cadenceMonths(ins: Installment): number {
+  const s = `${ins.label} ${ins.note ?? ""}`.toLowerCase();
+  if (/month/.test(s)) return 1;
+  if (/quarter/.test(s)) return 3;
+  if (/bi-?annual|biannual|half-?year/.test(s)) return 6;
+  if (/year|annual/.test(s)) return 12;
+  return 1; // default to monthly cadence
+}
+
+/**
+ * Monthly installment (PKR) for the cheapest entry unit. Prefers the project's
+ * actual monthly installment line; for schedules without one (e.g. quarterly),
+ * the most frequent recurring stream is normalised to a per-month figure so
+ * every project compares on the same basis. One-off balloon lump sums are
+ * excluded — they aren't part of the steady monthly burden. 0 if no recurring
+ * installments exist.
+ */
+export function entryMonthlyInstallment(p: Project): number {
+  const total = lowestTotal(p);
+  const recurring = p.plan.installments.filter(
+    (ins) => !/balloon/i.test(ins.label)
+  );
+  if (recurring.length === 0) return 0;
+  const monthly = recurring.filter((ins) => cadenceMonths(ins) === 1);
+  const pool = monthly.length > 0 ? monthly : recurring;
+  return Math.max(
+    ...pool.map((ins) => (total * ins.pct) / 100 / cadenceMonths(ins))
+  );
+}
+
 // Fallback cover used until a project gets its own photo (set `img` on the row).
 export const DEFAULT_PROJECT_IMG = "/images/hero-tower.jpg";
 
@@ -703,6 +759,22 @@ export const MIN_ENTRY_PRICE = Math.floor(
   Math.min(...PROJECTS.map(entryPriceMillions))
 );
 export const MAX_ENTRY_PRICE = 200;
+
+// Down-payment slider runs from the smallest entry down payment up to the
+// largest, rounded out to clean half-million steps (PKR millions).
+export const MIN_DOWN_PAYMENT =
+  Math.floor(Math.min(...PROJECTS.map(entryDownPaymentMillions)) * 2) / 2;
+export const MAX_DOWN_PAYMENT =
+  Math.ceil(Math.max(...PROJECTS.map(entryDownPaymentMillions)) * 2) / 2;
+
+// Monthly-installment slider (raw PKR), snapped out to clean 10k steps.
+export const MONTHLY_STEP = 10_000;
+export const MIN_MONTHLY =
+  Math.floor(Math.min(...PROJECTS.map(entryMonthlyInstallment)) / MONTHLY_STEP) *
+  MONTHLY_STEP;
+export const MAX_MONTHLY =
+  Math.ceil(Math.max(...PROJECTS.map(entryMonthlyInstallment)) / MONTHLY_STEP) *
+  MONTHLY_STEP;
 
 // Hero stat: overall price band across every project/category/size (PKR M).
 export const PRICE_BAND_MIN =
