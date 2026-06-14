@@ -129,18 +129,40 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
     ["Rate", formatRate(rate)],
   ];
   const cellW = CONTENT_W / cells.length;
+  const cellPad = 5;
+  // Usable text width inside a cell, leaving a gutter before the next column.
+  const cellTextW = cellW - cellPad - 3;
   doc.setFillColor(...CREAM);
   doc.roundedRect(MARGIN, y, CONTENT_W, 18, 2, 2, "F");
   cells.forEach(([label, value], i) => {
-    const cx = MARGIN + cellW * i + 5;
+    const cx = MARGIN + cellW * i + cellPad;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
     doc.setTextColor(...BROWN);
     doc.text(label.toUpperCase(), cx, y + 7);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
     doc.setTextColor(...INK);
-    doc.text(value, cx, y + 13.5);
+    // Shrink the value's font size until it fits within its column so long
+    // labels (e.g. "Corporate Offices (3rd–9th Floor)") don't overrun the
+    // neighbouring cell.
+    const FLOOR = 6.5;
+    let valueSize = 11;
+    doc.setFontSize(valueSize);
+    while (doc.getTextWidth(value) > cellTextW && valueSize > FLOOR) {
+      valueSize -= 0.5;
+      doc.setFontSize(valueSize);
+    }
+    // If it still doesn't fit at the floor size, wrap onto (up to two) lines.
+    const lines: string[] =
+      doc.getTextWidth(value) > cellTextW
+        ? (doc.splitTextToSize(value, cellTextW) as string[]).slice(0, 2)
+        : [value];
+    // Stack lines from a common bottom so a single line keeps its baseline.
+    const lineH = valueSize * 0.42;
+    const baseY = y + 13.5 - (lines.length - 1) * lineH;
+    lines.forEach((line, li) => {
+      doc.text(line, cx, baseY + li * lineH);
+    });
   });
   y += 26;
 
