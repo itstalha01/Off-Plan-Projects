@@ -1,7 +1,25 @@
 import { useMemo } from "react";
-import { entryPriceMillions, PROJECTS, typesOf } from "../constants/projects";
+import {
+  entryPriceMillions,
+  lowestTotal,
+  PROJECTS,
+  typesOf,
+} from "../constants/projects";
 import { useFilterStore } from "../store/filterStore";
 import type { Project, ProjectType } from "../types/project";
+
+// Default ordering: group by location so the grid reads road-by-road. Lahore
+// (the home market) is pinned ahead of other cities, then areas sort
+// alphabetically, then cheapest entry price first within each area.
+function byLocation(a: Project, b: Project): number {
+  if (a.city !== b.city) {
+    if (a.city === "Lahore") return -1;
+    if (b.city === "Lahore") return 1;
+    return a.city.localeCompare(b.city);
+  }
+  if (a.area !== b.area) return a.area.localeCompare(b.area);
+  return lowestTotal(a) - lowestTotal(b);
+}
 
 export function useFilteredProjects(): Project[] {
   const search = useFilterStore((s) => s.search);
@@ -27,6 +45,6 @@ export function useFilteredProjects(): Project[] {
       if (entryPriceMillions(p) > maxEntryPrice) return false;
       if (approvedOnly && p.lda !== "Approved") return false;
       return true;
-    });
+    }).sort(byLocation);
   }, [search, city, area, type, possession, maxEntryPrice, approvedOnly]);
 }
