@@ -23,6 +23,7 @@ export type PaymentPlanPdf = {
   total: number;
   milestones: MilestoneRow[];
   installments: InstallmentRow[];
+  buyerName?: string; // optional — personalises the document when provided
 };
 
 // Brand palette (from globals.css) as jsPDF RGB triples.
@@ -48,8 +49,17 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
   doc: jsPDF;
   filename: string;
 } {
-  const { project, category, size, rate, total, milestones, installments } =
-    data;
+  const {
+    project,
+    category,
+    size,
+    rate,
+    total,
+    milestones,
+    installments,
+    buyerName,
+  } = data;
+  const buyer = buyerName?.trim();
   const doc = new jsPDF({ unit: "mm", format: "a4" });
 
   // — Header band —
@@ -91,6 +101,26 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
     y
   );
   y += 12;
+
+  // — Personalisation (optional) — a quiet gold label with the buyer's name set
+  //   in serif italic, echoing the site's serif headings, and a short gold rule.
+  if (buyer) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7.5);
+    doc.setTextColor(...GOLD_DEEP);
+    doc.text("PREPARED EXCLUSIVELY FOR", MARGIN, y);
+    y += 7;
+    doc.setFont("times", "bolditalic");
+    doc.setFontSize(18);
+    doc.setTextColor(...INK);
+    doc.text(buyer, MARGIN, y);
+    const nameW = Math.min(doc.getTextWidth(buyer), CONTENT_W);
+    y += 2.5;
+    doc.setDrawColor(...GOLD);
+    doc.setLineWidth(0.5);
+    doc.line(MARGIN, y, MARGIN + nameW, y);
+    y += 10;
+  }
 
   // — Configuration summary (category / size / rate) —
   const cells: [string, string][] = [
@@ -239,9 +269,10 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
+  const forBuyer = buyer ? `-for-${slug(buyer)}` : "";
   const filename = `payment-plan-${slug(project.name)}-${slug(
     category.name
-  )}-${size}sqft.pdf`;
+  )}-${size}sqft${forBuyer}.pdf`;
 
   return { doc, filename };
 }

@@ -4,7 +4,7 @@ import { memo } from "react";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatMillions } from "@/lib/format";
+import { formatMillionsCr } from "@/lib/format";
 import {
   DEFAULT_PROJECT_IMG,
   entryPriceMillions,
@@ -105,7 +105,7 @@ function ProjectCardBase({ project, index, onOpen }: ProjectCardProps) {
           <span className="align-middle text-xs font-medium uppercase tracking-wide text-brown">
             from{" "}
           </span>
-          {formatMillions(entryPriceMillions(project))}
+          {formatMillionsCr(entryPriceMillions(project))}
         </p>
         <p className="mt-1.5 text-xs font-medium text-brown">
           starting from {entrySize(project).toLocaleString()} sqft · Possession{" "}

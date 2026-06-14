@@ -145,6 +145,9 @@ function PaymentCalculator({ project }: { project: Project }) {
   // Free-typed overrides for off-plan sizes / revised (old) rates.
   const [customSize, setCustomSize] = useState("");
   const [customRate, setCustomRate] = useState("");
+  // Optional buyer name — personalises the shared/downloaded PDF. Kept across
+  // category changes since it belongs to the buyer, not the selected unit.
+  const [buyerName, setBuyerName] = useState("");
 
   const category = catIndex >= 0 ? project.categories[catIndex] : null;
 
@@ -212,6 +215,7 @@ function PaymentCalculator({ project }: { project: Project }) {
       total,
       milestones,
       installments,
+      buyerName: buyerName.trim() || undefined,
     };
   }
 
@@ -222,8 +226,10 @@ function PaymentCalculator({ project }: { project: Project }) {
   // prefilled message for the consultant to attach manually.
   async function shareViaWhatsApp(c: Category) {
     const data = pdfData(c);
+    const buyer = buyerName.trim();
+    const greeting = buyer ? `Hi ${buyer}, here is your ` : "";
     const summary =
-      `Indicative payment plan — ${project.name} (${c.name}, ` +
+      `${greeting}indicative payment plan — ${project.name} (${c.name}, ` +
       `${effectiveSize.toLocaleString()} sqft). Total ${formatPKR(total)}.`;
 
     try {
@@ -402,7 +408,23 @@ function PaymentCalculator({ project }: { project: Project }) {
             developer at booking.
           </p>
 
-          <div className="mt-5 flex flex-wrap gap-3">
+          <label className="mt-5 flex flex-col gap-1.5">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-brown">
+              Buyer name
+              <span className="ml-1.5 font-normal normal-case tracking-normal text-brown/60">
+                optional · prints on the PDF
+              </span>
+            </span>
+            <input
+              type="text"
+              value={buyerName}
+              onChange={(e) => setBuyerName(e.target.value)}
+              placeholder="e.g. Ahmed Khan"
+              className="h-11 w-full rounded-xl border border-ink/15 bg-paper px-3 text-base font-medium text-ink outline-none transition-colors placeholder:font-normal placeholder:text-brown/40 hover:border-ink/30 focus:border-gold focus:ring-2 focus:ring-gold/30 sm:text-sm"
+            />
+          </label>
+
+          <div className="mt-4 flex flex-wrap gap-3">
             <a
               href={advisorWhatsapp(
                 project,

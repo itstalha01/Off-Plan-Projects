@@ -4,6 +4,9 @@ import {
   entryMonthlyInstallment,
   entryPriceMillions,
   lowestTotal,
+  MAX_DOWN_PAYMENT,
+  MAX_ENTRY_PRICE,
+  MAX_MONTHLY,
   PROJECTS,
   typesOf,
 } from "../constants/projects";
@@ -30,8 +33,11 @@ export function useFilteredProjects(): Project[] {
   const type = useFilterStore((s) => s.type);
   const possession = useFilterStore((s) => s.possession);
   const budgetMode = useFilterStore((s) => s.budgetMode);
+  const minEntryPrice = useFilterStore((s) => s.minEntryPrice);
   const maxEntryPrice = useFilterStore((s) => s.maxEntryPrice);
+  const minDownPayment = useFilterStore((s) => s.minDownPayment);
   const maxDownPayment = useFilterStore((s) => s.maxDownPayment);
+  const minMonthly = useFilterStore((s) => s.minMonthly);
   const maxMonthly = useFilterStore((s) => s.maxMonthly);
   const approvedOnly = useFilterStore((s) => s.approvedOnly);
 
@@ -47,12 +53,20 @@ export function useFilteredProjects(): Project[] {
       if (area && p.area !== area) return false;
       if (type && !typesOf(p).includes(type as ProjectType)) return false;
       if (possession && p.poss !== possession) return false;
+      // The slider's top end means "and up", so a max at the ceiling is no
+      // upper bound at all. The lower bound always applies.
       if (budgetMode === "down") {
-        if (entryDownPaymentMillions(p) > maxDownPayment) return false;
-      } else if (entryPriceMillions(p) > maxEntryPrice) {
-        return false;
+        const d = entryDownPaymentMillions(p);
+        if (d < minDownPayment) return false;
+        if (maxDownPayment < MAX_DOWN_PAYMENT && d > maxDownPayment) return false;
+      } else {
+        const e = entryPriceMillions(p);
+        if (e < minEntryPrice) return false;
+        if (maxEntryPrice < MAX_ENTRY_PRICE && e > maxEntryPrice) return false;
       }
-      if (entryMonthlyInstallment(p) > maxMonthly) return false;
+      const m = entryMonthlyInstallment(p);
+      if (m < minMonthly) return false;
+      if (maxMonthly < MAX_MONTHLY && m > maxMonthly) return false;
       if (approvedOnly && p.lda !== "Approved") return false;
       return true;
     }).sort(byLocation);
@@ -63,8 +77,11 @@ export function useFilteredProjects(): Project[] {
     type,
     possession,
     budgetMode,
+    minEntryPrice,
     maxEntryPrice,
+    minDownPayment,
     maxDownPayment,
+    minMonthly,
     maxMonthly,
     approvedOnly,
   ]);

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { ArrowUpRight, MessageCircle } from "lucide-react";
 import { whatsappLink } from "@/lib/whatsapp";
+import { formatMillionsCr } from "@/lib/format";
 import {
   AREAS,
   CITIES,
@@ -15,10 +16,20 @@ const HERO_WHATSAPP = whatsappLink(
   "Hi Clearstoreys, I'd like help finding a Pakistan off-plan project that fits me."
 );
 
-function Stat({ value, label }: { value: string; label: string }) {
+function Stat({
+  value,
+  label,
+  valueClassName = "text-3xl sm:text-4xl",
+}: {
+  value: string;
+  label: string;
+  valueClassName?: string;
+}) {
   return (
     <div className="flex flex-col gap-1">
-      <span className="font-serif text-3xl font-semibold text-ink sm:text-4xl">
+      <span
+        className={`font-serif font-semibold text-ink ${valueClassName}`}
+      >
         {value}
       </span>
       <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-brown">
@@ -32,7 +43,11 @@ export function Hero() {
   const minYear = POSSESSION_YEARS[0];
   const maxYear = POSSESSION_YEARS[POSSESSION_YEARS.length - 1];
   const possessionWindow = `${minYear}–${maxYear.slice(2)}`;
-  const priceBand = `${PRICE_BAND_MIN}–${PRICE_BAND_MAX}`;
+  // Glue each amount to its unit with a non-breaking space so the band only ever
+  // wraps at the dash (e.g. "22 Lakh–" / "75.6 Cr"), never mid-unit.
+  const band = (m: number) =>
+    formatMillionsCr(m).replace("PKR ", "").replace(" ", " ");
+  const priceBand = `${band(PRICE_BAND_MIN)}–${band(PRICE_BAND_MAX)}`;
 
   return (
     <section id="top" className="relative overflow-hidden bg-paper">
@@ -120,7 +135,11 @@ export function Hero() {
           <div className="mt-12 grid max-w-lg grid-cols-2 gap-8 border-t border-ink/10 pt-8 sm:grid-cols-4">
             <Stat value={String(PROJECTS.length)} label="Live projects" />
             <Stat value={String(AREAS.length)} label="Areas covered" />
-            <Stat value={priceBand} label="Price band (PKR M)" />
+            <Stat
+              value={priceBand}
+              label="Price band"
+              valueClassName="text-xl sm:text-2xl"
+            />
             <Stat value={possessionWindow} label="Possession window" />
           </div>
         </div>
