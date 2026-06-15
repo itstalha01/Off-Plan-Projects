@@ -13,6 +13,7 @@ import {
   typesOf,
 } from "../constants/projects";
 import type { LdaStatus, Project } from "../types/project";
+import type { DetailPanel } from "./ProjectDetailModal";
 
 const LDA_BADGE: Record<LdaStatus, { label: string; className: string }> = {
   Approved: {
@@ -42,7 +43,7 @@ function possessionProgress(poss: string): number {
 type ProjectCardProps = {
   project: Project;
   index: number;
-  onOpen: (project: Project) => void;
+  onOpen: (project: Project, panel?: DetailPanel) => void;
 };
 
 function ProjectCardBase({ project, index, onOpen }: ProjectCardProps) {
@@ -58,7 +59,7 @@ function ProjectCardBase({ project, index, onOpen }: ProjectCardProps) {
       <button
         type="button"
         onClick={() => onOpen(project)}
-        aria-label={`View payment plan for ${project.name}`}
+        aria-label={`Explore ${project.name}`}
         className="relative aspect-[16/10] w-full cursor-pointer overflow-hidden bg-cream focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
       >
         <Image
@@ -126,7 +127,7 @@ function ProjectCardBase({ project, index, onOpen }: ProjectCardProps) {
 
         <button
           type="button"
-          onClick={() => onOpen(project)}
+          onClick={() => onOpen(project, "payment")}
           className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-medium text-paper transition-colors hover:bg-gold-deep"
         >
           View payment plan

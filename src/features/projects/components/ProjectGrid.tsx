@@ -6,15 +6,24 @@ import { PROJECTS } from "../constants/projects";
 import { useFilteredProjects } from "../hooks/useFilteredProjects";
 import type { Project } from "../types/project";
 import { ProjectCard } from "./ProjectCard";
-import { PaymentModal } from "./PaymentModal";
+import {
+  ProjectDetailModal,
+  type DetailPanel,
+} from "./ProjectDetailModal";
 
 export function ProjectGrid() {
   const projects = useFilteredProjects();
-  const [selected, setSelected] = useState<Project | null>(null);
+  const [selected, setSelected] = useState<{
+    project: Project;
+    panel: DetailPanel;
+  } | null>(null);
 
-  const handleOpen = useCallback((project: Project) => {
-    setSelected(project);
-  }, []);
+  const handleOpen = useCallback(
+    (project: Project, panel: DetailPanel = "hub") => {
+      setSelected({ project, panel });
+    },
+    []
+  );
 
   const handleClose = useCallback(() => {
     setSelected(null);
@@ -52,7 +61,11 @@ export function ProjectGrid() {
         </div>
       )}
 
-      <PaymentModal project={selected} onClose={handleClose} />
+      <ProjectDetailModal
+        project={selected?.project ?? null}
+        initialPanel={selected?.panel}
+        onClose={handleClose}
+      />
     </section>
   );
 }

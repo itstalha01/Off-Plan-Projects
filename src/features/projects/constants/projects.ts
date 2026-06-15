@@ -1,5 +1,8 @@
 import type {
+  About,
   Category,
+  Developer,
+  FloorPlan,
   Installment,
   LdaStatus,
   Plan,
@@ -40,8 +43,8 @@ const rows: BaseTuple[] = [
   ["Pearl One Courtyard", "ABS Developers", "Bahria Town", "Residential", "2029", "Approved", 7, 83, 10, "Monthly", 2, 30000, 500, 1000, "/images/pearl-one-courtyard.webp"],
   ["Classic Atrium", "Classic Living", "Bahria Town", "Residential", "2030", "Approved", 10, 48, 13, "Monthly", 4, 17500, 350, 2500, "/images/classic-atrium.webp"],
   ["Skyline Boulevard", "Brother Developers", "Raiwind Road", ["Commercial", "Residential"], "2030", "Approved", 15, 45, 15, "Monthly", 3.5, 15000, 100, 4668, "/images/skyline-boulevard.jpg"],
-  ["Icon Mall & Tower 1", "Athar Associates", "Bahria Town", ["Commercial", "Residential"], "2031", "Approved", 10, 60, 20, "Monthly", 4.5, 19000, 318, 1318, "/images/icon-mall.jpg"],
-  ["Icon Mall & Tower 2", "Athar Associates", "Bahria Town", "Residential", "2031", "Approved", 10, 60, 20, "Monthly", 5, 16000, 343, 1182, "/images/icon-mall.jpg"],
+  ["Icon Mall & Tower 1", "Athar Associates", "Bahria Town", ["Commercial", "Residential"], "2031", "Approved", 10, 60, 20, "Monthly", 4.5, 19000, 318, 1318, "/images/icon-mall/aerial.webp"],
+  ["Icon Mall & Tower 2", "Athar Associates", "Bahria Town", "Residential", "2031", "Approved", 10, 60, 20, "Monthly", 5, 16000, 343, 1182, "/images/icon-mall/aerial.webp"],
   ["Icon Avenue", "Athar Associates", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "Monthly", 2.5, 25000, 384, 4877, "/images/icon-avenue.jpg"],
 ];
 
@@ -625,6 +628,77 @@ function genericPlan(
   };
 }
 
+// ---- Native "About developer / About project / Floor plans" content ----
+// Rendered in our own brand (we deliberately do NOT embed developers' brochures).
+// Developers are keyed by developer name so all of a developer's projects share
+// one bio; project copy and floor plans are keyed by project name.
+
+const DEVELOPERS: Record<string, Developer> = {
+  "Athar Associates": {
+    name: "Athar Associates",
+    blurb:
+      "With 19 years of legacy, Athar Associates is a name built on commitments delivered and excellence in real estate development. Led by Mian Athar, the firm has earned a strong reputation across Bahria Town Karachi and Bahria Town Lahore — establishing itself as a fourth pillar of Lahore's skyline.",
+    stats: [
+      { value: "19+", label: "Years of legacy" },
+      { value: "12+", label: "Projects delivered" },
+      { value: "Karachi & Lahore", label: "Operating markets" },
+    ],
+    trackRecord: [
+      "Jinnah Trade Center",
+      "Athar Residencia",
+      "Athar Aman Castle",
+      "Theme Park View",
+      "Zaiby Residencia",
+      "Kabber Residencia",
+      "Mall One",
+      "Prime Tower",
+      "Meadows Smart Homes",
+      "Business Bay Commercial",
+      "Athar Homes",
+    ],
+  },
+};
+
+// Tower 1 & Tower 2 are the same development — they share project copy & renders.
+const ICON_MALL_ABOUT: About = {
+  description:
+    "Icon Mall & Towers is Lahore's first 22-Kanal twin-towers project — a landmark mixed-use development directly facing the Lahore Ring Road near the Bahria Interchange. Commercial brand outlets occupy the Ground, First and Second floors, with residential apartments rising above, all wrapped around a landscaped central courtyard.",
+  highlights: [
+    "First 22-Kanal twin towers in Lahore",
+    "Lahore Ring Road frontage",
+    "Brand-outlet retail podium",
+    "Landscaped central courtyard",
+    "Bahria Interchange access",
+    "Mixed-use: retail + residences",
+  ],
+};
+
+const ICON_MALL_GALLERY = [
+  "/images/icon-mall/aerial.webp",
+  "/images/icon-mall/night.webp",
+  "/images/icon-mall/render-trio.webp",
+];
+
+const ABOUT_OVERRIDES: Record<string, About> = {
+  "Icon Mall & Tower 1": ICON_MALL_ABOUT,
+  "Icon Mall & Tower 2": ICON_MALL_ABOUT,
+};
+
+const GALLERY_OVERRIDES: Record<string, string[]> = {
+  "Icon Mall & Tower 1": ICON_MALL_GALLERY,
+  "Icon Mall & Tower 2": ICON_MALL_GALLERY,
+};
+
+const FLOORPLAN_OVERRIDES: Record<string, FloorPlan[]> = {
+  "Icon Mall & Tower 1": [
+    { label: "Tower 1 — Ground Floor", img: "/images/icon-mall/floor-t1-ground.webp" },
+    { label: "Tower 1 — First Floor", img: "/images/icon-mall/floor-t1-first.webp" },
+  ],
+  "Icon Mall & Tower 2": [
+    { label: "Tower 2 — Layout Plan", img: "/images/icon-mall/floor-t2-layout.webp" },
+  ],
+};
+
 export const PROJECTS: Project[] = rows.map(
   ([name, dev, area, type, poss, lda, book, dur, possP, bfreq, yrs, rate, minU, maxU, img]) => ({
     name,
@@ -640,6 +714,10 @@ export const PROJECTS: Project[] = rows.map(
       [{ name: "Standard", rate, sizes: genSizes(minU, maxU) }],
     ...(PLAN_NOTES[name] ? { planNote: PLAN_NOTES[name] } : {}),
     ...(img ? { img } : {}),
+    ...(GALLERY_OVERRIDES[name] ? { gallery: GALLERY_OVERRIDES[name] } : {}),
+    ...(DEVELOPERS[dev] ? { developer: DEVELOPERS[dev] } : {}),
+    ...(ABOUT_OVERRIDES[name] ? { about: ABOUT_OVERRIDES[name] } : {}),
+    ...(FLOORPLAN_OVERRIDES[name] ? { floorPlans: FLOORPLAN_OVERRIDES[name] } : {}),
   })
 );
 

@@ -41,6 +41,36 @@ export type Plan = {
   installments: Installment[];
 };
 
+/** A headline stat shown on the "About the developer" panel (e.g. "19 yrs · Experience"). */
+export type Stat = { value: string; label: string };
+
+/**
+ * The developer behind a project. Rendered natively in the site's brand on the
+ * "About the developer" panel — we don't embed the developer's own brochure.
+ * Shared across a developer's projects (keyed by developer name).
+ */
+export type Developer = {
+  name: string;
+  blurb: string; // 1–3 sentences, written in our voice
+  stats?: Stat[]; // headline figures (years, projects delivered, etc.)
+  trackRecord?: string[]; // notable past projects
+};
+
+/**
+ * Marketing-facing description of the project itself, rendered natively.
+ * `highlights` become pills (amenities / selling points).
+ */
+export type About = {
+  description: string;
+  highlights?: string[];
+};
+
+/** A single floor-plan drawing — shown as an image, with optional download. */
+export type FloorPlan = {
+  label: string; // e.g. "Tower 1 — Ground Floor"
+  img: string; // path under /public
+};
+
 export type Project = {
   name: string;
   dev: string;
@@ -53,4 +83,9 @@ export type Project = {
   planNote?: string; // optional caveat shown with the plan (e.g. corner/MB factor)
   categories: Category[]; // one or more purchasable layouts
   img?: string; // optional cover photo path under /public
+  gallery?: string[]; // optional extra images (renders) for the "About the project" panel
+  developer?: Developer; // optional native "About the developer" content
+  about?: About; // optional native "About the project" content
+  floorPlans?: FloorPlan[]; // optional floor-plan drawings (shown as images)
+  brochureUrl?: string; // optional link to the developer's official PDF brochure
 };

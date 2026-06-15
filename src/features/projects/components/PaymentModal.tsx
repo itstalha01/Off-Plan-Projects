@@ -143,7 +143,7 @@ function CategoryButton({
   );
 }
 
-function PaymentCalculator({ project }: { project: Project }) {
+export function PaymentCalculator({ project }: { project: Project }) {
   const single = project.categories.length === 1;
   const [catIndex, setCatIndex] = useState(single ? 0 : -1);
   const [size, setSize] = useState(
