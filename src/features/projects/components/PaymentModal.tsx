@@ -76,7 +76,7 @@ function CustomNumberField({
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
-          className="w-24 bg-transparent text-right text-sm font-semibold text-ink outline-none placeholder:font-normal placeholder:text-brown/40 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className="w-24 bg-transparent text-right text-base font-semibold text-ink outline-none placeholder:font-normal placeholder:text-brown/40 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none sm:text-sm"
         />
         <span className="text-xs text-brown/60">{suffix}</span>
       </span>
