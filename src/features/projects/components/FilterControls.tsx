@@ -30,7 +30,9 @@ function ChevronAdornment() {
 // The filter fields themselves, decoupled from any chrome. Rendered both inline in
 // the sticky toolbar (desktop) and inside the mobile filter sheet, so the two stay
 // in lock-step. The grid collapses to one column in the narrow sheet automatically.
-export function FilterControls() {
+// In the sheet, `inlineBudget` makes Budget expand in place rather than in a popover
+// that would otherwise stack behind the sheet.
+export function FilterControls({ inlineBudget = false }: { inlineBudget?: boolean }) {
   const search = useFilterStore((s) => s.search);
   const city = useFilterStore((s) => s.city);
   const area = useFilterStore((s) => s.area);
@@ -142,7 +144,7 @@ export function FilterControls() {
 
         <div className="flex flex-col gap-1.5">
           <span className={labelClass}>Budget</span>
-          <BudgetFilter />
+          <BudgetFilter inline={inlineBudget} />
         </div>
       </div>
 
