@@ -17,6 +17,13 @@ import {
   type PaymentPlanPdf,
 } from "@/lib/paymentPdf";
 import type { Category, Project } from "../types/project";
+import {
+  buildConsolidatedPlan,
+  modeCadenceMonths,
+  planSupportsCustomDownPayment,
+  standardDownPayment,
+  type PlanMode,
+} from "../lib/customPlan";
 import { UnitSizeSlider } from "./UnitSizeSlider";
 
 function advisorWhatsapp(
@@ -145,6 +152,15 @@ function PaymentCalculator({ project }: { project: Project }) {
   // Free-typed overrides for off-plan sizes / revised (old) rates.
   const [customSize, setCustomSize] = useState("");
   const [customRate, setCustomRate] = useState("");
+  // Which plan the client is viewing — the developer's published split, or a
+  // custom proposal consolidated to monthly / quarterly installments.
+  const [planMode, setPlanMode] = useState<PlanMode>("developer");
+  // Free-typed custom down payment (PKR) for the custom modes. Empty falls back
+  // to the standard down payment, so a mode is meaningful before any typing.
+  const [customDown, setCustomDown] = useState("");
+  // Free-typed target monthly (PKR) for Custom · Monthly. Empty spreads over the
+  // developer's term; a higher amount shortens it. Can't go below what's required.
+  const [customMonthly, setCustomMonthly] = useState("");
   // Optional buyer name — personalises the shared/downloaded PDF. Kept across
   // category changes since it belongs to the buyer, not the selected unit.
   const [buyerName, setBuyerName] = useState("");
@@ -170,6 +186,15 @@ function PaymentCalculator({ project }: { project: Project }) {
     setSize(project.categories[i].sizes[0]);
     setCustomSize("");
     setCustomRate("");
+    setCustomDown("");
+    setCustomMonthly("");
+    setPlanMode("developer");
+  }
+
+  // The target monthly only applies to Custom · Monthly; drop it when leaving.
+  function selectMode(mode: PlanMode) {
+    setPlanMode(mode);
+    if (mode !== "monthly") setCustomMonthly("");
   }
 
   // Picking a listed size clears any custom size so the two never conflict.
@@ -206,6 +231,40 @@ function PaymentCalculator({ project }: { project: Project }) {
     [project, total]
   );
 
+  // Custom modes are only offered for plans that have installments to
+  // consolidate. Each builds a proposal at the chosen cadence; an empty down
+  // payment field falls back to the standard down payment.
+  const supportsCustom = planSupportsCustomDownPayment(project.plan);
+  const parsedDown = parsePositive(customDown);
+  const parsedMonthly = parsePositive(customMonthly);
+  const customPlan = useMemo(() => {
+    if (planMode === "developer" || total <= 0) return null;
+    const down = parsedDown ?? standardDownPayment(project.plan, total);
+    // The target monthly only applies to the monthly cadence.
+    const per = planMode === "monthly" ? parsedMonthly : null;
+    return buildConsolidatedPlan(
+      project.plan,
+      total,
+      modeCadenceMonths(planMode),
+      down,
+      per
+    );
+  }, [project, total, planMode, parsedDown, parsedMonthly]);
+
+  // Rows actually rendered / exported — custom when active, else the standard split.
+  const shownMilestones = customPlan ? customPlan.milestones : milestones;
+  const shownInstallments = customPlan ? customPlan.installments : installments;
+
+  // Plan-mode options offered for this project (developer always; custom modes
+  // only when there's a recurring portion to restructure).
+  const planModes: { mode: PlanMode; label: string }[] = supportsCustom
+    ? [
+        { mode: "developer", label: "Developer's plan" },
+        { mode: "monthly", label: "Custom · Monthly" },
+        { mode: "quarterly", label: "Custom · Quarterly" },
+      ]
+    : [{ mode: "developer", label: "Developer's plan" }];
+
   function pdfData(c: Category): PaymentPlanPdf {
     return {
       project,
@@ -213,9 +272,10 @@ function PaymentCalculator({ project }: { project: Project }) {
       size: effectiveSize,
       rate: effectiveRate,
       total,
-      milestones,
-      installments,
+      milestones: shownMilestones,
+      installments: shownInstallments,
       buyerName: buyerName.trim() || undefined,
+      custom: customPlan != null,
     };
   }
 
@@ -228,9 +288,15 @@ function PaymentCalculator({ project }: { project: Project }) {
     const data = pdfData(c);
     const buyer = buyerName.trim();
     const greeting = buyer ? `Hi ${buyer}, here is your ` : "";
+    const planKind = customPlan ? "custom" : "indicative";
+    const downPart = customPlan
+      ? ` Down payment ${formatPKR(customPlan.downPayment)}.`
+      : "";
     const summary =
-      `${greeting}indicative payment plan — ${project.name} (${c.name}, ` +
-      `${effectiveSize.toLocaleString()} sqft). Total ${formatPKR(total)}.`;
+      `${greeting}${planKind} payment plan — ${project.name} (${c.name}, ` +
+      `${effectiveSize.toLocaleString()} sqft). Total ${formatPKR(
+        total
+      )}.${downPart}`;
 
     try {
       const file = paymentPlanPdfFile(data);
@@ -363,6 +429,101 @@ function PaymentCalculator({ project }: { project: Project }) {
             />
           </div>
 
+          {/* Plan options — the developer's published split, or a custom
+              proposal that consolidates the recurring portion to a single
+              monthly / quarterly installment. Only when there's a recurring
+              portion to restructure. */}
+          {supportsCustom && (
+            <div className="mt-5">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-brown">
+                Payment plan
+              </span>
+              <div className="mt-2 grid grid-cols-3 gap-2">
+                {planModes.map(({ mode, label }) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => selectMode(mode)}
+                    className={cn(
+                      "rounded-xl border px-2 py-2 text-center text-xs font-semibold transition-colors",
+                      mode === planMode
+                        ? "border-gold bg-gold/10 text-ink"
+                        : "border-ink/15 text-brown hover:border-ink/30"
+                    )}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Custom down payment — drives the consolidated proposal. A larger
+              upfront amount lowers every installment over the same term. */}
+          {planMode !== "developer" && (
+            <div className="mt-3">
+              <CustomNumberField
+                label="Down payment"
+                suffix="PKR"
+                placeholder={Math.round(
+                  standardDownPayment(project.plan, total)
+                ).toLocaleString()}
+                value={customDown}
+                onChange={setCustomDown}
+                active={parsedDown != null}
+              />
+              {customPlan && (
+                <p className="mt-1.5 text-xs text-brown/70">
+                  {customPlan.clamped
+                    ? `Capped at ${formatPKR(
+                        customPlan.downPayment
+                      )} — the full balance due before possession. `
+                    : ""}
+                  {customPlan.fullyCovered
+                    ? "Covers everything up to possession — no installments remain."
+                    : `${customPlan.downPaymentPct.toFixed(1)}% down · ${
+                        customPlan.count
+                      } ${planMode} payments${
+                        customPlan.synthesized
+                          ? ` (converted to ${planMode} over the same term)`
+                          : ""
+                      }.`}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Target monthly — only for Custom · Monthly. Paying more per month
+              finishes sooner; it can't go below the amount required to complete
+              by possession (so the schedule never runs past the developer's term). */}
+          {planMode === "monthly" && customPlan && !customPlan.fullyCovered && (
+            <div className="mt-3">
+              <CustomNumberField
+                label="Monthly installment"
+                suffix="PKR"
+                placeholder={Math.round(
+                  customPlan.requiredMonthly
+                ).toLocaleString()}
+                value={customMonthly}
+                onChange={setCustomMonthly}
+                active={parsedMonthly != null && !customPlan.monthlyClamped}
+              />
+              <p className="mt-1.5 text-xs text-brown/70">
+                {customPlan.monthlyClamped
+                  ? `Minimum ${formatPKR(
+                      customPlan.requiredMonthly
+                    )}/month — the least that still finishes by possession.`
+                  : parsedMonthly != null
+                  ? `${formatPKR(
+                      customPlan.installments[0]?.per ?? 0
+                    )}/month · finishes in ${customPlan.count} payments.`
+                  : `Minimum ${formatPKR(
+                      customPlan.requiredMonthly
+                    )}/month. Enter more to finish sooner.`}
+              </p>
+            </div>
+          )}
+
           <div className="mt-3 rounded-xl bg-cream/60 px-4">
             <Row
               label="Total unit price"
@@ -375,7 +536,7 @@ function PaymentCalculator({ project }: { project: Project }) {
           </div>
 
           <div className="mt-1">
-            {milestones.map((m) => (
+            {shownMilestones.map((m) => (
               <Row
                 key={m.label}
                 label={m.label}
@@ -384,7 +545,7 @@ function PaymentCalculator({ project }: { project: Project }) {
               />
             ))}
 
-            {installments.map((ins) => (
+            {shownInstallments.map((ins) => (
               <Row
                 key={ins.label}
                 label={ins.label}
@@ -404,8 +565,12 @@ function PaymentCalculator({ project }: { project: Project }) {
 
           <p className="mt-4 text-xs leading-relaxed text-brown/70">
             Figures are indicative and derived from the published rate and plan
-            split. Final pricing, taxes and schedule are confirmed by the
-            developer at booking.
+            split.{" "}
+            {customPlan
+              ? "This custom split is a proposal subject to developer approval. "
+              : ""}
+            Final pricing, taxes and schedule are confirmed by the developer at
+            booking.
           </p>
 
           <label className="mt-5 flex flex-col gap-1.5">

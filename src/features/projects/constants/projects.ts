@@ -688,8 +688,9 @@ export function entryPriceMillions(p: Project): number {
 
 // Milestones whose label marks a back-loaded payment (due at/near possession,
 // not part of the upfront cash a prospect needs to book). These are excluded
-// from the down-payment figure.
-const BACKLOADED_MILESTONE = /possession|completion|grey structure|handover|final/i;
+// from the down-payment figure, and held fixed when a custom down payment is
+// redistributed across the installments (see lib/customPlan).
+export const BACKLOADED_MILESTONE = /possession|completion|grey structure|handover|final/i;
 
 /**
  * Upfront down payment (PKR) for the cheapest entry unit · the lump-sum
@@ -711,7 +712,7 @@ export function entryDownPaymentMillions(p: Project): number {
 // Months between payments for a recurring stream, inferred from its label/note.
 // "month" is checked first so a monthly stream split across years (e.g.
 // "Monthly instalment · Year 1") isn't mistaken for a yearly one.
-function cadenceMonths(ins: Installment): number {
+export function cadenceMonths(ins: Installment): number {
   const s = `${ins.label} ${ins.note ?? ""}`.toLowerCase();
   if (/month/.test(s)) return 1;
   if (/quarter/.test(s)) return 3;

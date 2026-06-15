@@ -24,6 +24,7 @@ export type PaymentPlanPdf = {
   milestones: MilestoneRow[];
   installments: InstallmentRow[];
   buyerName?: string; // optional — personalises the document when provided
+  custom?: boolean; // true when built from a custom down payment (see customPlan)
 };
 
 // Brand palette (from globals.css) as jsPDF RGB triples.
@@ -58,6 +59,7 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
     milestones,
     installments,
     buyerName,
+    custom,
   } = data;
   const buyer = buyerName?.trim();
   const doc = new jsPDF({ unit: "mm", format: "a4" });
@@ -72,7 +74,11 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
   doc.setTextColor(...PAPER);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
-  doc.text("Indicative Payment Plan", MARGIN, 22);
+  doc.text(
+    custom ? "Custom Payment Plan" : "Indicative Payment Plan",
+    MARGIN,
+    22
+  );
 
   const generated = new Date().toLocaleDateString("en-GB", {
     day: "numeric",
@@ -264,6 +270,9 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
   ensureSpace(16);
   const disclaimer =
     "Figures are indicative and derived from the published rate and plan split. " +
+    (custom
+      ? "This custom split is a proposal subject to developer approval. "
+      : "") +
     "Final pricing, taxes and schedule are confirmed by the developer at booking.";
   doc.setFont("helvetica", "italic");
   doc.setFontSize(8);
@@ -292,7 +301,8 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
   const forBuyer = buyer ? `-for-${slug(buyer)}` : "";
-  const filename = `payment-plan-${slug(project.name)}-${slug(
+  const customTag = custom ? "-custom" : "";
+  const filename = `payment-plan${customTag}-${slug(project.name)}-${slug(
     category.name
   )}-${size}sqft${forBuyer}.pdf`;
 
