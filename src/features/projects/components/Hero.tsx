@@ -51,7 +51,7 @@ export function Hero() {
 
   return (
     <section id="top" className="relative overflow-hidden bg-paper">
-      <div className="relative mx-auto grid w-full max-w-7xl grid-cols-1 gap-10 px-5 pb-16 pt-12 sm:px-8 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-12 lg:pb-24 lg:pt-16">
+      <div className="relative mx-auto grid w-full max-w-7xl grid-cols-1 gap-10 px-5 pb-16 pt-24 sm:px-8 sm:pt-12 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-12 lg:pb-24 lg:pt-16">
         {/* Left: building photo on a gold accent block */}
         <div className="relative order-2 lg:order-1">
           <Sunburst className="absolute -left-4 -top-4 z-20 size-14 drop-shadow-md sm:size-16" />
