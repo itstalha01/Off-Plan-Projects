@@ -195,7 +195,46 @@ function RangeRow({
   );
 }
 
-export function BudgetFilter() {
+// Shared trigger styling for both the popover (desktop) and inline (mobile) modes.
+const budgetTriggerClass =
+  "flex h-11 w-full items-center justify-between rounded-lg border bg-paper px-3 text-base font-medium outline-none transition-colors hover:border-ink/30 focus-visible:ring-2 focus-visible:ring-gold/30 sm:text-sm";
+
+// Trigger label + active state, derived from the store. Shared so the popover and
+// inline triggers always read the same. Each useFilterStore selector returns a
+// primitive (string | null, boolean) — never a fresh object — so the subscription
+// stays stable and doesn't loop.
+function useBudgetSummary() {
+  const priceSummary = useFilterStore((s) =>
+    s.budgetMode === "down"
+      ? rangeLabel(
+          s.minDownPayment,
+          s.maxDownPayment,
+          MIN_DOWN_PAYMENT,
+          MAX_DOWN_PAYMENT,
+          formatMillionsCr
+        )
+      : rangeLabel(
+          s.minEntryPrice,
+          s.maxEntryPrice,
+          MIN_ENTRY_PRICE,
+          MAX_ENTRY_PRICE,
+          formatMillionsCr
+        )
+  );
+  const monthlyActive = useFilterStore(
+    (s) => s.minMonthly > MIN_MONTHLY || s.maxMonthly < MAX_MONTHLY
+  );
+
+  return {
+    active: priceSummary !== null || monthlyActive,
+    triggerText: priceSummary ?? (monthlyActive ? "Monthly set" : "Any budget"),
+  };
+}
+
+// The budget controls themselves: entry-price/down-payment lens toggle + the two
+// range rows. Rendered inside the popover (desktop) and inline within the mobile
+// filter sheet, so they stay identical.
+function BudgetPanel() {
   const budgetMode = useFilterStore((s) => s.budgetMode);
   const minEntryPrice = useFilterStore((s) => s.minEntryPrice);
   const maxEntryPrice = useFilterStore((s) => s.maxEntryPrice);
@@ -212,35 +251,138 @@ export function BudgetFilter() {
   const setMinMonthly = useFilterStore((s) => s.setMinMonthly);
   const setMaxMonthly = useFilterStore((s) => s.setMaxMonthly);
 
-  const count = useFilteredProjects().length;
-
   const byDown = budgetMode === "down";
 
-  const priceSummary = byDown
-    ? rangeLabel(
-        minDownPayment,
-        maxDownPayment,
-        MIN_DOWN_PAYMENT,
-        MAX_DOWN_PAYMENT,
-        formatMillionsCr
-      )
-    : rangeLabel(
-        minEntryPrice,
-        maxEntryPrice,
-        MIN_ENTRY_PRICE,
-        MAX_ENTRY_PRICE,
-        formatMillionsCr
-      );
-  const monthlyActive = minMonthly > MIN_MONTHLY || maxMonthly < MAX_MONTHLY;
-  const active = priceSummary !== null || monthlyActive;
-  const triggerText =
-    priceSummary ?? (monthlyActive ? "Monthly set" : "Any budget");
+  return (
+    <>
+      {/* Entry price / down payment lens */}
+      <div className="inline-flex rounded-lg border border-ink/15 bg-cream/60 p-0.5">
+        {(
+          [
+            ["price", "Entry price"],
+            ["down", "Down payment"],
+          ] as const
+        ).map(([mode, label]) => (
+          <button
+            key={mode}
+            type="button"
+            onClick={() => setBudgetMode(mode)}
+            className={cn(
+              "rounded-md px-3 py-1 text-xs font-semibold transition-colors",
+              budgetMode === mode
+                ? "bg-gold text-ink"
+                : "text-brown hover:text-ink"
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        {byDown ? (
+          <RangeRow
+            title="Down payment"
+            absMin={MIN_DOWN_PAYMENT}
+            absMax={MAX_DOWN_PAYMENT}
+            step={0.5}
+            storeMin={minDownPayment}
+            storeMax={maxDownPayment}
+            setMin={setMinDownPayment}
+            setMax={setMaxDownPayment}
+            toDisplay={(m) => m * 10}
+            fromDisplay={(l) => l / 10}
+            unit="Lakh"
+            formatLabel={formatMillionsCr}
+          />
+        ) : (
+          <RangeRow
+            title="Entry price"
+            absMin={MIN_ENTRY_PRICE}
+            absMax={MAX_ENTRY_PRICE}
+            step={0.5}
+            storeMin={minEntryPrice}
+            storeMax={maxEntryPrice}
+            setMin={setMinEntryPrice}
+            setMax={setMaxEntryPrice}
+            toDisplay={(m) => m / 10}
+            fromDisplay={(c) => c * 10}
+            unit="Cr"
+            formatLabel={formatMillionsCr}
+          />
+        )}
+      </div>
+
+      <div className="my-5 h-px bg-ink/10" />
+
+      <RangeRow
+        title="Monthly installment"
+        absMin={MIN_MONTHLY}
+        absMax={MAX_MONTHLY}
+        step={MONTHLY_STEP}
+        storeMin={minMonthly}
+        storeMax={maxMonthly}
+        setMin={setMinMonthly}
+        setMax={setMaxMonthly}
+        toDisplay={(v) => v}
+        fromDisplay={(v) => v}
+        unit="PKR"
+        formatLabel={formatCroreLakh}
+      />
+    </>
+  );
+}
+
+// Inline (accordion) budget for the mobile filter sheet: tapping the trigger
+// expands the panel in normal flow, so the amount inputs stay on-screen instead of
+// floating in a popover that would stack behind the sheet.
+function InlineBudget() {
+  const [open, setOpen] = useState(false);
+  const { active, triggerText } = useBudgetSummary();
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        className={cn(
+          budgetTriggerClass,
+          active || open
+            ? "border-gold bg-gold/5 text-gold-deep"
+            : "border-ink/15 text-ink"
+        )}
+      >
+        <span className="truncate">{triggerText}</span>
+        <ChevronDown
+          className={cn(
+            "ml-2 size-4 shrink-0 text-brown transition-transform",
+            open && "rotate-180"
+          )}
+        />
+      </button>
+
+      {open && (
+        <div className="mt-3 rounded-2xl border border-ink/10 bg-paper p-4 text-ink">
+          <BudgetPanel />
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function BudgetFilter({ inline = false }: { inline?: boolean }) {
+  const { active, triggerText } = useBudgetSummary();
+  const count = useFilteredProjects().length;
+
+  if (inline) return <InlineBudget />;
 
   return (
     <Popover.Root>
       <Popover.Trigger
         className={cn(
-          "flex h-11 w-full items-center justify-between rounded-lg border bg-paper px-3 text-base font-medium outline-none transition-colors hover:border-ink/30 focus-visible:ring-2 focus-visible:ring-gold/30 data-popup-open:border-gold sm:text-sm",
+          budgetTriggerClass,
+          "data-popup-open:border-gold",
           active
             ? "border-gold bg-gold/5 text-gold-deep"
             : "border-ink/15 text-ink"
@@ -255,80 +397,9 @@ export function BudgetFilter() {
           <Popover.Popup className="w-[22rem] max-w-[calc(100vw-2rem)] origin-[var(--transform-origin)] rounded-2xl border border-ink/10 bg-paper p-5 text-ink shadow-xl shadow-ink/10 outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95">
             <p className="font-serif text-lg font-semibold text-ink">Budget</p>
 
-            {/* Entry price / down payment lens */}
-            <div className="mt-3 inline-flex rounded-lg border border-ink/15 bg-cream/60 p-0.5">
-              {(
-                [
-                  ["price", "Entry price"],
-                  ["down", "Down payment"],
-                ] as const
-              ).map(([mode, label]) => (
-                <button
-                  key={mode}
-                  type="button"
-                  onClick={() => setBudgetMode(mode)}
-                  className={cn(
-                    "rounded-md px-3 py-1 text-xs font-semibold transition-colors",
-                    budgetMode === mode
-                      ? "bg-gold text-ink"
-                      : "text-brown hover:text-ink"
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
+            <div className="mt-3">
+              <BudgetPanel />
             </div>
-
-            <div className="mt-4">
-              {byDown ? (
-                <RangeRow
-                  title="Down payment"
-                  absMin={MIN_DOWN_PAYMENT}
-                  absMax={MAX_DOWN_PAYMENT}
-                  step={0.5}
-                  storeMin={minDownPayment}
-                  storeMax={maxDownPayment}
-                  setMin={setMinDownPayment}
-                  setMax={setMaxDownPayment}
-                  toDisplay={(m) => m * 10}
-                  fromDisplay={(l) => l / 10}
-                  unit="Lakh"
-                  formatLabel={formatMillionsCr}
-                />
-              ) : (
-                <RangeRow
-                  title="Entry price"
-                  absMin={MIN_ENTRY_PRICE}
-                  absMax={MAX_ENTRY_PRICE}
-                  step={0.5}
-                  storeMin={minEntryPrice}
-                  storeMax={maxEntryPrice}
-                  setMin={setMinEntryPrice}
-                  setMax={setMaxEntryPrice}
-                  toDisplay={(m) => m / 10}
-                  fromDisplay={(c) => c * 10}
-                  unit="Cr"
-                  formatLabel={formatMillionsCr}
-                />
-              )}
-            </div>
-
-            <div className="my-5 h-px bg-ink/10" />
-
-            <RangeRow
-              title="Monthly installment"
-              absMin={MIN_MONTHLY}
-              absMax={MAX_MONTHLY}
-              step={MONTHLY_STEP}
-              storeMin={minMonthly}
-              storeMax={maxMonthly}
-              setMin={setMinMonthly}
-              setMax={setMaxMonthly}
-              toDisplay={(v) => v}
-              fromDisplay={(v) => v}
-              unit="PKR"
-              formatLabel={formatCroreLakh}
-            />
 
             <Popover.Close className="mt-6 w-full rounded-xl bg-gold px-4 py-3 text-sm font-semibold text-ink transition-colors hover:bg-gold-deep hover:text-paper">
               {count === 0

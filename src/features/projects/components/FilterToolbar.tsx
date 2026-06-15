@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { SlidersHorizontal, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import {
   MAX_DOWN_PAYMENT,
   MAX_ENTRY_PRICE,
@@ -67,30 +68,34 @@ export function FilterToolbar() {
       </div>
       <div ref={sentinelRef} aria-hidden className="h-px w-full" />
 
-      {/* Mobile-only floating filter tab + slide-in sheet. Hidden on sm+ where the
-          toolbar is sticky and always reachable. */}
+      {/* Mobile-only sticky top filter bar + full-screen filter panel (Zillow-style).
+          Hidden on sm+ where the toolbar is sticky and always reachable. */}
       <Dialog.Root>
-        <Dialog.Trigger
-          aria-label="Open filters"
-          className={[
-            "fixed right-0 top-1/2 z-40 flex -translate-y-1/2 items-center gap-2 rounded-l-xl bg-gold py-3 pl-4 pr-3 text-sm font-semibold text-ink shadow-lg shadow-ink/20 transition-all duration-300 ease-out sm:hidden",
+        <div
+          className={cn(
+            "fixed inset-x-0 top-16 z-30 border-b border-ink/10 bg-cream/95 px-5 py-3 backdrop-blur-md transition-all duration-300 ease-out sm:hidden",
             scrolledPast
-              ? "translate-x-0 opacity-100"
-              : "pointer-events-none translate-x-full opacity-0",
-          ].join(" ")}
-        >
-          <SlidersHorizontal className="size-4" />
-          Filters
-          {activeCount > 0 && (
-            <span className="flex size-5 items-center justify-center rounded-full bg-ink text-[11px] font-bold text-paper">
-              {activeCount}
-            </span>
+              ? "translate-y-0 opacity-100"
+              : "pointer-events-none -translate-y-full opacity-0"
           )}
-        </Dialog.Trigger>
+        >
+          <Dialog.Trigger
+            aria-label="Open filters"
+            className="flex w-full items-center justify-center gap-2 rounded-full border border-ink/20 bg-paper px-4 py-2.5 text-sm font-semibold text-ink shadow-sm transition-colors hover:border-ink/30"
+          >
+            <SlidersHorizontal className="size-4" />
+            Filters
+            {activeCount > 0 && (
+              <span className="flex size-5 items-center justify-center rounded-full bg-gold text-[11px] font-bold text-ink">
+                {activeCount}
+              </span>
+            )}
+          </Dialog.Trigger>
+        </div>
 
         <Dialog.Portal>
           <Dialog.Backdrop className="fixed inset-0 z-50 bg-ink/40 backdrop-blur-sm data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
-          <Dialog.Popup className="fixed inset-y-0 right-0 z-50 flex w-[90%] max-w-sm flex-col bg-cream shadow-2xl shadow-ink/30 outline-none data-open:animate-in data-open:slide-in-from-right data-closed:animate-out data-closed:slide-out-to-right">
+          <Dialog.Popup className="fixed inset-0 z-50 flex flex-col bg-cream outline-none data-open:animate-in data-open:slide-in-from-top data-closed:animate-out data-closed:slide-out-to-top">
             <div className="flex items-center justify-between border-b border-ink/10 px-5 py-4">
               <Dialog.Title className="font-serif text-lg font-semibold text-ink">
                 Filters
@@ -104,7 +109,7 @@ export function FilterToolbar() {
             </div>
 
             <div className="flex-1 overflow-y-auto px-5 py-5">
-              <FilterControls />
+              <FilterControls inlineBudget />
             </div>
 
             <div className="border-t border-ink/10 px-5 py-4">
