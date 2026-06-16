@@ -60,13 +60,18 @@ function BoundInput({
   onCommit: (value: number | null) => void;
 }) {
   const [text, setText] = useState(atExtreme ? "" : String(display));
+  const [focused, setFocused] = useState(false);
 
-  // Re-sync when the bound changes from outside (slider drag, reset) using the
-  // store-previous-value-in-state pattern. The inSync guard leaves an in-progress
-  // edit alone (e.g. typing "1." parses to the same value), so decimals survive.
+  // Re-sync when the bound changes from outside (slider drag, reset, mode switch)
+  // using the store-previous-value-in-state pattern — but ONLY while the field is
+  // not focused. During typing the field is the user's; resyncing then would let
+  // each keystroke's clamped commit overwrite an in-progress multi-digit number
+  // (e.g. the first "1" of "10" snapping to the opposite bound). The inSync guard
+  // leaves an edit that already matches alone (e.g. "1." parses to the same value),
+  // so decimals survive the blur resync.
   const [prevDisplay, setPrevDisplay] = useState(display);
   const [prevExtreme, setPrevExtreme] = useState(atExtreme);
-  if (prevDisplay !== display || prevExtreme !== atExtreme) {
+  if (!focused && (prevDisplay !== display || prevExtreme !== atExtreme)) {
     setPrevDisplay(display);
     setPrevExtreme(atExtreme);
     const parsed = text.trim() === "" ? null : Number(text);
@@ -88,6 +93,13 @@ function BoundInput({
           if (raw.trim() === "") return onCommit(null);
           const n = Number(raw);
           if (Number.isFinite(n)) onCommit(n);
+        }}
+        onFocus={() => setFocused(true)}
+        onBlur={() => {
+          // Leaving the field: normalise the text to the committed (clamped) value
+          // so a half-typed or out-of-range entry settles to what was actually set.
+          setFocused(false);
+          setText(atExtreme ? "" : String(display));
         }}
         className="h-10 w-full rounded-lg border border-ink/15 bg-paper px-3 pr-12 text-base font-medium text-ink outline-none transition-colors placeholder:font-normal placeholder:text-brown/60 focus:border-gold focus:ring-2 focus:ring-gold/30 sm:text-sm"
       />

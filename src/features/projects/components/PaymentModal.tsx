@@ -18,13 +18,50 @@ import {
 } from "@/lib/paymentPdf";
 import type { Category, Project } from "../types/project";
 import {
+  MAX_DOWN_PAYMENT,
+  MAX_ENTRY_PRICE,
+  MAX_MONTHLY,
+  MIN_DOWN_PAYMENT,
+  MIN_ENTRY_PRICE,
+  MIN_MONTHLY,
+  unitInBudget,
+  type BudgetFilter,
+} from "../constants/projects";
+import {
   buildConsolidatedPlan,
   modeCadenceMonths,
   planSupportsCustomDownPayment,
   standardDownPayment,
   type PlanMode,
 } from "../lib/customPlan";
+import { useBudgetFilter } from "../hooks/useBudgetFilter";
 import { UnitSizeSlider } from "./UnitSizeSlider";
+
+type BudgetMode = BudgetFilter["budgetMode"];
+
+// Does the window actually constrain anything (vs. the wide-open "Any")? Mirrors
+// the grid's budget summary: only the active price/down lens plus monthly count.
+function budgetConstrains(b: BudgetFilter): boolean {
+  const priceSide =
+    b.budgetMode === "down"
+      ? b.minDownPayment > MIN_DOWN_PAYMENT || b.maxDownPayment < MAX_DOWN_PAYMENT
+      : b.minEntryPrice > MIN_ENTRY_PRICE || b.maxEntryPrice < MAX_ENTRY_PRICE;
+  const monthlySide = b.minMonthly > MIN_MONTHLY || b.maxMonthly < MAX_MONTHLY;
+  return priceSide || monthlySide;
+}
+
+// The store's max for a lens, expressed as a PKR string for the modal's input
+// (price/down are kept in millions; monthly is already raw PKR). "" when open.
+function seedMax(mode: BudgetMode, b: BudgetFilter): string {
+  if (mode === "down") {
+    return b.maxDownPayment < MAX_DOWN_PAYMENT
+      ? String(Math.round(b.maxDownPayment * 1_000_000))
+      : "";
+  }
+  return b.maxEntryPrice < MAX_ENTRY_PRICE
+    ? String(Math.round(b.maxEntryPrice * 1_000_000))
+    : "";
+}
 
 function advisorWhatsapp(
   project: Project,
@@ -123,22 +160,38 @@ function CategoryButton({
   c,
   active,
   onSelect,
+  fit,
 }: {
   c: Category;
   active: boolean;
   onSelect: () => void;
+  // How many of this category's sizes fall inside the budget · undefined when no
+  // budget is set (so no fit line is shown).
+  fit?: { n: number; total: number };
 }) {
+  const dim = fit != null && fit.n === 0 && !active;
   return (
     <button
       type="button"
       onClick={onSelect}
       className={cn(
         "flex flex-col items-start rounded-xl border px-3 py-2.5 text-left transition-colors",
-        active ? "border-gold bg-gold/10" : "border-ink/15 hover:border-ink/30"
+        active ? "border-gold bg-gold/10" : "border-ink/15 hover:border-ink/30",
+        dim && "opacity-50"
       )}
     >
       <span className="text-sm font-semibold text-ink">{c.name}</span>
       <span className="text-xs text-brown">{formatRate(c.rate)}</span>
+      {fit && (
+        <span
+          className={cn(
+            "mt-0.5 text-[10px] font-semibold uppercase tracking-wide",
+            fit.n > 0 ? "text-gold-deep" : "text-brown/50"
+          )}
+        >
+          {fit.n > 0 ? `${fit.n} of ${fit.total} fit budget` : "None in budget"}
+        </span>
+      )}
     </button>
   );
 }
@@ -165,6 +218,84 @@ export function PaymentCalculator({ project }: { project: Project }) {
   // category changes since it belongs to the buyer, not the selected unit.
   const [buyerName, setBuyerName] = useState("");
 
+  // Client budget — seeded from the grid filter the client already set, then
+  // editable here so the consultant can tweak it per project. It drives the
+  // "fits budget" highlighting on categories and sizes below; it does NOT change
+  // the quoted prices. Inputs are in PKR (matching the prices on screen).
+  const storeBudget = useBudgetFilter();
+  const [budgetMode, setBudgetModeLocal] = useState<BudgetMode>(
+    storeBudget.budgetMode
+  );
+  const [maxBudget, setMaxBudget] = useState(() =>
+    seedMax(storeBudget.budgetMode, storeBudget)
+  );
+  const [maxMonthlyBudget, setMaxMonthlyBudget] = useState(() =>
+    storeBudget.maxMonthly < MAX_MONTHLY ? String(storeBudget.maxMonthly) : ""
+  );
+
+  // Switching lens re-seeds the max from the store, since the figure's scale and
+  // meaning change between total price and down payment.
+  function switchBudgetMode(m: BudgetMode) {
+    setBudgetModeLocal(m);
+    setMaxBudget(seedMax(m, storeBudget));
+  }
+
+  const parsedMaxBudget = parsePositive(maxBudget);
+  const parsedMaxMonthly = parsePositive(maxMonthlyBudget);
+
+  // The window the matcher reads. Min bounds carry over from the grid filter; the
+  // editable max for the active lens (and the monthly cap) override the store.
+  const budget = useMemo<BudgetFilter>(
+    () => ({
+      budgetMode,
+      minEntryPrice:
+        budgetMode === "price" ? storeBudget.minEntryPrice : MIN_ENTRY_PRICE,
+      maxEntryPrice:
+        budgetMode === "price" && parsedMaxBudget != null
+          ? parsedMaxBudget / 1_000_000
+          : MAX_ENTRY_PRICE,
+      minDownPayment:
+        budgetMode === "down" ? storeBudget.minDownPayment : MIN_DOWN_PAYMENT,
+      maxDownPayment:
+        budgetMode === "down" && parsedMaxBudget != null
+          ? parsedMaxBudget / 1_000_000
+          : MAX_DOWN_PAYMENT,
+      minMonthly: storeBudget.minMonthly,
+      maxMonthly: parsedMaxMonthly != null ? parsedMaxMonthly : MAX_MONTHLY,
+    }),
+    [budgetMode, parsedMaxBudget, parsedMaxMonthly, storeBudget]
+  );
+
+  const budgetActive = budgetConstrains(budget);
+
+  // Roll-up across the whole project for the budget panel's one-line summary.
+  const fitSummary = useMemo(() => {
+    let units = 0;
+    let cats = 0;
+    for (const c of project.categories) {
+      const n = c.sizes.filter((s) =>
+        unitInBudget(project, s * c.rate, budget)
+      ).length;
+      units += n;
+      if (n > 0) cats += 1;
+    }
+    return { units, cats };
+  }, [project, budget]);
+
+  // Sizes within a category that fit the budget (at the category's published
+  // rate). The selected category also re-checks against any custom rate below.
+  const categoryFit = (c: Category) => {
+    let n = 0;
+    for (const s of c.sizes) if (unitInBudget(project, s * c.rate, budget)) n++;
+    return { n, total: c.sizes.length };
+  };
+
+  // First size in a category that fits the budget, so selecting a category lands
+  // on an affordable unit rather than its smallest (which may be out of range).
+  const firstFittingSize = (c: Category) =>
+    (budgetActive && c.sizes.find((s) => unitInBudget(project, s * c.rate, budget))) ||
+    c.sizes[0];
+
   const category = catIndex >= 0 ? project.categories[catIndex] : null;
 
   // When categories carry a `group` (e.g. floor), render them grouped in
@@ -183,7 +314,7 @@ export function PaymentCalculator({ project }: { project: Project }) {
 
   function selectCategory(i: number) {
     setCatIndex(i);
-    setSize(project.categories[i].sizes[0]);
+    setSize(firstFittingSize(project.categories[i]));
     setCustomSize("");
     setCustomRate("");
     setCustomDown("");
@@ -319,6 +450,65 @@ export function PaymentCalculator({ project }: { project: Project }) {
 
   return (
     <div className="flex max-h-[68vh] flex-col overflow-y-auto pr-1">
+      {/* Client budget — seeded from the grid filter, editable here. Highlights
+          which categories & sizes fit; doesn't change the quoted prices. */}
+      <div className="mt-2 rounded-xl border border-ink/15 bg-cream/40 p-3">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-brown">
+            Client budget
+          </span>
+          <div className="inline-flex rounded-lg border border-ink/15 bg-paper p-0.5">
+            {(
+              [
+                ["price", "Total price"],
+                ["down", "Down payment"],
+              ] as const
+            ).map(([m, label]) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => switchBudgetMode(m)}
+                className={cn(
+                  "rounded-md px-2.5 py-1 text-[11px] font-semibold transition-colors",
+                  budgetMode === m ? "bg-gold text-ink" : "text-brown hover:text-ink"
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-2.5 grid grid-cols-2 gap-2">
+          <CustomNumberField
+            label={budgetMode === "price" ? "Max price" : "Max down"}
+            suffix="PKR"
+            placeholder="No max"
+            value={maxBudget}
+            onChange={setMaxBudget}
+            active={parsedMaxBudget != null}
+          />
+          <CustomNumberField
+            label="Max monthly"
+            suffix="PKR"
+            placeholder="No max"
+            value={maxMonthlyBudget}
+            onChange={setMaxMonthlyBudget}
+            active={parsedMaxMonthly != null}
+          />
+        </div>
+
+        <p className="mt-2 text-xs text-brown/70">
+          {budgetActive
+            ? `${fitSummary.units} unit${
+                fitSummary.units === 1 ? "" : "s"
+              } across ${fitSummary.cats} categor${
+                fitSummary.cats === 1 ? "y" : "ies"
+              } fit this budget — highlighted below.`
+            : "Set a max to highlight the sizes that fit across every category."}
+        </p>
+      </div>
+
       {/* Step 1 — choose a category (only when there is more than one) */}
       {!single && (
         <div className="mt-2">
@@ -339,6 +529,7 @@ export function PaymentCalculator({ project }: { project: Project }) {
                         c={c}
                         active={i === catIndex}
                         onSelect={() => selectCategory(i)}
+                        fit={budgetActive ? categoryFit(c) : undefined}
                       />
                     ))}
                   </div>
@@ -353,6 +544,7 @@ export function PaymentCalculator({ project }: { project: Project }) {
                   c={c}
                   active={i === catIndex}
                   onSelect={() => selectCategory(i)}
+                  fit={budgetActive ? categoryFit(c) : undefined}
                 />
               ))}
             </div>
@@ -385,21 +577,28 @@ export function PaymentCalculator({ project }: { project: Project }) {
                   onChange={pickSize}
                 />
                 <div className="mt-2 flex justify-between">
-                  {category.sizes.map((s) => (
-                    <button
-                      key={s}
-                      type="button"
-                      onClick={() => pickSize(s)}
-                      className={cn(
-                        "text-[11px] font-medium transition-colors",
-                        s === size && !parsedSize
-                          ? "text-gold-deep"
-                          : "text-brown/60 hover:text-brown"
-                      )}
-                    >
-                      {s.toLocaleString()}
-                    </button>
-                  ))}
+                  {category.sizes.map((s) => {
+                    const outOfBudget =
+                      budgetActive &&
+                      !unitInBudget(project, s * effectiveRate, budget);
+                    return (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => pickSize(s)}
+                        title={outOfBudget ? "Outside budget" : undefined}
+                        className={cn(
+                          "text-[11px] font-medium transition-colors",
+                          s === size && !parsedSize
+                            ? "text-gold-deep"
+                            : "text-brown/60 hover:text-brown",
+                          outOfBudget && s !== size && "opacity-40 line-through"
+                        )}
+                      >
+                        {s.toLocaleString()}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}

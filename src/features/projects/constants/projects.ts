@@ -771,15 +771,21 @@ export function entryPriceMillions(p: Project): number {
 export const BACKLOADED_MILESTONE = /possession|completion|grey structure|handover|final/i;
 
 /**
- * Upfront down payment (PKR) for the cheapest entry unit · the lump-sum
- * milestones due at booking (booking + down payment + confirmation, etc.),
- * excluding payments back-loaded to possession/completion.
+ * Fraction of a unit's total price due upfront to book it · the lump-sum
+ * milestones (booking + down payment + confirmation, etc.), excluding payments
+ * back-loaded to possession/completion. Constant across a project's units, so
+ * any unit's down payment is its price times this.
  */
-export function entryDownPayment(p: Project): number {
+export function downPaymentFraction(p: Project): number {
   const pct = p.plan.milestones
     .filter((m) => !BACKLOADED_MILESTONE.test(m.label))
     .reduce((sum, m) => sum + m.pct, 0);
-  return (lowestTotal(p) * pct) / 100;
+  return pct / 100;
+}
+
+/** Upfront down payment (PKR) for the cheapest entry unit. */
+export function entryDownPayment(p: Project): number {
+  return lowestTotal(p) * downPaymentFraction(p);
 }
 
 /** Entry down payment in millions · used by the down-payment budget filter. */
@@ -807,17 +813,19 @@ export function cadenceMonths(ins: Installment): number {
  * excluded — they aren't part of the steady monthly burden. 0 if no recurring
  * installments exist.
  */
-export function entryMonthlyInstallment(p: Project): number {
-  const total = lowestTotal(p);
+export function monthlyInstallmentFraction(p: Project): number {
   const recurring = p.plan.installments.filter(
     (ins) => !/balloon/i.test(ins.label)
   );
   if (recurring.length === 0) return 0;
   const monthly = recurring.filter((ins) => cadenceMonths(ins) === 1);
   const pool = monthly.length > 0 ? monthly : recurring;
-  return Math.max(
-    ...pool.map((ins) => (total * ins.pct) / 100 / cadenceMonths(ins))
-  );
+  return Math.max(...pool.map((ins) => ins.pct / 100 / cadenceMonths(ins)));
+}
+
+/** Monthly installment (PKR) for the cheapest entry unit. */
+export function entryMonthlyInstallment(p: Project): number {
+  return lowestTotal(p) * monthlyInstallmentFraction(p);
 }
 
 // Fallback cover used until a project gets its own photo (set `img` on the row).
@@ -861,3 +869,76 @@ export const PRICE_BAND_MIN =
 export const PRICE_BAND_MAX = Math.round(
   Math.max(...PROJECTS.map(highestTotal)) / 1_000_000
 );
+
+// ---------------------------------------------------------------------------
+// Budget matching · single source of truth shared by the grid filter and the
+// card's "from" price. A buyer's budget is matched at the UNIT level (one size
+// of one category), not against the project's single entry price — so a project
+// with units inside the range still shows even when its cheapest unit sits
+// below the floor, and the card advertises the cheapest unit that actually fits
+// the range rather than one the buyer ruled out.
+// ---------------------------------------------------------------------------
+
+/** The active budget window · the slider state the matchers care about. */
+export type BudgetFilter = {
+  budgetMode: "price" | "down";
+  minEntryPrice: number; // millions
+  maxEntryPrice: number; // millions
+  minDownPayment: number; // millions
+  maxDownPayment: number; // millions
+  minMonthly: number; // raw PKR
+  maxMonthly: number; // raw PKR
+};
+
+/** Every purchasable unit · one size from one category, with its total price. */
+export function projectUnits(p: Project): { price: number; size: number }[] {
+  const out: { price: number; size: number }[] = [];
+  for (const c of p.categories) {
+    for (const s of c.sizes) out.push({ price: s * c.rate, size: s });
+  }
+  return out;
+}
+
+/**
+ * Does a unit at this total price (PKR) fall inside the budget window? Down
+ * payment and monthly installment scale linearly with the total, so each is the
+ * price times the project's fixed fraction. A max sitting at the slider ceiling
+ * means "and up" — no upper bound. The lower bound always applies.
+ */
+export function unitInBudget(p: Project, price: number, b: BudgetFilter): boolean {
+  if (b.budgetMode === "down") {
+    const d = (price * downPaymentFraction(p)) / 1_000_000;
+    if (d < b.minDownPayment) return false;
+    if (b.maxDownPayment < MAX_DOWN_PAYMENT && d > b.maxDownPayment) return false;
+  } else {
+    const e = price / 1_000_000;
+    if (e < b.minEntryPrice) return false;
+    if (b.maxEntryPrice < MAX_ENTRY_PRICE && e > b.maxEntryPrice) return false;
+  }
+  const m = price * monthlyInstallmentFraction(p);
+  if (m < b.minMonthly) return false;
+  if (b.maxMonthly < MAX_MONTHLY && m > b.maxMonthly) return false;
+  return true;
+}
+
+/** A project matches the budget when at least one of its units fits the window. */
+export function matchesBudget(p: Project, b: BudgetFilter): boolean {
+  return projectUnits(p).some((u) => unitInBudget(p, u.price, b));
+}
+
+/**
+ * The cheapest unit that fits the budget window — its price (millions) and
+ * size — for the card's "from" line. Falls back to the absolute cheapest unit
+ * when nothing fits (e.g. no budget set, or the project is shown for a
+ * non-budget reason), so the card always has something to show.
+ */
+export function entryInBudget(
+  p: Project,
+  b: BudgetFilter
+): { millions: number; size: number } {
+  const units = projectUnits(p);
+  const fitting = units.filter((u) => unitInBudget(p, u.price, b));
+  const pool = fitting.length > 0 ? fitting : units;
+  const cheapest = pool.reduce((a, u) => (u.price < a.price ? u : a));
+  return { millions: cheapest.price / 1_000_000, size: cheapest.size };
+}

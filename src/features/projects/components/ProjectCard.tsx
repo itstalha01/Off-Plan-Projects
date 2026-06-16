@@ -7,8 +7,6 @@ import { cn } from "@/lib/utils";
 import { formatMillionsCr } from "@/lib/format";
 import {
   DEFAULT_PROJECT_IMG,
-  entryPriceMillions,
-  entrySize,
   POSSESSION_YEARS,
   typesOf,
 } from "../constants/projects";
@@ -44,9 +42,19 @@ type ProjectCardProps = {
   project: Project;
   index: number;
   onOpen: (project: Project, panel?: DetailPanel) => void;
+  // The cheapest unit that fits the active budget — what "from" advertises, so
+  // a buyer sees the in-range price, not a unit below their floor.
+  entryMillions: number;
+  entrySqft: number;
 };
 
-function ProjectCardBase({ project, index, onOpen }: ProjectCardProps) {
+function ProjectCardBase({
+  project,
+  index,
+  onOpen,
+  entryMillions,
+  entrySqft,
+}: ProjectCardProps) {
   const badge = LDA_BADGE[project.lda];
   const progress = possessionProgress(project.poss);
 
@@ -106,10 +114,10 @@ function ProjectCardBase({ project, index, onOpen }: ProjectCardProps) {
           <span className="align-middle text-xs font-medium uppercase tracking-wide text-brown">
             from{" "}
           </span>
-          {formatMillionsCr(entryPriceMillions(project))}
+          {formatMillionsCr(entryMillions)}
         </p>
         <p className="mt-1.5 text-xs font-medium text-brown">
-          starting from {entrySize(project).toLocaleString()} sqft · Possession{" "}
+          starting from {entrySqft.toLocaleString()} sqft · Possession{" "}
           {project.poss}
           {project.categories.length > 1 &&
             ` · ${project.categories.length} layout options`}

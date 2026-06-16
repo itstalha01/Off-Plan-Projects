@@ -2,7 +2,8 @@
 
 import { useCallback, useState } from "react";
 import { SearchX } from "lucide-react";
-import { PROJECTS } from "../constants/projects";
+import { entryInBudget, PROJECTS } from "../constants/projects";
+import { useBudgetFilter } from "../hooks/useBudgetFilter";
 import { useFilteredProjects } from "../hooks/useFilteredProjects";
 import type { Project } from "../types/project";
 import { ProjectCard } from "./ProjectCard";
@@ -13,6 +14,7 @@ import {
 
 export function ProjectGrid() {
   const projects = useFilteredProjects();
+  const budget = useBudgetFilter();
   const [selected, setSelected] = useState<{
     project: Project;
     panel: DetailPanel;
@@ -50,14 +52,19 @@ export function ProjectGrid() {
         </div>
       ) : (
         <div className="mt-6 grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-5">
-          {projects.map((project, index) => (
-            <ProjectCard
-              key={project.name}
-              project={project}
-              index={index}
-              onOpen={handleOpen}
-            />
-          ))}
+          {projects.map((project, index) => {
+            const entry = entryInBudget(project, budget);
+            return (
+              <ProjectCard
+                key={project.name}
+                project={project}
+                index={index}
+                onOpen={handleOpen}
+                entryMillions={entry.millions}
+                entrySqft={entry.size}
+              />
+            );
+          })}
         </div>
       )}
 
