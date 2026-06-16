@@ -634,6 +634,16 @@ function genericPlan(
 // one bio; project copy and floor plans are keyed by project name.
 
 const DEVELOPERS: Record<string, Developer> = {
+  "Classic Living": {
+    name: "Classic Living",
+    blurb:
+      "Classic Living is the real-estate arm of the Classic group — a name that has stood for excellence and innovation for over forty years, spanning auto-parts trading across Pakistan and Afghanistan as well as medical education, electric vehicles and software solutions worldwide. Classic Living takes pride in transforming urban landscapes across Pakistan, leaving an indelible mark on the cities it serves with iconic landmarks built to stand the test of time. Its commitment to excellence and innovation extends beyond construction — it is about creating spaces that resonate with luxury and comfort.",
+    stats: [
+      { value: "40+", label: "Years of group legacy" },
+      { value: "4", label: "Industries served" },
+      { value: "Pakistan", label: "Real-estate market" },
+    ],
+  },
   "Athar Associates": {
     name: "Athar Associates",
     blurb:
@@ -682,11 +692,56 @@ const ICON_MALL_GALLERY = [
 const ABOUT_OVERRIDES: Record<string, About> = {
   "Icon Mall & Tower 1": ICON_MALL_ABOUT,
   "Icon Mall & Tower 2": ICON_MALL_ABOUT,
+  "Classic Atrium": {
+    description:
+      "Classic Atrium is a residential high-rise by Classic Living in the Tipu Sultan Block of Bahria Town, Lahore. The tower offers a full range of homes — from studio and one-bed apartments to spacious two- and three-bed residences, lawn apartments and duplex penthouses — each finished at a flat PKR 17,500 per sq ft and scheduled for possession in 2030. Floors are arranged around a central atrium with capsule glass lifts and landscaped terraces, blending luxury and comfort into everyday living.",
+    highlights: [
+      "Tipu Sultan Block, Bahria Town Lahore",
+      "LDA approved",
+      "Possession in 2030",
+      "Flat PKR 17,500 / sq ft",
+      "Studio to 3-bed duplex penthouse",
+      "Central atrium & landscaped terraces",
+    ],
+  },
 };
+
+// Classic Atrium · curated renders from the project brochure, ordered exterior
+// & common areas → amenities → furnished interiors by unit size. The leading
+// image is the landscape atrium hero (it fills the gallery's wide first tile).
+const CLASSIC_ATRIUM_GALLERY = [
+  "/images/classic-atrium/gallery/01-atrium.jpg",
+  "/images/classic-atrium/gallery/02-atrium.jpg",
+  "/images/classic-atrium/gallery/03-atrium.jpg",
+  "/images/classic-atrium/gallery/04-rooftop.jpg",
+  "/images/classic-atrium/gallery/05-rooftop.jpg",
+  "/images/classic-atrium/gallery/06-lobbies.jpg",
+  "/images/classic-atrium/gallery/07-lobbies.jpg",
+  "/images/classic-atrium/gallery/08-lobbies.jpg",
+  "/images/classic-atrium/gallery/09-masjid.jpg",
+  "/images/classic-atrium/gallery/10-gym.jpg",
+  "/images/classic-atrium/gallery/11-daycare.jpg",
+  "/images/classic-atrium/gallery/12-kids-zone.jpg",
+  "/images/classic-atrium/gallery/13-gaming-zone.jpg",
+  "/images/classic-atrium/gallery/14-bowling.jpg",
+  "/images/classic-atrium/gallery/15-golf.jpg",
+  "/images/classic-atrium/gallery/16-studio.jpg",
+  "/images/classic-atrium/gallery/17-studio.jpg",
+  "/images/classic-atrium/gallery/18-studio.jpg",
+  "/images/classic-atrium/gallery/19-one-bed.jpg",
+  "/images/classic-atrium/gallery/20-one-bed.jpg",
+  "/images/classic-atrium/gallery/21-one-bed.jpg",
+  "/images/classic-atrium/gallery/22-two-bed.jpg",
+  "/images/classic-atrium/gallery/23-two-bed.jpg",
+  "/images/classic-atrium/gallery/24-three-bed.jpg",
+  "/images/classic-atrium/gallery/25-three-bed.jpg",
+  "/images/classic-atrium/gallery/26-three-bed.jpg",
+];
 
 const GALLERY_OVERRIDES: Record<string, string[]> = {
   "Icon Mall & Tower 1": ICON_MALL_GALLERY,
   "Icon Mall & Tower 2": ICON_MALL_GALLERY,
+  "Classic Atrium": CLASSIC_ATRIUM_GALLERY,
 };
 
 const FLOORPLAN_OVERRIDES: Record<string, FloorPlan[]> = {
@@ -696,6 +751,12 @@ const FLOORPLAN_OVERRIDES: Record<string, FloorPlan[]> = {
   ],
   "Icon Mall & Tower 2": [
     { label: "Tower 2 — Layout Plan", img: "/images/icon-mall/floor-t2-layout.webp" },
+  ],
+  "Classic Atrium": [
+    { label: "1st – 7th Floor", img: "/images/classic-atrium/floor-1-7.jpg" },
+    { label: "12th Floor", img: "/images/classic-atrium/floor-12.jpg" },
+    { label: "Penthouse — Lower Storey", img: "/images/classic-atrium/penthouse-lower.jpg" },
+    { label: "Penthouse — Upper Storey", img: "/images/classic-atrium/penthouse-upper.jpg" },
   ],
 };
 

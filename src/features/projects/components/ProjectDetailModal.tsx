@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   ArrowLeft,
   Building2,
   Calculator,
+  ChevronLeft,
   ChevronRight,
   Download,
   Info,
@@ -301,18 +302,121 @@ function DeveloperPanel({ project }: { project: Project }) {
   );
 }
 
+type LightboxItem = { src: string; label?: string };
+
+/** Fullscreen image viewer with backdrop-to-close, download, and — when given
+ *  more than one item — prev/next navigation (arrow keys too). Shared by the
+ *  gallery and floor-plan panels. */
+function Lightbox({
+  items,
+  index,
+  onIndex,
+  onClose,
+}: {
+  items: LightboxItem[];
+  index: number;
+  onIndex: (i: number) => void;
+  onClose: () => void;
+}) {
+  const many = items.length > 1;
+  const go = (delta: number) =>
+    onIndex((index + delta + items.length) % items.length);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      else if (e.key === "ArrowLeft" && many) go(-1);
+      else if (e.key === "ArrowRight" && many) go(1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, items.length]);
+
+  const item = items[index];
+
+  return (
+    <div
+      className="fixed inset-0 z-[60] flex flex-col bg-ink/90 p-4"
+      onClick={onClose}
+    >
+      <div className="flex items-center justify-between text-paper">
+        <span className="text-sm font-medium">
+          {item.label}
+          {many && (
+            <span className="ml-2 text-paper/60">
+              {index + 1} / {items.length}
+            </span>
+          )}
+        </span>
+        <div className="flex items-center gap-2">
+          <a
+            href={item.src}
+            download
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Download image"
+            className="inline-flex size-9 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
+          >
+            <Download className="size-5" />
+          </a>
+          <button
+            type="button"
+            aria-label="Close"
+            className="inline-flex size-9 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
+      </div>
+      <div className="relative mt-3 flex-1" onClick={(e) => e.stopPropagation()}>
+        <Image
+          src={item.src}
+          alt={item.label ?? ""}
+          fill
+          sizes="100vw"
+          className="object-contain"
+        />
+        {many && (
+          <>
+            <button
+              type="button"
+              aria-label="Previous image"
+              onClick={() => go(-1)}
+              className="absolute left-2 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-paper transition-colors hover:bg-white/20"
+            >
+              <ChevronLeft className="size-6" />
+            </button>
+            <button
+              type="button"
+              aria-label="Next image"
+              onClick={() => go(1)}
+              className="absolute right-2 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-paper transition-colors hover:bg-white/20"
+            >
+              <ChevronRight className="size-6" />
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function AboutPanel({ project }: { project: Project }) {
   const about = project.about;
+  const gallery = project.gallery;
+  const [zoom, setZoom] = useState<number | null>(null);
   if (!about) return <ComingSoon label="Project details" />;
   return (
     <div className="flex flex-col gap-5">
-      {project.gallery && project.gallery.length > 0 && (
+      {gallery && gallery.length > 0 && (
         <div className="grid grid-cols-2 gap-2">
-          {project.gallery.map((src, i) => (
-            <div
+          {gallery.map((src, i) => (
+            <button
               key={src}
+              type="button"
+              onClick={() => setZoom(i)}
               className={cn(
-                "relative aspect-[4/3] overflow-hidden rounded-xl bg-cream",
+                "group relative aspect-[4/3] overflow-hidden rounded-xl bg-cream focus:outline-none focus-visible:ring-2 focus-visible:ring-gold",
                 i === 0 && "col-span-2 aspect-[16/9]"
               )}
             >
@@ -321,11 +425,23 @@ function AboutPanel({ project }: { project: Project }) {
                 alt={`${project.name} render ${i + 1}`}
                 fill
                 sizes="(max-width: 640px) 100vw, 640px"
-                className="object-cover"
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
               />
-            </div>
+              <span className="absolute right-2 top-2 inline-flex size-7 items-center justify-center rounded-full bg-ink/70 text-paper opacity-0 transition-opacity group-hover:opacity-100">
+                <ZoomIn className="size-4" />
+              </span>
+            </button>
           ))}
         </div>
+      )}
+
+      {gallery && gallery.length > 0 && zoom !== null && (
+        <Lightbox
+          items={gallery.map((src) => ({ src, label: project.name }))}
+          index={zoom}
+          onIndex={setZoom}
+          onClose={() => setZoom(null)}
+        />
       )}
 
       <p className="text-sm leading-relaxed text-brown">{about.description}</p>
@@ -365,9 +481,7 @@ function AboutPanel({ project }: { project: Project }) {
 
 function FloorPlansPanel({ project }: { project: Project }) {
   const plans = project.floorPlans;
-  const [zoomed, setZoomed] = useState<{ label: string; img: string } | null>(
-    null
-  );
+  const [zoom, setZoom] = useState<number | null>(null);
 
   if (!plans || plans.length === 0)
     return <ComingSoon label="Floor plans" />;
@@ -376,11 +490,11 @@ function FloorPlansPanel({ project }: { project: Project }) {
     <div className="flex flex-col gap-4">
       <p className="text-sm text-brown">Tap a layout to enlarge.</p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {plans.map((fp) => (
+        {plans.map((fp, i) => (
           <button
             key={fp.label}
             type="button"
-            onClick={() => setZoomed(fp)}
+            onClick={() => setZoom(i)}
             className="group overflow-hidden rounded-xl border border-ink/10 bg-white text-left transition-all hover:border-gold/40 hover:shadow-[0_12px_28px_-18px_rgba(19,17,13,0.45)] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
           >
             <div className="relative aspect-[4/3] w-full bg-white">
@@ -403,42 +517,13 @@ function FloorPlansPanel({ project }: { project: Project }) {
         ))}
       </div>
 
-      {zoomed && (
-        <div
-          className="fixed inset-0 z-[60] flex flex-col bg-ink/90 p-4"
-          onClick={() => setZoomed(null)}
-        >
-          <div className="flex items-center justify-between text-paper">
-            <span className="text-sm font-medium">{zoomed.label}</span>
-            <div className="flex items-center gap-2">
-              <a
-                href={zoomed.img}
-                download
-                onClick={(e) => e.stopPropagation()}
-                aria-label="Download floor plan"
-                className="inline-flex size-9 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
-              >
-                <Download className="size-5" />
-              </a>
-              <button
-                type="button"
-                aria-label="Close"
-                className="inline-flex size-9 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-white/20"
-              >
-                <X className="size-5" />
-              </button>
-            </div>
-          </div>
-          <div className="relative mt-3 flex-1">
-            <Image
-              src={zoomed.img}
-              alt={zoomed.label}
-              fill
-              sizes="100vw"
-              className="object-contain"
-            />
-          </div>
-        </div>
+      {zoom !== null && (
+        <Lightbox
+          items={plans.map((fp) => ({ src: fp.img, label: fp.label }))}
+          index={zoom}
+          onIndex={setZoom}
+          onClose={() => setZoom(null)}
+        />
       )}
     </div>
   );
