@@ -104,8 +104,8 @@ function CustomNumberField({
         active ? "border-gold bg-gold/10" : "border-ink/15"
       )}
     >
-      <span className="text-xs font-medium text-brown">{label}</span>
-      <span className="flex items-baseline gap-1">
+      <span className="shrink-0 text-xs font-medium text-brown">{label}</span>
+      <span className="flex min-w-0 flex-1 items-baseline justify-end gap-1">
         <input
           type="number"
           inputMode="numeric"
@@ -113,9 +113,9 @@ function CustomNumberField({
           value={value}
           placeholder={placeholder}
           onChange={(e) => onChange(e.target.value)}
-          className="w-24 bg-transparent text-right text-base font-semibold text-ink outline-none placeholder:font-normal placeholder:text-brown/40 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none sm:text-sm"
+          className="w-full min-w-0 bg-transparent text-right text-base font-semibold text-ink outline-none placeholder:font-normal placeholder:text-brown/40 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none sm:text-sm"
         />
-        <span className="text-xs text-brown/60">{suffix}</span>
+        <span className="shrink-0 text-xs text-brown/60">{suffix}</span>
       </span>
     </label>
   );
@@ -479,11 +479,11 @@ export function PaymentCalculator({ project }: { project: Project }) {
           </div>
         </div>
 
-        <div className="mt-2.5 grid grid-cols-2 gap-2">
+        <div className="mt-2.5 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <CustomNumberField
             label={budgetMode === "price" ? "Max price" : "Max down"}
             suffix="PKR"
-            placeholder="No max"
+            placeholder="Any"
             value={maxBudget}
             onChange={setMaxBudget}
             active={parsedMaxBudget != null}
@@ -491,7 +491,7 @@ export function PaymentCalculator({ project }: { project: Project }) {
           <CustomNumberField
             label="Max monthly"
             suffix="PKR"
-            placeholder="No max"
+            placeholder="Any"
             value={maxMonthlyBudget}
             onChange={setMaxMonthlyBudget}
             active={parsedMaxMonthly != null}
