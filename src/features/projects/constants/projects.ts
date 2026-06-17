@@ -634,6 +634,16 @@ function genericPlan(
 // one bio; project copy and floor plans are keyed by project name.
 
 const DEVELOPERS: Record<string, Developer> = {
+  "ABS Developers": {
+    name: "ABS Developers",
+    blurb:
+      "ABS is an emerging real-estate developer on a mission to transform the way people live — bringing luxury into everyday residences through state-of-the-art technology and modern amenities. Founded in 2015, ABS Builders set out to create projects that cater to the luxury-living needs of both the middle and elite classes, and has since completed multiple grand developments that mirror that mission. What sets the company apart is its focus on furnishing luxurious dwellings — apartments and buildings equipped with world-class amenities at genuinely affordable rates. Operating in an Islamic state, ABS is proud to be among the first Sharia-compliant real-estate companies, reflecting its commitment to honesty in trade and regard for its clientele. Quality, luxury and affordability are at the heart of everything it builds.",
+    stats: [
+      { value: "2015", label: "Founded" },
+      { value: "Sharia-compliant", label: "First-of-its-kind" },
+      { value: "Bahria Town & DHA", label: "Operating markets" },
+    ],
+  },
   "Classic Living": {
     name: "Classic Living",
     blurb:
@@ -642,6 +652,16 @@ const DEVELOPERS: Record<string, Developer> = {
       { value: "40+", label: "Years of group legacy" },
       { value: "4", label: "Industries served" },
       { value: "Pakistan", label: "Real-estate market" },
+    ],
+  },
+  "HF Developers": {
+    name: "HF Developers",
+    blurb:
+      "HF Developers is a forward-thinking real-estate company dedicated to delivering modern, high-value developments across Lahore. Led by an experienced team of industry experts, the company focuses on innovation, quality and long-term investment potential. With landmark projects such as CURVE, HF Tower and Sky Tree Tower on Pine Avenue, HF Developers is shaping contemporary urban living with thoughtfully planned commercial and residential spaces. The firm's commitment to excellence and strategic growth continues to position it as a trusted name in Pakistan's evolving real-estate landscape.",
+    stats: [
+      { value: "Pine Avenue", label: "Flagship corridor" },
+      { value: "3+", label: "Landmark projects" },
+      { value: "Lahore", label: "Operating market" },
     ],
   },
   "Athar Associates": {
@@ -667,6 +687,16 @@ const DEVELOPERS: Record<string, Developer> = {
       "Athar Homes",
     ],
   },
+  "Zalmi Developments": {
+    name: "Zalmi Developments",
+    blurb:
+      "Zalmi Developments is a premier real-estate developer formed through a strategic joint venture between JW-Corporation and Shalimar Group — pairing industrial-manufacturing muscle with a four-decade construction legacy. JW-Corporation is a Lahore-headquartered conglomerate operating across industrial manufacturing, supply-chain management, retail and strategic partnerships in Pakistan, KSA, the UAE and China; it owns the Peshawar Zalmi cricket team, develops industrial parks and special economic zones, and runs manufacturing joint ventures with Haier, Deli, Enviro, Forland, Foton and SAIC/MG Motors. Shalimar Group, established in 1984 and registered with the Pakistan Engineering Council, has delivered projects for major institutions including the NHA, Pak PWD, C&W and NIPDMC, and over the past decade has expanded into real estate — developing housing societies, residential apartments and commercial projects, and currently spearheading the Shalimar Smart City in Sargodha.",
+    stats: [
+      { value: "JW × Shalimar", label: "Joint venture" },
+      { value: "1984", label: "Shalimar Group founded" },
+      { value: "Peshawar Zalmi", label: "Owned by the group" },
+    ],
+  },
 };
 
 // Tower 1 & Tower 2 are the same development — they share project copy & renders.
@@ -690,8 +720,56 @@ const ICON_MALL_GALLERY = [
 ];
 
 const ABOUT_OVERRIDES: Record<string, About> = {
+  "Pearl One Courtyard": {
+    description:
+      "Pearl One Courtyard Tower 1 is one of the most modern projects by ABS Developers — designed to offer a life full of comfort, peace and luxury. The building rises Ground + 25 storeys, with basement parking, a G+5-storey shopping mall, and 1, 2 and 3-bedroom apartments topped by double-storey penthouses. Set in the heart of Bahria Town Lahore on Tipu Sultan Main Boulevard, it sits just 10 seconds from Winter Land and the Food Court, 3 minutes from Bahria Hospital and Imtiaz Mall, and 5 minutes from Ring Road, Raiwind Road and Canal Road — a prime address that blends comfort, style and convenience for both residents and businesses.",
+    highlights: [
+      "Tipu Sultan Main Boulevard, Bahria Town Lahore",
+      "LDA approved",
+      "Ground + 25 storeys with basement parking",
+      "G+5 shopping mall podium",
+      "1, 2 & 3-bed apartments + double-storey penthouses",
+      "Minutes from Ring Road, Raiwind Road & Canal Road",
+    ],
+  },
+  "Curve – Pine Avenue Downtown": {
+    description:
+      "The Curve is a contemporary commercial landmark on Pine Avenue Road. Positioned along a prominent curve of the avenue, the project benefits from strong frontage and natural exposure, making it an ideal destination for retail outlets, showrooms and modern office spaces. With its smart layout, premium construction and proximity to established residential communities and popular lifestyle destinations, The Curve creates a dynamic environment for both businesses and customers.",
+    highlights: [
+      "Pine Avenue Road, Lahore",
+      "LDA approved",
+      "Contemporary commercial landmark",
+      "Prominent avenue frontage & exposure",
+      "Retail, showrooms & modern offices",
+      "Near established residential communities",
+    ],
+  },
+  "Sky Tree Tower": {
+    description:
+      "Sky Tree Tower offers a refined blend of modern design and functional business spaces on Pine Avenue Road. Positioned at a highly accessible point along the corridor, the project features well-planned retail units and contemporary offices designed to meet the needs of growing businesses and established enterprises. With its clean architectural identity, efficient layouts and strong connectivity to Ring Road and the surrounding residential communities, Sky Tree Tower provides an ideal environment for productivity and customer engagement.",
+    highlights: [
+      "Pine Avenue Road, Lahore",
+      "LDA approved",
+      "Retail units & contemporary offices",
+      "Highly accessible corridor location",
+      "Strong connectivity to Ring Road",
+      "Near surrounding residential communities",
+    ],
+  },
   "Icon Mall & Tower 1": ICON_MALL_ABOUT,
   "Icon Mall & Tower 2": ICON_MALL_ABOUT,
+  "Zalmi X": {
+    description:
+      "Zalmi X is a state-of-the-art premium tower on Pine Avenue Road — a symbol of modern excellence that redefines the high-rise through innovative design. Conceived as a vibrant business centre, it offers high-end commercial spaces and top-quality office units built to spark innovation and drive growth. Premium commercial outlets across the Ground, First and Second floors are designed to house both international and national brands, creating a dynamic retail environment, while corporate offices rising from the 3rd to the 9th floor provide custom workspaces for growing companies, new startups and entrepreneurs. Two basement levels add dedicated parking beneath the tower.",
+    highlights: [
+      "Pine Avenue Road, Lahore",
+      "LDA approved",
+      "Premium commercial & corporate tower",
+      "Commercial outlets — Ground, 1st & 2nd floor",
+      "Corporate offices — 3rd to 9th floor",
+      "Two basement parking levels",
+    ],
+  },
   "Classic Atrium": {
     description:
       "Classic Atrium is a residential high-rise by Classic Living in the Tipu Sultan Block of Bahria Town, Lahore. The tower offers a full range of homes — from studio and one-bed apartments to spacious two- and three-bed residences, lawn apartments and duplex penthouses — each finished at a flat PKR 17,500 per sq ft and scheduled for possession in 2030. Floors are arranged around a central atrium with capsule glass lifts and landscaped terraces, blending luxury and comfort into everyday living.",
@@ -738,10 +816,61 @@ const CLASSIC_ATRIUM_GALLERY = [
   "/images/classic-atrium/gallery/26-three-bed.jpg",
 ];
 
+// Pearl One Courtyard · Tower 1 renders from the project brochure, ordered
+// shopping-mall podium → furnished apartment interiors by unit size → penthouse.
+const PEARL_ONE_COURTYARD_GALLERY = [
+  "/images/pearl-one-courtyard/gallery/01-mall-lower-ground.webp",
+  "/images/pearl-one-courtyard/gallery/02-mall-ground.webp",
+  "/images/pearl-one-courtyard/gallery/03-mall-first.webp",
+  "/images/pearl-one-courtyard/gallery/04-one-bed.webp",
+  "/images/pearl-one-courtyard/gallery/05-two-bed.webp",
+  "/images/pearl-one-courtyard/gallery/06-three-bed.webp",
+  "/images/pearl-one-courtyard/gallery/07-three-bed.webp",
+  "/images/pearl-one-courtyard/gallery/08-penthouse.webp",
+  "/images/pearl-one-courtyard/gallery/09-penthouse.webp",
+];
+
+// Zalmi X · renders from the project brochure — branded entrance lobby (the
+// wide hero), corporate office interior, and an amenities plate (car parking,
+// high-speed lifts & corporate café).
+const ZALMI_X_GALLERY = [
+  "/images/zalmi-x/gallery/01-lobby.jpg",
+  "/images/zalmi-x/gallery/02-corporate-offices.jpg",
+  "/images/zalmi-x/gallery/03-amenities.jpg",
+];
+
+// Curve · renders from the project brochure, ordered exterior hero →
+// street-level facade → twin curved blocks → central courtyard → branded
+// retail → aerial.
+const CURVE_GALLERY = [
+  "/images/curve/gallery/01-facade-dusk.webp",
+  "/images/curve/gallery/02-facade-night.webp",
+  "/images/curve/gallery/03-street-view.webp",
+  "/images/curve/gallery/04-twin-blocks.webp",
+  "/images/curve/gallery/05-courtyard-retail.webp",
+  "/images/curve/gallery/06-central-courtyard.webp",
+  "/images/curve/gallery/07-branded-night.webp",
+  "/images/curve/gallery/08-aerial.webp",
+];
+
+// Sky Tree Tower · renders from the project brochure, ordered front elevation →
+// angled tower → main-road view → podium detail → aerial.
+const SKY_TREE_TOWER_GALLERY = [
+  "/images/sky-tree-tower/gallery/01-facade.webp",
+  "/images/sky-tree-tower/gallery/02-tower-angle.webp",
+  "/images/sky-tree-tower/gallery/03-road-view.webp",
+  "/images/sky-tree-tower/gallery/04-podium-detail.webp",
+  "/images/sky-tree-tower/gallery/05-aerial.webp",
+];
+
 const GALLERY_OVERRIDES: Record<string, string[]> = {
+  "Curve – Pine Avenue Downtown": CURVE_GALLERY,
+  "Sky Tree Tower": SKY_TREE_TOWER_GALLERY,
+  "Pearl One Courtyard": PEARL_ONE_COURTYARD_GALLERY,
   "Icon Mall & Tower 1": ICON_MALL_GALLERY,
   "Icon Mall & Tower 2": ICON_MALL_GALLERY,
   "Classic Atrium": CLASSIC_ATRIUM_GALLERY,
+  "Zalmi X": ZALMI_X_GALLERY,
 };
 
 const FLOORPLAN_OVERRIDES: Record<string, FloorPlan[]> = {
@@ -757,6 +886,14 @@ const FLOORPLAN_OVERRIDES: Record<string, FloorPlan[]> = {
     { label: "12th Floor", img: "/images/classic-atrium/floor-12.jpg" },
     { label: "Penthouse — Lower Storey", img: "/images/classic-atrium/penthouse-lower.jpg" },
     { label: "Penthouse — Upper Storey", img: "/images/classic-atrium/penthouse-upper.jpg" },
+  ],
+  "Zalmi X": [
+    { label: "Basement 1", img: "/images/zalmi-x/floor-basement-1.jpg" },
+    { label: "Basement 2", img: "/images/zalmi-x/floor-basement-2.jpg" },
+    { label: "Ground Floor", img: "/images/zalmi-x/floor-ground.jpg" },
+    { label: "First Floor", img: "/images/zalmi-x/floor-first.jpg" },
+    { label: "Second Floor", img: "/images/zalmi-x/floor-second.jpg" },
+    { label: "Third & Typical Floor (up to 9th)", img: "/images/zalmi-x/floor-typical.jpg" },
   ],
 };
 
