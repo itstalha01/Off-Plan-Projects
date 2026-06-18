@@ -1,7 +1,13 @@
 import { useMemo } from "react";
-import { lowestTotal, matchesBudget, PROJECTS, typesOf } from "../constants/projects";
+import {
+  configsOf,
+  lowestTotal,
+  matchesBudget,
+  PROJECTS,
+  typesOf,
+} from "../constants/projects";
 import { useFilterStore } from "../store/filterStore";
-import type { Project, ProjectType } from "../types/project";
+import type { Project, ProjectType, UnitConfig } from "../types/project";
 import { useBudgetFilter } from "./useBudgetFilter";
 
 // Default ordering: group by location so the grid reads road-by-road. Lahore
@@ -22,6 +28,7 @@ export function useFilteredProjects(): Project[] {
   const city = useFilterStore((s) => s.city);
   const area = useFilterStore((s) => s.area);
   const type = useFilterStore((s) => s.type);
+  const config = useFilterStore((s) => s.config);
   const possession = useFilterStore((s) => s.possession);
   const budget = useBudgetFilter();
   const approvedOnly = useFilterStore((s) => s.approvedOnly);
@@ -37,6 +44,7 @@ export function useFilteredProjects(): Project[] {
       if (city && p.city !== city) return false;
       if (area && p.area !== area) return false;
       if (type && !typesOf(p).includes(type as ProjectType)) return false;
+      if (config && !configsOf(p).includes(config as UnitConfig)) return false;
       if (possession && p.poss !== possession) return false;
       // Budget is matched at the unit level — a project shows if any of its
       // units fits the window, not just its cheapest entry price.
@@ -44,5 +52,5 @@ export function useFilteredProjects(): Project[] {
       if (approvedOnly && p.lda !== "Approved") return false;
       return true;
     }).sort(byLocation);
-  }, [search, city, area, type, possession, budget, approvedOnly]);
+  }, [search, city, area, type, config, possession, budget, approvedOnly]);
 }

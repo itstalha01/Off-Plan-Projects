@@ -8,6 +8,8 @@ import type {
   Plan,
   Project,
   ProjectType,
+  UnitConfig,
+  UnitConfigGroup,
 } from "../types/project";
 
 // Base fields per project. Single-category projects also carry rate/minU/maxU,
@@ -33,11 +35,11 @@ type BaseTuple = [
 
 const rows: BaseTuple[] = [
   ["Bahria Sky 2", "OZ Developers", "Raiwind Road", ["Commercial", "Residential"], "2029", "Approved", 15, 60, 10, "6-Monthly", 3, 54000, 143, 654, "/images/bahria-sky-2.jpg"],
-  ["Sky Tree Tower", "HF Developers", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 18000, 6300, 12600, "/images/sky-tree-tower.webp"],
+  ["Sky Tree Tower", "HF Developers", "Pine Avenue Road", ["Commercial", "Residential"], "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 30000, 570, 4600, "/images/sky-tree-tower.webp"],
   ["Emirates Mall & Residency", "The Kings Developments", "Raiwind Road", ["Commercial", "Residential"], "2030", "Approved", 10, 65, 15, "6-Monthly", 4, 17000, 56, 1293, "/images/emirates-mall.jpg"],
   ["The Ark", "The Ark Developments", "Pine Avenue Road", "Commercial", "2027", "Approved", 10, 60, 20, "Monthly", 2.5, 31000, 637, 1345, "/images/the-ark-cover.jpg"],
   ["Falah Technology Tower", "Falah Developers", "Main Defence Road", "Commercial", "2028", "Approved", 10, 55, 25, "Monthly", 2.6, 26000, 375, 2003, "/images/falah-tower.jpg"],
-  ["Curve – Pine Avenue Downtown", "HF Developers", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 24000, 225, 2250, "/images/curve.webp"],
+  ["Curve – Pine Avenue Downtown", "HF Developers", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 24000, 225, 4800, "/images/curve.webp"],
   ["Zalmi X", "Zalmi Developments", "Pine Avenue Road", "Commercial", "2028", "Approved", 15, 55, 0, "Quarterly", 2.5, 30000, 729, 4671, "/images/zalmi-x.webp"],
   ["Pearl One Capital", "ABS Developers", "DHA Phase 2", ["Residential", "Commercial"], "2029", "Approved", 5, 85, 10, "Monthly", 3, 26000, 625, 1668.75, "/images/pearl-one-capital.webp"],
   ["Pearl One Courtyard", "ABS Developers", "Bahria Town", "Residential", "2029", "Approved", 7, 83, 10, "Monthly", 2, 30000, 500, 1000, "/images/pearl-one-courtyard.webp"],
@@ -135,16 +137,18 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { name: "Hotel Suites", rate: 17000, sizes: [284, 296, 303, 315, 338, 405] },
   ],
   "Sky Tree Tower": [
-    { name: "Basement", rate: 18000, sizes: [6300] },
-    { name: "Showroom (G + M)", rate: 60000, sizes: [12600] },
-    { name: "Halls", rate: 22000, sizes: [6300] },
-    { name: "Double Height (6+7)", rate: 40000, sizes: [12600] },
+    { name: "Showroom", rate: 75000, sizes: [4600] },
+    { name: "Premium Office", rate: 30000, sizes: [850, 1150] },
+    { name: "1 BHK Apartment", rate: 30000, sizes: [570] },
+    { name: "2 BHK Apartment", rate: 30000, sizes: [690] },
+    { name: "3 BHK Apartment", rate: 30000, sizes: [1200] },
   ],
   "Curve – Pine Avenue Downtown": [
-    { name: "Ground & Mezzanine", rate: 60000, sizes: [725, 825, 1125] },
-    { name: "First Floor", rate: 32000, sizes: [225, 425, 525, 780] },
-    { name: "Second Floor", rate: 28000, sizes: [225, 425, 525, 780] },
+    { name: "Ground & Mezzanine", rate: 60000, sizes: [750, 825, 925, 1125] },
+    { name: "First Floor", rate: 34000, sizes: [225, 425, 525] },
+    { name: "Second Floor", rate: 32000, sizes: [225, 450, 525] },
     { name: "Office (3 to 7 Floor)", rate: 24000, sizes: [750, 950, 1250, 2250] },
+    { name: "8th Floor (eArena)", rate: 40000, sizes: [1075, 1650, 2500, 4800] },
   ],
   // Zalmi X · sizes are the published covered areas of office stacks 301-901
   // through 306-906; the commercial outlet spans Ground + 1st + 2nd floor.
@@ -307,7 +311,7 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
   "Sky Tree Tower": {
     milestones: [
       { label: "Booking", pct: 10 },
-      { label: "Confirmation (within 15 days)", pct: 10 },
+      { label: "Confirmation (within 30 days)", pct: 10 },
       { label: "On possession", pct: 20 },
     ],
     installments: [
@@ -315,13 +319,13 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
         label: "Monthly installment",
         pct: 1,
         count: 30,
-        note: "1% × 30 (1st due 90 days after confirmation)",
+        note: "1% × 30",
       },
       {
-        label: "Biannual balloon payment",
+        label: "Half-yearly installment",
         pct: 6,
         count: 5,
-        note: "6% × 5 (biannual)",
+        note: "6% × 5 (half-yearly)",
       },
     ],
   },
@@ -746,14 +750,14 @@ const ABOUT_OVERRIDES: Record<string, About> = {
   },
   "Sky Tree Tower": {
     description:
-      "Sky Tree Tower offers a refined blend of modern design and functional business spaces on Pine Avenue Road. Positioned at a highly accessible point along the corridor, the project features well-planned retail units and contemporary offices designed to meet the needs of growing businesses and established enterprises. With its clean architectural identity, efficient layouts and strong connectivity to Ring Road and the surrounding residential communities, Sky Tree Tower provides an ideal environment for productivity and customer engagement.",
+      "Sky Tree Tower offers a refined blend of modern design, functional business spaces and contemporary living on Pine Avenue Road. Positioned at a highly accessible point along the corridor, the project pairs well-planned showrooms and premium offices with 1, 2 and 3 BHK apartments, meeting the needs of growing businesses, established enterprises and residents alike. With its clean architectural identity, efficient layouts and strong connectivity to Ring Road and the surrounding residential communities, Sky Tree Tower provides an ideal environment for productivity, customer engagement and everyday living.",
     highlights: [
       "Pine Avenue Road, Lahore",
       "LDA approved",
-      "Retail units & contemporary offices",
+      "Showrooms, premium offices & apartments",
+      "1, 2 & 3 BHK residential units",
       "Highly accessible corridor location",
       "Strong connectivity to Ring Road",
-      "Near surrounding residential communities",
     ],
   },
   "Icon Mall & Tower 1": ICON_MALL_ABOUT,
@@ -874,6 +878,10 @@ const GALLERY_OVERRIDES: Record<string, string[]> = {
 };
 
 const FLOORPLAN_OVERRIDES: Record<string, FloorPlan[]> = {
+  "Curve – Pine Avenue Downtown": [
+    { label: "Ground Floor", img: "/images/curve/floor-ground.jpg" },
+    { label: "First Floor", img: "/images/curve/floor-first.jpg" },
+  ],
   "Icon Mall & Tower 1": [
     { label: "Tower 1 — Ground Floor", img: "/images/icon-mall/floor-t1-ground.webp" },
     { label: "Tower 1 — First Floor", img: "/images/icon-mall/floor-t1-first.webp" },
@@ -924,6 +932,49 @@ export const PROJECTS: Project[] = rows.map(
 /** Project types as an array (handles single or mixed-use projects). */
 export function typesOf(p: Project): ProjectType[] {
   return Array.isArray(p.type) ? p.type : [p.type];
+}
+
+// Unit configurations grouped by family, in the order they appear in the
+// filter dropdown. The flattened list is also the canonical sort order.
+const CONFIG_GROUPS: { group: UnitConfigGroup; configs: UnitConfig[] }[] = [
+  {
+    group: "Residential",
+    configs: ["Studio", "1 Bed", "2 Bed", "3 Bed", "4 Bed", "Penthouse"],
+  },
+  {
+    group: "Commercial",
+    configs: ["Corporate Office", "Shop", "Showroom", "Kiosk", "Food Court", "Outlet"],
+  },
+];
+const CONFIG_ORDER: UnitConfig[] = CONFIG_GROUPS.flatMap((g) => g.configs);
+
+/**
+ * Unit configurations a project offers, parsed from its category names/groups
+ * (the source of truth for layouts). Residential: "Studio", "N Bed"/"N BHK"
+ * and "Penthouse" (a "3 Bed Penthouse" counts as both "3 Bed" and "Penthouse").
+ * Commercial: office, shop, showroom, kiosk, food court and outlet units.
+ */
+export function configsOf(p: Project): UnitConfig[] {
+  const found = new Set<UnitConfig>();
+  for (const c of p.categories) {
+    const s = `${c.group ?? ""} ${c.name}`;
+    // Residential layouts
+    if (/studio/i.test(s)) found.add("Studio");
+    if (/penthouse/i.test(s)) found.add("Penthouse");
+    for (const m of s.matchAll(/(\d+)\s*(?:bed|bhk)\b/gi)) {
+      const key = `${m[1]} Bed` as UnitConfig;
+      if (CONFIG_ORDER.includes(key)) found.add(key);
+    }
+    // Commercial unit types
+    if (/office/i.test(s)) found.add("Corporate Office");
+    if (/showroom/i.test(s)) found.add("Showroom");
+    if (/shop/i.test(s)) found.add("Shop");
+    if (/kiosk/i.test(s)) found.add("Kiosk");
+    // "eArena" / "Dine Arena" is Curve's dining floor — treat as a food court.
+    if (/food court|arena|dine/i.test(s)) found.add("Food Court");
+    if (/outlet/i.test(s)) found.add("Outlet");
+  }
+  return CONFIG_ORDER.filter((k) => found.has(k));
 }
 
 /** Lowest per-sqft rate across a project's categories. */
@@ -1037,6 +1088,15 @@ export const CITIES = [
 );
 export const AREAS = [...new Set(PROJECTS.map((p) => p.area))].sort();
 export const TYPES = [...new Set(PROJECTS.flatMap(typesOf))].sort();
+// Unit configurations offered across all projects, grouped (Residential /
+// Commercial) for the dropdown. Only families/configs actually present in the
+// data are listed, so empty groups never render.
+const PRESENT_CONFIGS = new Set(PROJECTS.flatMap(configsOf));
+export const CONFIG_OPTIONS: { group: UnitConfigGroup; configs: UnitConfig[] }[] =
+  CONFIG_GROUPS.map((g) => ({
+    group: g.group,
+    configs: g.configs.filter((c) => PRESENT_CONFIGS.has(c)),
+  })).filter((g) => g.configs.length > 0);
 export const POSSESSION_YEARS = [...new Set(PROJECTS.map((p) => p.poss))].sort();
 
 // Budget slider runs from the cheapest entry up to a fixed PKR 200 M ceiling.

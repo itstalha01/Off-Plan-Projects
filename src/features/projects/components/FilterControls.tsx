@@ -2,7 +2,13 @@
 
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AREAS, CITIES, POSSESSION_YEARS, TYPES } from "../constants/projects";
+import {
+  AREAS,
+  CITIES,
+  CONFIG_OPTIONS,
+  POSSESSION_YEARS,
+  TYPES,
+} from "../constants/projects";
 import { useFilterStore } from "../store/filterStore";
 import { BudgetFilter } from "./BudgetFilter";
 
@@ -37,6 +43,7 @@ export function FilterControls({ inlineBudget = false }: { inlineBudget?: boolea
   const city = useFilterStore((s) => s.city);
   const area = useFilterStore((s) => s.area);
   const type = useFilterStore((s) => s.type);
+  const config = useFilterStore((s) => s.config);
   const possession = useFilterStore((s) => s.possession);
   const approvedOnly = useFilterStore((s) => s.approvedOnly);
 
@@ -44,6 +51,7 @@ export function FilterControls({ inlineBudget = false }: { inlineBudget?: boolea
   const setCity = useFilterStore((s) => s.setCity);
   const setArea = useFilterStore((s) => s.setArea);
   const setType = useFilterStore((s) => s.setType);
+  const setConfig = useFilterStore((s) => s.setConfig);
   const setPossession = useFilterStore((s) => s.setPossession);
   const setApprovedOnly = useFilterStore((s) => s.setApprovedOnly);
   const reset = useFilterStore((s) => s.reset);
@@ -51,7 +59,7 @@ export function FilterControls({ inlineBudget = false }: { inlineBudget?: boolea
   return (
     <>
       {/* Row 1 — search + selects + budget */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-7">
         <label className="flex flex-col gap-1.5">
           <span className={labelClass}>Search</span>
           <div className="relative">
@@ -117,6 +125,29 @@ export function FilterControls({ inlineBudget = false }: { inlineBudget?: boolea
                 <option key={t} value={t}>
                   {t}
                 </option>
+              ))}
+            </select>
+            <ChevronAdornment />
+          </div>
+        </label>
+
+        <label className="flex flex-col gap-1.5">
+          <span className={labelClass}>Unit type</span>
+          <div className="relative">
+            <select
+              value={config}
+              onChange={(e) => setConfig(e.target.value)}
+              className={selectClass}
+            >
+              <option value="">Any unit</option>
+              {CONFIG_OPTIONS.map((g) => (
+                <optgroup key={g.group} label={g.group}>
+                  {g.configs.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
             <ChevronAdornment />

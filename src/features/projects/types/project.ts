@@ -8,6 +8,31 @@ export type ProjectType =
   | "Residential";
 
 /**
+ * Unit configuration, derived from category names/groups — both residential
+ * bedroom layouts (e.g. "Studio (Standard)", "3 Bed Penthouse") and commercial
+ * unit types (e.g. "Corporate Offices", "Ground Floor · Shops"). Lets a
+ * prospect narrow to projects that actually offer the unit they want.
+ */
+export type UnitConfig =
+  // Residential
+  | "Studio"
+  | "1 Bed"
+  | "2 Bed"
+  | "3 Bed"
+  | "4 Bed"
+  | "Penthouse"
+  // Commercial
+  | "Corporate Office"
+  | "Shop"
+  | "Showroom"
+  | "Kiosk"
+  | "Food Court"
+  | "Outlet";
+
+/** Which family a `UnitConfig` belongs to — used to group the filter dropdown. */
+export type UnitConfigGroup = "Residential" | "Commercial";
+
+/**
  * A purchasable layout within a project (e.g. "Ground Floor", "Offices").
  * Price is linear within a category: total = size × rate.
  * `sizes` is an explicit, ascending list — the size slider snaps ONLY to

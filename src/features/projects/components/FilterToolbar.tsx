@@ -25,6 +25,7 @@ function useActiveFilterCount() {
     if (s.city) n++;
     if (s.area) n++;
     if (s.type) n++;
+    if (s.config) n++;
     if (s.possession) n++;
     if (s.approvedOnly) n++;
     if (s.minEntryPrice > MIN_ENTRY_PRICE || s.maxEntryPrice < MAX_ENTRY_PRICE)

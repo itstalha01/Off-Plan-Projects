@@ -17,6 +17,7 @@ export type FilterState = {
   city: string; // "" = any
   area: string; // "" = any
   type: string; // "" = any
+  config: string; // "" = any bedroom configuration
   possession: string; // "" = any year
   budgetMode: BudgetMode;
   minEntryPrice: number; // in millions, filters on entry price
@@ -33,6 +34,7 @@ type FilterActions = {
   setCity: (v: string) => void;
   setArea: (v: string) => void;
   setType: (v: string) => void;
+  setConfig: (v: string) => void;
   setPossession: (v: string) => void;
   setBudgetMode: (v: BudgetMode) => void;
   setMinEntryPrice: (v: number) => void;
@@ -50,6 +52,7 @@ const initialState: FilterState = {
   city: "",
   area: "",
   type: "",
+  config: "",
   possession: "",
   budgetMode: "price",
   minEntryPrice: MIN_ENTRY_PRICE,
@@ -67,6 +70,7 @@ export const useFilterStore = create<FilterState & FilterActions>((set) => ({
   setCity: (city) => set({ city }),
   setArea: (area) => set({ area }),
   setType: (type) => set({ type }),
+  setConfig: (config) => set({ config }),
   setPossession: (possession) => set({ possession }),
   setBudgetMode: (budgetMode) => set({ budgetMode }),
   setMinEntryPrice: (minEntryPrice) => set({ minEntryPrice }),
