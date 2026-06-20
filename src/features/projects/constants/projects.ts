@@ -43,7 +43,7 @@ const rows: BaseTuple[] = [
   ["Zalmi X", "Zalmi Developments", "Pine Avenue Road", "Commercial", "2028", "Approved", 15, 55, 0, "Quarterly", 2.5, 30000, 729, 4671, "/images/zalmi-x.webp"],
   ["Pearl One Capital", "ABS Developers", "DHA Phase 2", ["Residential", "Commercial"], "2029", "Approved", 5, 85, 10, "Monthly", 3, 26000, 625, 1668.75, "/images/pearl-one-capital.webp"],
   ["Pearl One Courtyard", "ABS Developers", "Bahria Town", "Residential", "2029", "Approved", 7, 83, 10, "Monthly", 2, 30000, 500, 1000, "/images/pearl-one-courtyard.webp"],
-  ["Classic Atrium", "Classic Living", "Bahria Town", "Residential", "2030", "Approved", 10, 48, 13, "Monthly", 4, 17500, 350, 2500, "/images/classic-atrium.webp"],
+  ["Classic Atrium", "Classic Living", "Bahria Town", "Residential", "2030", "Approved", 10, 48, 13, "Monthly", 4, 18500, 350, 2500, "/images/classic-atrium.webp"],
   ["Skyline Boulevard", "Brother Developers", "Raiwind Road", ["Commercial", "Residential"], "2030", "Approved", 15, 45, 15, "Monthly", 3.5, 15000, 100, 4668, "/images/skyline-boulevard.jpg"],
   ["Icon Mall & Tower 1", "Athar Associates", "Bahria Town", ["Commercial", "Residential"], "2031", "Approved", 10, 60, 20, "Monthly", 4.5, 19000, 318, 1318, "/images/icon-mall/aerial.webp"],
   ["Icon Mall & Tower 2", "Athar Associates", "Bahria Town", "Residential", "2031", "Approved", 10, 60, 20, "Monthly", 5, 16000, 343, 1182, "/images/icon-mall/aerial.webp"],
@@ -190,15 +190,15 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { group: "1 Bed Apartment", name: "General", rate: 30000, sizes: [500] },
     { group: "2 Bed Apartment", name: "General", rate: 30000, sizes: [800, 1000] },
   ],
-  // Classic Atrium · residential apartments, flat 17,500/sqft across all types.
+  // Classic Atrium · residential apartments, flat 18,500/sqft across all types.
   // Sizes are the approximate covered areas published in the payment plan.
   "Classic Atrium": [
-    { name: "Studio Apartment", rate: 17500, sizes: [350] },
-    { name: "1 Bed Apartment", rate: 17500, sizes: [500] },
-    { name: "2 Bed Apartment", rate: 17500, sizes: [800] },
-    { name: "3 Bed Apartment", rate: 17500, sizes: [1100] },
-    { name: "3 Bed Lawn Apartment", rate: 17500, sizes: [1650] },
-    { name: "3 Bed Penthouse", rate: 17500, sizes: [2500] },
+    { name: "Studio Apartment", rate: 18500, sizes: [350] },
+    { name: "1 Bed Apartment", rate: 18500, sizes: [500] },
+    { name: "2 Bed Apartment", rate: 18500, sizes: [800] },
+    { name: "3 Bed Apartment", rate: 18500, sizes: [1100] },
+    { name: "3 Bed Lawn Apartment", rate: 18500, sizes: [1650] },
+    { name: "3 Bed Penthouse", rate: 18500, sizes: [2500] },
   ],
   // Skyline Boulevard · Brother Developers, Al Kabir Downtown, Main Raiwind Road.
   // Rates shown are the general per-sqft rates published per floor; corner /
@@ -450,26 +450,26 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
   // Classic Atrium: down payment + equal payment after 2 months + 48 monthly
   // + 7 half-yearly balloons + final payment on possession. The developer quotes
   // fixed rupee amounts per unit, so the percentages are indicative — derived
-  // from the 350 sqft studio (total 6,125,000; ÷100 = 61,250). 9.71 + 9.71 +
-  // (0.571%×48 = 27.4%) + (5.71%×7 = 40%) + 13.14 = 100%.
+  // from the 350 sqft studio (total 6,475,000; ÷100 = 64,750). 9.19 + 9.19 +
+  // (0.602%×48 = 28.9%) + (5.56%×7 = 38.9%) + 13.79 = 100%.
   "Classic Atrium": {
     milestones: [
-      { label: "Down payment (at booking)", pct: 595000 / 61250 },
-      { label: "Payment after 2 months", pct: 595000 / 61250 },
-      { label: "Last payment (on possession)", pct: 805000 / 61250 },
+      { label: "Down payment (at booking)", pct: 595000 / 64750 },
+      { label: "Payment after 2 months", pct: 595000 / 64750 },
+      { label: "Last payment (on possession)", pct: 893000 / 64750 },
     ],
     installments: [
       {
         label: "Monthly installment",
-        pct: 35000 / 61250,
+        pct: 39000 / 64750,
         count: 48,
-        note: "48 monthly installments (≈27% on the 350 sqft studio)",
+        note: "48 monthly installments (≈29% on the 350 sqft studio)",
       },
       {
         label: "Half-yearly balloon payment",
-        pct: 350000 / 61250,
+        pct: 360000 / 64750,
         count: 7,
-        note: "7 half-yearly balloons (≈40% on the 350 sqft studio)",
+        note: "7 half-yearly balloons (≈39% on the 350 sqft studio)",
       },
     ],
   },
@@ -572,7 +572,7 @@ const PLAN_NOTES: Record<string, string> = {
   "Pearl One Courtyard":
     "LDA approved · Tower 1, Bahria Town Lahore, Tipu Sultan Main Boulevard. All apartments are sold at a flat PKR 30,000/sq ft; areas are gross & approximate. The down payment and final instalment are fixed rupee amounts that vary by unit, so the percentages shown are indicative (based on the entry 1-bed unit). Down payment at booking is PKR 1,000,000 for the 1-bed and PKR 1,500,000 for the 2-bed units. The schedule runs as a down payment, 11 monthly instalments (1 May 2026 – 1 Mar 2027), a yearly instalment on 1 Apr 2027, 11 more monthly instalments (1 May 2027 – 1 Mar 2028), and a final instalment on 1 Apr 2028. Down payment is due by 30 April 2026, failing which the booking is cancelled.",
   "Classic Atrium":
-    "LDA approved · Tipu Sultan Block, Bahria Town Lahore, by Classic Living; possession in 2030. All apartments are sold at a flat PKR 17,500/sq ft; areas are gross & approximate. The booking/down payment and the payment due after 2 months are fixed rupee amounts that vary by unit, so the percentages shown are indicative (based on the 350 sq ft studio). The schedule runs as a down payment at booking, an equal payment after 2 months, 48 monthly installments, 7 half-yearly balloon payments, and a final payment on possession. Indicative amounts per unit (down / after 2 months / monthly ×48 / balloon ×7 / final) — Studio 350 sq ft: 595,000 / 595,000 / 35,000 / 350,000 / 805,000. 1-Bed 500 sq ft: 1,095,000 / 1,095,000 / 45,000 / 470,000 / 1,110,000. 2-Bed 800 sq ft: 1,495,000 / 1,495,000 / 79,500 / 699,000 / 2,301,000. 3-Bed 1,100 sq ft: 1,695,000 / 1,695,000 / 99,500 / 1,075,000 / 3,559,000. 3-Bed Lawn 1,650 sq ft: 2,895,000 / 2,895,000 / 149,000 / 1,590,000 / 4,801,000. 3-Bed Penthouse 2,500 sq ft: 4,495,000 / 4,495,000 / 225,000 / 2,495,000 / 6,495,000. Payment plan is subject to availability of units.",
+    "LDA approved · Tipu Sultan Block, Bahria Town Lahore, by Classic Living; possession in 2030. All apartments are sold at a flat PKR 18,500/sq ft; areas are gross & approximate. The booking/down payment and the payment due after 2 months are fixed rupee amounts that vary by unit, so the percentages shown are indicative (based on the 350 sq ft studio). The schedule runs as a down payment at booking, an equal payment after 2 months, 48 monthly installments, 7 half-yearly balloon payments, and a final payment on possession. Indicative amounts per unit (down / after 2 months / monthly ×48 / balloon ×7 / final) — Studio 350 sq ft: 595,000 / 595,000 / 39,000 / 360,000 / 893,000. 1-Bed 500 sq ft: 1,095,000 / 1,095,000 / 49,000 / 491,000 / 1,271,000. 2-Bed 800 sq ft: 1,495,000 / 1,495,000 / 89,500 / 699,000 / 2,621,000. 3-Bed 1,100 sq ft: 1,695,000 / 1,695,000 / 109,500 / 1,120,000 / 3,864,000. 3-Bed Lawn 1,650 sq ft: 2,895,000 / 2,895,000 / 169,000 / 1,650,000 / 5,073,000. 3-Bed Penthouse 2,500 sq ft: 4,495,000 / 4,495,000 / 250,000 / 2,595,000 / 7,095,000. Payment plan is subject to availability of units.",
   "Skyline Boulevard":
     "LDA approved · Al Kabir Downtown, Main Raiwind Road, Lahore, by Brother Developers. Pay over 3.5 years with possession in 3 years. Rates shown are the general per-sqft rates published per floor; corner and premium (“category”) units carry a higher rate — Lower Ground 24,200, Ground Floor shops 44,000, 1st & 2nd Floor 27,500, and apartments 16,500 per sq ft. Triple-height main-boulevard premium outlets are quoted at 35,000 (up to 49,500 for prime positions). The schedule runs as 15% booking, 15% on confirmation within 45 days, 42 monthly installments (25%), a half-yearly installment after every 6 months (20%), 10% on grey structure, and 15% on possession. Areas are gross & approximate and prices are subject to availability of units.",
   "Icon Mall & Tower 1":
@@ -776,12 +776,12 @@ const ABOUT_OVERRIDES: Record<string, About> = {
   },
   "Classic Atrium": {
     description:
-      "Classic Atrium is a residential high-rise by Classic Living in the Tipu Sultan Block of Bahria Town, Lahore. The tower offers a full range of homes — from studio and one-bed apartments to spacious two- and three-bed residences, lawn apartments and duplex penthouses — each finished at a flat PKR 17,500 per sq ft and scheduled for possession in 2030. Floors are arranged around a central atrium with capsule glass lifts and landscaped terraces, blending luxury and comfort into everyday living.",
+      "Classic Atrium is a residential high-rise by Classic Living in the Tipu Sultan Block of Bahria Town, Lahore. The tower offers a full range of homes — from studio and one-bed apartments to spacious two- and three-bed residences, lawn apartments and duplex penthouses — each finished at a flat PKR 18,500 per sq ft and scheduled for possession in 2030. Floors are arranged around a central atrium with capsule glass lifts and landscaped terraces, blending luxury and comfort into everyday living.",
     highlights: [
       "Tipu Sultan Block, Bahria Town Lahore",
       "LDA approved",
       "Possession in 2030",
-      "Flat PKR 17,500 / sq ft",
+      "Flat PKR 18,500 / sq ft",
       "Studio to 3-bed duplex penthouse",
       "Central atrium & landscaped terraces",
     ],
