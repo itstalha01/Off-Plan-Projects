@@ -927,6 +927,58 @@ export const PROJECTS: Project[] = rows.map(
   })
 );
 
+// ---- Routing (slugs) ----
+
+/**
+ * URL-safe slug derived from a project's (unique) name — lowercased, with every
+ * run of non-alphanumerics collapsed to a single hyphen. e.g.
+ * "Curve – Pine Avenue Downtown" -> "curve-pine-avenue-downtown".
+ */
+export function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// Slug -> project lookup, built once. Project names are unique, and slugify is
+// stable, so the slugs are too — a collision here would mean two projects share
+// a name, which the directory already disallows (name is the React key).
+const PROJECTS_BY_SLUG = new Map(PROJECTS.map((p) => [slugify(p.name), p]));
+
+/** The route slug for a project (what its card links to). */
+export function slugOf(p: Project): string {
+  return slugify(p.name);
+}
+
+/** Resolve a route slug back to its project, or undefined if none matches. */
+export function projectBySlug(slug: string): Project | undefined {
+  return PROJECTS_BY_SLUG.get(slug);
+}
+
+/** All project slugs — used to prerender the detail routes. */
+export const PROJECT_SLUGS = [...PROJECTS_BY_SLUG.keys()];
+
+/**
+ * Projects most related to `project`, for the "Related projects" rail. Ranked by
+ * shared developer (strongest), then area, then city; the project itself is
+ * excluded and only genuine matches (score > 0) are returned. Ties keep dataset
+ * order, so results are deterministic at build time.
+ */
+export function relatedProjects(project: Project, limit = 3): Project[] {
+  const score = (p: Project) =>
+    (p.dev === project.dev ? 4 : 0) +
+    (p.area === project.area ? 2 : 0) +
+    (p.city === project.city ? 1 : 0);
+
+  return PROJECTS.filter((p) => p.name !== project.name)
+    .map((p) => ({ p, s: score(p) }))
+    .filter((x) => x.s > 0)
+    .sort((a, b) => b.s - a.s)
+    .slice(0, limit)
+    .map((x) => x.p);
+}
+
 // ---- Derived helpers (categories are the source of truth) ----
 
 /** Project types as an array (handles single or mixed-use projects). */

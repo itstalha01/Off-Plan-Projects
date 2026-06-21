@@ -24,6 +24,11 @@ const nastaliq = Noto_Nastaliq_Urdu({
 });
 
 export const metadata: Metadata = {
+  // Resolves relative Open Graph / Twitter image paths (e.g. a project's cover)
+  // to absolute URLs. Set NEXT_PUBLIC_SITE_URL in production; localhost in dev.
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+  ),
   title: "Clearstoreys · Pakistan Commercial Off-Plan",
   description:
     "Clearstoreys is a curated portal for Pakistan commercial off-plan real estate. Payment plans, possession timelines and approval status, laid bare.",

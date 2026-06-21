@@ -2,16 +2,17 @@
 
 import { memo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatMillionsCr } from "@/lib/format";
 import {
   DEFAULT_PROJECT_IMG,
   POSSESSION_YEARS,
+  slugOf,
   typesOf,
 } from "../constants/projects";
 import type { LdaStatus, Project } from "../types/project";
-import type { DetailPanel } from "./ProjectDetailModal";
 
 const LDA_BADGE: Record<LdaStatus, { label: string; className: string }> = {
   Approved: {
@@ -41,7 +42,6 @@ function possessionProgress(poss: string): number {
 type ProjectCardProps = {
   project: Project;
   index: number;
-  onOpen: (project: Project, panel?: DetailPanel) => void;
   // The cheapest unit that fits the active budget — what "from" advertises, so
   // a buyer sees the in-range price, not a unit below their floor.
   entryMillions: number;
@@ -51,22 +51,21 @@ type ProjectCardProps = {
 function ProjectCardBase({
   project,
   index,
-  onOpen,
   entryMillions,
   entrySqft,
 }: ProjectCardProps) {
   const badge = LDA_BADGE[project.lda];
   const progress = possessionProgress(project.poss);
+  const href = `/projects/${slugOf(project)}`;
 
   return (
     <article
       className="animate-fade-up group relative flex flex-col overflow-hidden rounded-2xl border border-ink/10 bg-paper transition-all duration-300 hover:-translate-y-1 hover:border-gold/40 hover:shadow-[0_18px_40px_-20px_rgba(19,17,13,0.35)]"
       style={{ animationDelay: `${Math.min(index, 12) * 55}ms` }}
     >
-      {/* Cover photo — zooms on hover, click opens the payment plan */}
-      <button
-        type="button"
-        onClick={() => onOpen(project)}
+      {/* Cover photo — zooms on hover, opens the project page */}
+      <Link
+        href={href}
         aria-label={`Explore ${project.name}`}
         className="relative aspect-[16/10] w-full cursor-pointer overflow-hidden bg-cream focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
       >
@@ -85,12 +84,17 @@ function ProjectCardBase({
         >
           {badge.label}
         </span>
-      </button>
+      </Link>
 
       <div className="flex flex-1 flex-col p-6">
         <div>
           <h3 className="font-serif text-xl font-semibold leading-snug text-ink">
-            {project.name}
+            <Link
+              href={href}
+              className="rounded-sm transition-colors hover:text-gold-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+            >
+              {project.name}
+            </Link>
           </h3>
           <p className="mt-1 text-sm text-brown">{project.dev}</p>
         </div>
@@ -133,14 +137,13 @@ function ProjectCardBase({
         </div>
       </div>
 
-        <button
-          type="button"
-          onClick={() => onOpen(project, "payment")}
+        <Link
+          href={`${href}/payment`}
           className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-medium text-paper transition-colors hover:bg-gold-deep"
         >
           View payment plan
           <ArrowRight className="size-4" />
-        </button>
+        </Link>
       </div>
     </article>
   );

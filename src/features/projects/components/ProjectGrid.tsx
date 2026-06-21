@@ -1,35 +1,14 @@
 "use client";
 
-import { useCallback, useState } from "react";
 import { SearchX } from "lucide-react";
 import { entryInBudget, PROJECTS } from "../constants/projects";
 import { useBudgetFilter } from "../hooks/useBudgetFilter";
 import { useFilteredProjects } from "../hooks/useFilteredProjects";
-import type { Project } from "../types/project";
 import { ProjectCard } from "./ProjectCard";
-import {
-  ProjectDetailModal,
-  type DetailPanel,
-} from "./ProjectDetailModal";
 
 export function ProjectGrid() {
   const projects = useFilteredProjects();
   const budget = useBudgetFilter();
-  const [selected, setSelected] = useState<{
-    project: Project;
-    panel: DetailPanel;
-  } | null>(null);
-
-  const handleOpen = useCallback(
-    (project: Project, panel: DetailPanel = "hub") => {
-      setSelected({ project, panel });
-    },
-    []
-  );
-
-  const handleClose = useCallback(() => {
-    setSelected(null);
-  }, []);
 
   return (
     <section id="projects" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
@@ -59,7 +38,6 @@ export function ProjectGrid() {
                 key={project.name}
                 project={project}
                 index={index}
-                onOpen={handleOpen}
                 entryMillions={entry.millions}
                 entrySqft={entry.size}
               />
@@ -67,12 +45,6 @@ export function ProjectGrid() {
           })}
         </div>
       )}
-
-      <ProjectDetailModal
-        project={selected?.project ?? null}
-        initialPanel={selected?.panel}
-        onClose={handleClose}
-      />
     </section>
   );
 }

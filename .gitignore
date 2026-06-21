@@ -42,3 +42,6 @@ next-env.d.ts
 
 # claude local settings
 .claude/settings.local.json
+
+# local marketing artifacts (not part of the web app)
+/clearstoreys_carousel/
