@@ -196,7 +196,16 @@ function CategoryButton({
   );
 }
 
-export function PaymentCalculator({ project }: { project: Project }) {
+export function PaymentCalculator({
+  project,
+  // The modal renders this inside a fixed-height dialog, so it caps the height
+  // and scrolls internally. On the dedicated payment page we want it to flow at
+  // full height instead, so the whole plan is visible before Related projects.
+  scrollContained = false,
+}: {
+  project: Project;
+  scrollContained?: boolean;
+}) {
   const single = project.categories.length === 1;
   const [catIndex, setCatIndex] = useState(single ? 0 : -1);
   const [size, setSize] = useState(
@@ -449,7 +458,13 @@ export function PaymentCalculator({ project }: { project: Project }) {
   }
 
   return (
-    <div className="flex max-h-[68vh] flex-col overflow-y-auto pr-1">
+    <div
+      className={
+        scrollContained
+          ? "flex max-h-[68vh] flex-col overflow-y-auto pr-1"
+          : "flex flex-col"
+      }
+    >
       {/* Client budget — seeded from the grid filter, editable here. Highlights
           which categories & sizes fit; doesn't change the quoted prices. */}
       <div className="mt-2 rounded-xl border border-ink/15 bg-cream/40 p-3">
@@ -851,7 +866,11 @@ export function PaymentModal({ project, onClose }: PaymentModalProps) {
           <DialogDescription className="text-sm text-brown">
             {project.dev} · {project.area}
           </DialogDescription>
-          <PaymentCalculator key={project.name} project={project} />
+          <PaymentCalculator
+            key={project.name}
+            project={project}
+            scrollContained
+          />
         </DialogContent>
       )}
     </Dialog>
