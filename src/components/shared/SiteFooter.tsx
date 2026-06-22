@@ -1,21 +1,32 @@
+"use client";
+
 import { MessageCircle } from "lucide-react";
 import { whatsappLink } from "@/lib/whatsapp";
+import { brandName } from "@/features/partners/partners";
+import { usePartner } from "@/features/partners/usePartner";
 
 export function SiteFooter() {
+  const partner = usePartner();
+  const brand = brandName(partner);
+
   return (
     <footer className="border-t border-ink/10 bg-ink text-paper">
       <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-4 px-5 py-10 sm:flex-row sm:items-center sm:px-8">
         <div>
           <p className="font-serif text-xl font-semibold">
-            Clearstoreys<span className="text-gold">.</span>
+            {brand}
+            <span className="text-gold">.</span>
           </p>
           <p className="mt-1 text-sm text-paper/60">
-            Pakistan commercial off-plan, decoded.
+            {partner
+              ? "Powered by Clearstoreys · Pakistan commercial off-plan."
+              : "Pakistan commercial off-plan, decoded."}
           </p>
         </div>
         <a
           href={whatsappLink(
-            "Hi Clearstoreys, I'd like to talk about Pakistan off-plan investment options."
+            `Hi ${brand}, I'd like to talk about Pakistan off-plan investment options.`,
+            partner?.whatsapp
           )}
           target="_blank"
           rel="noopener noreferrer"

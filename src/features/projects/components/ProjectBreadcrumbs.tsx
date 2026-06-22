@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { SITE_URL } from "@/constants";
+import { basePathFor } from "@/features/partners/partners";
+import { usePartner } from "@/features/partners/usePartner";
 import { SECTION_META, type SectionKey } from "../constants/sections";
 
 type Crumb = { name: string; href: string };
@@ -22,7 +24,9 @@ export function ProjectBreadcrumbs({
   sections: SectionKey[];
 }) {
   const pathname = usePathname();
-  const base = `/projects/${slug}`;
+  const partner = usePartner();
+  const bp = basePathFor(partner);
+  const base = `${bp}/projects/${slug}`;
 
   const segment = pathname.startsWith(`${base}/`)
     ? pathname.slice(base.length + 1)
@@ -30,7 +34,7 @@ export function ProjectBreadcrumbs({
   const active = sections.find((k) => SECTION_META[k].segment === segment);
 
   const trail: Crumb[] = [
-    { name: "Home", href: "/" },
+    { name: "Home", href: bp || "/" },
     { name: projectName, href: base },
     ...(active
       ? [{ name: SECTION_META[active].title, href: `${base}/${segment}` }]

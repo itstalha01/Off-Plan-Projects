@@ -12,6 +12,8 @@ import {
   slugOf,
   typesOf,
 } from "../constants/projects";
+import { basePathFor } from "@/features/partners/partners";
+import { usePartner } from "@/features/partners/usePartner";
 import type { LdaStatus, Project } from "../types/project";
 
 const LDA_BADGE: Record<LdaStatus, { label: string; className: string }> = {
@@ -54,9 +56,10 @@ function ProjectCardBase({
   entryMillions,
   entrySqft,
 }: ProjectCardProps) {
+  const partner = usePartner();
   const badge = LDA_BADGE[project.lda];
   const progress = possessionProgress(project.poss);
-  const href = `/projects/${slugOf(project)}`;
+  const href = `${basePathFor(partner)}/projects/${slugOf(project)}`;
 
   return (
     <article

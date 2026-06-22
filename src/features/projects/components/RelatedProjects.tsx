@@ -6,14 +6,30 @@ import {
   entryPriceMillions,
   slugOf,
 } from "../constants/projects";
+import {
+  basePathFor,
+  isAllowedSlug,
+  type Partner,
+} from "@/features/partners/partners";
 import type { Project } from "../types/project";
 
 /** A compact rail of related projects (same developer / area) shown at the foot
  *  of every project page. Each tile is a single contextual link to that
  *  project's hub — spreading internal links beyond the homepage and building
  *  topical clusters around developer and area. */
-export function RelatedProjects({ projects }: { projects: Project[] }) {
-  if (projects.length === 0) return null;
+export function RelatedProjects({
+  projects,
+  partner,
+}: {
+  projects: Project[];
+  partner?: Partner | null;
+}) {
+  // A partner never links out to projects they don't carry.
+  const shown = partner
+    ? projects.filter((p) => isAllowedSlug(partner, slugOf(p)))
+    : projects;
+  if (shown.length === 0) return null;
+  const bp = basePathFor(partner);
 
   return (
     <section className="mx-auto w-full max-w-4xl px-5 py-12 sm:px-8">
@@ -25,10 +41,10 @@ export function RelatedProjects({ projects }: { projects: Project[] }) {
       </p>
 
       <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {projects.map((p) => (
+        {shown.map((p) => (
           <Link
             key={p.name}
-            href={`/projects/${slugOf(p)}`}
+            href={`${bp}/projects/${slugOf(p)}`}
             className="group flex flex-col overflow-hidden rounded-xl border border-ink/10 bg-paper transition-all hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-[0_12px_28px_-18px_rgba(19,17,13,0.45)] focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
           >
             <div className="relative aspect-[16/10] w-full overflow-hidden bg-cream">

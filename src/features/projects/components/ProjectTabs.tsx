@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { basePathFor } from "@/features/partners/partners";
+import { usePartner } from "@/features/partners/usePartner";
 import { SECTION_META, type SectionKey } from "../constants/sections";
 
 /** Sticky tab bar for jumping between a project's sections. The active tab is
@@ -15,7 +17,8 @@ export function ProjectTabs({
   sections: SectionKey[];
 }) {
   const pathname = usePathname();
-  const base = `/projects/${slug}`;
+  const partner = usePartner();
+  const base = `${basePathFor(partner)}/projects/${slug}`;
 
   const tabs = [
     { href: base, label: "Overview" },

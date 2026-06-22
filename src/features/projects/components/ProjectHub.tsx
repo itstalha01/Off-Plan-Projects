@@ -3,14 +3,26 @@ import { ChevronRight, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { whatsappLink } from "@/lib/whatsapp";
 import { slugOf } from "../constants/projects";
+import {
+  basePathFor,
+  brandName,
+  type Partner,
+} from "@/features/partners/partners";
 import { SECTION_META, sectionsOf } from "../constants/sections";
 import type { Project } from "../types/project";
 
 /** The project "hub": lets a visitor choose which section to explore. Each tile
  *  is a real link to that section's route. */
-export function ProjectHub({ project }: { project: Project }) {
+export function ProjectHub({
+  project,
+  partner,
+}: {
+  project: Project;
+  partner?: Partner | null;
+}) {
   const sections = sectionsOf(project);
-  const base = `/projects/${slugOf(project)}`;
+  const base = `${basePathFor(partner)}/projects/${slugOf(project)}`;
+  const brand = brandName(partner);
 
   return (
     <section className="py-8">
@@ -53,7 +65,8 @@ export function ProjectHub({ project }: { project: Project }) {
 
       <a
         href={whatsappLink(
-          `Hi Clearstoreys, I'd like more information about ${project.name} (${project.dev}, ${project.area}).`
+          `Hi ${brand}, I'd like more information about ${project.name} (${project.dev}, ${project.area}).`,
+          partner?.whatsapp
         )}
         target="_blank"
         rel="noopener noreferrer"

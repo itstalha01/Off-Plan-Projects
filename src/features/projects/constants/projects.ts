@@ -1029,6 +1029,29 @@ export function configsOf(p: Project): UnitConfig[] {
   return CONFIG_ORDER.filter((k) => found.has(k));
 }
 
+// Words that name the kind of unit a project sells but rarely appear verbatim
+// in its category labels. A commercial project's ground floor is, in a buyer's
+// words, "shops" / "retail" even when the developer calls it "Commercial
+// Outlet" (Zalmi X) or "Ground & Mezzanine" (Curve) — so we fold those synonyms
+// into the searchable text of every Commercial project.
+const COMMERCIAL_SYNONYMS = ["shop", "shops", "retail", "store", "outlet"];
+
+/**
+ * The lowercased blob a free-text search is matched against. Beyond the obvious
+ * name/developer/location, it folds in the project's types, derived unit
+ * configs, raw category labels, and retail synonyms for commercial projects, so
+ * a search like "shops on pine avenue road" finds every commercial tower there
+ * — not just the ones whose categories literally spell out "shop".
+ */
+export function searchText(p: Project): string {
+  const parts: string[] = [p.name, p.dev, p.city, p.area];
+  parts.push(...typesOf(p));
+  parts.push(...configsOf(p));
+  for (const c of p.categories) parts.push(c.group ?? "", c.name);
+  if (typesOf(p).includes("Commercial")) parts.push(...COMMERCIAL_SYNONYMS);
+  return parts.join(" ").toLowerCase();
+}
+
 /** Lowest per-sqft rate across a project's categories. */
 export function lowestRate(p: Project): number {
   return Math.min(...p.categories.map((c) => c.rate));

@@ -1,7 +1,9 @@
 "use client";
 
 import { SearchX } from "lucide-react";
-import { entryInBudget, PROJECTS } from "../constants/projects";
+import { entryInBudget, PROJECTS, slugOf } from "../constants/projects";
+import { isAllowedSlug } from "@/features/partners/partners";
+import { usePartner } from "@/features/partners/usePartner";
 import { useBudgetFilter } from "../hooks/useBudgetFilter";
 import { useFilteredProjects } from "../hooks/useFilteredProjects";
 import { ProjectCard } from "./ProjectCard";
@@ -9,13 +11,17 @@ import { ProjectCard } from "./ProjectCard";
 export function ProjectGrid() {
   const projects = useFilteredProjects();
   const budget = useBudgetFilter();
+  const partner = usePartner();
+  const total = partner
+    ? PROJECTS.filter((p) => isAllowedSlug(partner, slugOf(p))).length
+    : PROJECTS.length;
 
   return (
     <section id="projects" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
       <p className="text-sm font-medium text-brown">
         Showing{" "}
         <span className="font-semibold text-ink">{projects.length}</span> of{" "}
-        {PROJECTS.length} projects
+        {total} projects
       </p>
 
       {projects.length === 0 ? (

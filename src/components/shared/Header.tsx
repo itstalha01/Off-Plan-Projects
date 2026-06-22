@@ -6,27 +6,45 @@ import { Menu, MessageCircle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { whatsappLink } from "@/lib/whatsapp";
 import { Logo } from "@/components/shared/Logo";
+import { basePathFor, brandName } from "@/features/partners/partners";
+import { usePartner } from "@/features/partners/usePartner";
 
 const isExternal = (href: string) => href.startsWith("http");
 
-const ADVISOR_WHATSAPP = whatsappLink(
-  "Hi Clearstoreys, I'd like to speak to an advisor about Pakistan off-plan investments."
-);
-
-const NAV_LINKS = [
-  { label: "Projects", href: "#projects" },
-  { label: "Areas", href: "#areas" },
-  { label: "Contact", href: ADVISOR_WHATSAPP },
-];
-
 export function Header() {
   const [open, setOpen] = useState(false);
+  const partner = usePartner();
+  const home = basePathFor(partner) || "/";
+  const brand = brandName(partner);
+
+  const ADVISOR_WHATSAPP = whatsappLink(
+    `Hi ${brand}, I'd like to speak to an advisor about Pakistan off-plan investments.`,
+    partner?.whatsapp
+  );
+
+  const NAV_LINKS = [
+    { label: "Projects", href: "#projects" },
+    { label: "Areas", href: "#areas" },
+    { label: "Contact", href: ADVISOR_WHATSAPP },
+  ];
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur-md">
+      {partner?.accent && (
+        <div style={{ height: 3, backgroundColor: partner.accent }} />
+      )}
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-5 sm:px-8">
-        <Link href="/" aria-label="Clearstoreys home">
-          <Logo className="flex items-center gap-2.5" />
+        <Link href={home} aria-label={`${brand} home`}>
+          {partner ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={partner.logo}
+              alt={partner.name}
+              className="h-14 w-auto object-contain"
+            />
+          ) : (
+            <Logo className="flex items-center gap-2.5" />
+          )}
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">

@@ -1,8 +1,13 @@
 // WhatsApp number in international format, digits only — no "+", spaces or leading zeros.
 export const WHATSAPP_NUMBER = "923297748627";
 
-export function whatsappLink(message?: string): string {
-  const base = `https://wa.me/${WHATSAPP_NUMBER}`;
+// `number` lets a white-label partner route enquiries to their own WhatsApp
+// Business line; it defaults to the Clearstoreys advisor number.
+export function whatsappLink(
+  message?: string,
+  number: string = WHATSAPP_NUMBER
+): string {
+  const base = `https://wa.me/${number}`;
   return message ? `${base}?text=${encodeURIComponent(message)}` : base;
 }
 

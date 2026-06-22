@@ -5,16 +5,19 @@ import { formatMillionsCr } from "@/lib/format";
 import {
   AREAS,
   CITIES,
+  entryPriceMillions,
   POSSESSION_YEARS,
   PRICE_BAND_MAX,
   PRICE_BAND_MIN,
   PROJECTS,
+  slugOf,
 } from "../constants/projects";
+import {
+  brandName,
+  isAllowedSlug,
+  type Partner,
+} from "@/features/partners/partners";
 import { Facade, Plus, Sunburst } from "./BuildingArt";
-
-const HERO_WHATSAPP = whatsappLink(
-  "Hi Clearstoreys, I'd like help finding a Pakistan off-plan project that fits me."
-);
 
 function Stat({
   value,
@@ -39,15 +42,39 @@ function Stat({
   );
 }
 
-export function Hero() {
-  const minYear = POSSESSION_YEARS[0];
-  const maxYear = POSSESSION_YEARS[POSSESSION_YEARS.length - 1];
+export function Hero({ partner }: { partner?: Partner | null }) {
+  const brand = brandName(partner);
+  const heroWhatsapp = whatsappLink(
+    `Hi ${brand}, I'd like help finding a Pakistan off-plan project that fits me.`,
+    partner?.whatsapp
+  );
+
+  // The catalogue a partner embed sees — the full set on the main site, so the
+  // headline stats below stay identical there.
+  const base = partner
+    ? PROJECTS.filter((p) => isAllowedSlug(partner, slugOf(p)))
+    : PROJECTS;
+  const projectCount = base.length;
+  const cities = partner
+    ? Array.from(new Set(base.map((p) => p.city)))
+    : CITIES;
+  const areaCount = partner
+    ? new Set(base.map((p) => p.area)).size
+    : AREAS.length;
+  const years = partner
+    ? Array.from(new Set(base.map((p) => p.poss))).sort()
+    : POSSESSION_YEARS;
+  const entries = base.map((p) => entryPriceMillions(p));
+  const minYear = years[0];
+  const maxYear = years[years.length - 1];
   const possessionWindow = `${minYear}–${maxYear.slice(2)}`;
   // Glue each amount to its unit with a non-breaking space so the band only ever
   // wraps at the dash (e.g. "22 Lakh–" / "75.6 Cr"), never mid-unit.
   const band = (m: number) =>
     formatMillionsCr(m).replace("PKR ", "").replace(" ", " ");
-  const priceBand = `${band(PRICE_BAND_MIN)}–${band(PRICE_BAND_MAX)}`;
+  const priceBand = partner
+    ? `${band(Math.min(...entries))}–${band(Math.max(...entries))}`
+    : `${band(PRICE_BAND_MIN)}–${band(PRICE_BAND_MAX)}`;
 
   return (
     <section id="top" className="relative overflow-hidden bg-paper">
@@ -79,7 +106,7 @@ export function Hero() {
               <Facade className="h-8 w-12" />
             </span>
             <span className="text-xs font-medium text-brown">
-              {PROJECTS.length} curated towers across {CITIES.join(" & ")}
+              {projectCount} curated towers across {cities.join(" & ")}
             </span>
           </div>
         </div>
@@ -115,7 +142,7 @@ export function Hero() {
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <a
-              href={HERO_WHATSAPP}
+              href={heroWhatsapp}
               target="_blank"
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3.5 text-sm font-semibold text-paper transition-colors hover:bg-gold-deep"
@@ -133,8 +160,8 @@ export function Hero() {
           </div>
 
           <div className="mt-12 grid max-w-lg grid-cols-2 gap-8 border-t border-ink/10 pt-8 sm:grid-cols-4">
-            <Stat value={String(PROJECTS.length)} label="Live projects" />
-            <Stat value={String(AREAS.length)} label="Areas covered" />
+            <Stat value={String(projectCount)} label="Live projects" />
+            <Stat value={String(areaCount)} label="Areas covered" />
             <Stat
               value={priceBand}
               label="Price band"

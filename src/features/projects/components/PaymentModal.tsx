@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Download, MessageCircle, Send } from "lucide-react";
 import {
   Dialog,
@@ -16,6 +16,9 @@ import {
   paymentPlanPdfFile,
   type PaymentPlanPdf,
 } from "@/lib/paymentPdf";
+import { hexToRgb, loadLogoImage, type LogoImage } from "@/lib/partnerLogo";
+import { brandName, type Partner } from "@/features/partners/partners";
+import { usePartner } from "@/features/partners/usePartner";
 import type { Category, Project } from "../types/project";
 import {
   MAX_DOWN_PAYMENT,
@@ -67,12 +70,15 @@ function advisorWhatsapp(
   project: Project,
   category: Category,
   size: number,
-  rate: number
+  rate: number,
+  brand: string,
+  number?: string
 ): string {
   const ratePart =
     rate !== category.rate ? ` at a custom rate of ${formatRate(rate)}` : "";
   return whatsappLink(
-    `Hi Clearstoreys, I'd like the full payment schedule and to book a viewing for ${project.name} (${project.dev}, ${project.area}), ${category.name}, roughly ${size.toLocaleString()} sqft${ratePart}.`
+    `Hi ${brand}, I'd like the full payment schedule and to book a viewing for ${project.name} (${project.dev}, ${project.area}), ${category.name}, roughly ${size.toLocaleString()} sqft${ratePart}.`,
+    number
   );
 }
 
@@ -206,6 +212,25 @@ export function PaymentCalculator({
   project: Project;
   scrollContained?: boolean;
 }) {
+  // White-label context: route enquiries to the partner's WhatsApp and stamp
+  // their logo on the exported PDF. Null on the main Clearstoreys site.
+  const partner = usePartner();
+  const brand = brandName(partner);
+  const [partnerLogo, setPartnerLogo] = useState<LogoImage | null>(null);
+  useEffect(() => {
+    if (!partner?.logo) {
+      setPartnerLogo(null);
+      return;
+    }
+    let alive = true;
+    loadLogoImage(partner.logo).then((img) => {
+      if (alive) setPartnerLogo(img);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [partner?.logo]);
+
   const single = project.categories.length === 1;
   const [catIndex, setCatIndex] = useState(single ? 0 : -1);
   const [size, setSize] = useState(
@@ -416,6 +441,13 @@ export function PaymentCalculator({
       installments: shownInstallments,
       buyerName: buyerName.trim() || undefined,
       custom: customPlan != null,
+      branding: partner
+        ? {
+            name: partner.name,
+            logo: partnerLogo ?? undefined,
+            accent: hexToRgb(partner.accent),
+          }
+        : undefined,
     };
   }
 
@@ -809,7 +841,9 @@ export function PaymentCalculator({
                 project,
                 category,
                 effectiveSize,
-                effectiveRate
+                effectiveRate,
+                brand,
+                partner?.whatsapp
               )}
               target="_blank"
               rel="noopener noreferrer"

@@ -25,6 +25,14 @@ export type PaymentPlanPdf = {
   installments: InstallmentRow[];
   buyerName?: string; // optional — personalises the document when provided
   custom?: boolean; // true when built from a custom down payment (see customPlan)
+  // Optional white-label branding. When present, the header carries the
+  // partner's logo on a light band with their accent, and the footer credits
+  // them ("· Powered by Clearstoreys"). Absent on the main Clearstoreys site.
+  branding?: {
+    name: string;
+    logo?: { dataUrl: string; width: number; height: number };
+    accent?: [number, number, number];
+  };
 };
 
 // Brand palette (from globals.css) as jsPDF RGB triples.
@@ -60,35 +68,66 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
     installments,
     buyerName,
     custom,
+    branding,
   } = data;
   const buyer = buyerName?.trim();
   const doc = new jsPDF({ unit: "mm", format: "a4" });
-
-  // — Header band —
-  doc.setFillColor(...INK);
-  doc.rect(0, 0, PAGE_W, 30, "F");
-  doc.setTextColor(...GOLD);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text("CLEARSTOREYS", MARGIN, 15);
-  doc.setTextColor(...PAPER);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.text(
-    custom ? "Custom Payment Plan" : "Indicative Payment Plan",
-    MARGIN,
-    22
-  );
-
+  const subtitle = custom ? "Custom Payment Plan" : "Indicative Payment Plan";
   const generated = new Date().toLocaleDateString("en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
-  doc.setTextColor(...BROWN);
-  doc.text(generated, PAGE_W - MARGIN, 22, { align: "right" });
 
-  let y = 44;
+  let y: number;
+  if (branding) {
+    // — Partner header: light band so dark agency logos read, with a thin
+    //   accent rule in the agency's brand colour. —
+    const accent = branding.accent ?? GOLD_DEEP;
+    doc.setFillColor(...PAPER);
+    doc.rect(0, 0, PAGE_W, 34, "F");
+    if (branding.logo) {
+      // Fit the logo within a 60×16mm box, preserving aspect ratio.
+      const ratio = branding.logo.width / branding.logo.height;
+      let h = 16;
+      let w = h * ratio;
+      if (w > 60) {
+        w = 60;
+        h = w / ratio;
+      }
+      // `FAST` zlib-compresses the bitmap so the embedded logo doesn't bloat
+      // the file (jsPDF would otherwise store it as raw pixels).
+      doc.addImage(branding.logo.dataUrl, "PNG", MARGIN, 8, w, h, undefined, "FAST");
+    } else {
+      doc.setTextColor(...INK);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(18);
+      doc.text(branding.name, MARGIN, 19);
+    }
+    doc.setTextColor(...BROWN);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(subtitle, PAGE_W - MARGIN, 15, { align: "right" });
+    doc.text(generated, PAGE_W - MARGIN, 21, { align: "right" });
+    doc.setFillColor(accent[0], accent[1], accent[2]);
+    doc.rect(0, 34, PAGE_W, 1.4, "F");
+    y = 50;
+  } else {
+    // — Clearstoreys header band —
+    doc.setFillColor(...INK);
+    doc.rect(0, 0, PAGE_W, 30, "F");
+    doc.setTextColor(...GOLD);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("CLEARSTOREYS", MARGIN, 15);
+    doc.setTextColor(...PAPER);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(subtitle, MARGIN, 22);
+    doc.setTextColor(...BROWN);
+    doc.text(generated, PAGE_W - MARGIN, 22, { align: "right" });
+    y = 44;
+  }
 
   // — Project title —
   doc.setTextColor(...INK);
@@ -289,7 +328,11 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
     doc.setTextColor(...BROWN);
-    doc.text("Clearstoreys", MARGIN, PAGE_H - 10);
+    doc.text(
+      branding ? `${branding.name} · Powered by Clearstoreys` : "Clearstoreys",
+      MARGIN,
+      PAGE_H - 10
+    );
     doc.text(`Page ${p} of ${pageCount}`, PAGE_W - MARGIN, PAGE_H - 10, {
       align: "right",
     });
