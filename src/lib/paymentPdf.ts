@@ -25,6 +25,14 @@ export type PaymentPlanPdf = {
   installments: InstallmentRow[];
   buyerName?: string; // optional — personalises the document when provided
   custom?: boolean; // true when built from a custom down payment (see customPlan)
+  // Optional price breakdown when a premium and/or discount was applied on top
+  // of size × rate. When present, `total` is the net payable and a Pricing
+  // section reconciles it from the base price.
+  adjustments?: {
+    basePrice: number;
+    premium?: { label: string; amount: number };
+    discount?: { label: string; amount: number };
+  };
   // Optional white-label branding. When present, the header carries the
   // partner's logo on a light band with their accent, and the footer credits
   // them ("· Powered by Clearstoreys"). Absent on the main Clearstoreys site.
@@ -68,6 +76,7 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
     installments,
     buyerName,
     custom,
+    adjustments,
     branding,
   } = data;
   const buyer = buyerName?.trim();
@@ -218,7 +227,9 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
   doc.setFontSize(8);
   doc.setTextColor(...INK);
   doc.text(
-    `TOTAL UNIT PRICE · ${size.toLocaleString()} sqft × ${formatRate(rate)}`,
+    adjustments
+      ? `TOTAL UNIT PRICE (NET) · ${size.toLocaleString()} sqft`
+      : `TOTAL UNIT PRICE · ${size.toLocaleString()} sqft × ${formatRate(rate)}`,
     MARGIN + 6,
     y + 8
   );
@@ -268,6 +279,32 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
     doc.line(MARGIN, y, PAGE_W - MARGIN, y);
     y += 5;
   };
+
+  // — Pricing breakdown (only when a premium / discount was applied) —
+  if (adjustments) {
+    sectionHeading("Pricing");
+    planRow(
+      "Base price",
+      `${size.toLocaleString()} sqft × ${formatRate(rate)}`,
+      formatPKR(adjustments.basePrice)
+    );
+    if (adjustments.premium) {
+      planRow(
+        adjustments.premium.label,
+        "Added to base price",
+        `+ ${formatPKR(adjustments.premium.amount)}`
+      );
+    }
+    if (adjustments.discount) {
+      planRow(
+        adjustments.discount.label,
+        "Off the price",
+        `- ${formatPKR(adjustments.discount.amount)}`
+      );
+    }
+    planRow("Net total", "Payable", formatPKR(total));
+    y += 2;
+  }
 
   if (milestones.length) {
     sectionHeading("Milestones");

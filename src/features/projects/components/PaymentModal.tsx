@@ -127,22 +127,96 @@ function CustomNumberField({
   );
 }
 
+type AdjustMode = "pct" | "amount";
+
+/**
+ * A price adjustment field (premium or discount) the consultant types as either
+ * a percentage or a flat PKR amount, toggled inline. The resolved figure is
+ * shown beneath so it's clear what the % works out to against the price.
+ */
+function AdjustmentField({
+  label,
+  value,
+  onChange,
+  mode,
+  onModeChange,
+  active,
+  hint,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  mode: AdjustMode;
+  onModeChange: (mode: AdjustMode) => void;
+  active: boolean;
+  hint?: string;
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded-xl border px-3 py-2 transition-colors",
+        active ? "border-gold bg-gold/10" : "border-ink/15"
+      )}
+    >
+      <div className="flex items-center justify-between gap-3">
+        <span className="shrink-0 text-xs font-medium text-brown">{label}</span>
+        <span className="flex min-w-0 flex-1 items-center justify-end gap-2">
+          <input
+            type="number"
+            inputMode="decimal"
+            min={0}
+            value={value}
+            placeholder="0"
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full min-w-0 bg-transparent text-right text-base font-semibold text-ink outline-none placeholder:font-normal placeholder:text-brown/40 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none sm:text-sm"
+          />
+          <span className="inline-flex shrink-0 rounded-lg border border-ink/15 bg-paper p-0.5">
+            {(
+              [
+                ["pct", "%"],
+                ["amount", "PKR"],
+              ] as const
+            ).map(([m, glyph]) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => onModeChange(m)}
+                className={cn(
+                  "rounded-md px-2 py-0.5 text-[11px] font-semibold transition-colors",
+                  mode === m ? "bg-gold text-ink" : "text-brown hover:text-ink"
+                )}
+              >
+                {glyph}
+              </button>
+            ))}
+          </span>
+        </span>
+      </div>
+      {hint && <p className="mt-1 text-right text-[11px] text-brown/70">{hint}</p>}
+    </div>
+  );
+}
+
 function Row({
   label,
   value,
   sub,
   lead = false,
+  divider = true,
 }: {
   label: string;
   value: string;
   sub?: string;
   lead?: boolean;
+  // Hairline separator above the row. On by default; the first row in a box
+  // turns it off so the box edge isn't doubled up.
+  divider?: boolean;
 }) {
   return (
     <div
       className={cn(
         "flex items-baseline justify-between gap-4 py-3",
-        lead ? "" : "border-t border-ink/10"
+        divider ? "border-t border-ink/10" : ""
       )}
     >
       <div className="flex flex-col">
@@ -239,6 +313,13 @@ export function PaymentCalculator({
   // Free-typed overrides for off-plan sizes / revised (old) rates.
   const [customSize, setCustomSize] = useState("");
   const [customRate, setCustomRate] = useState("");
+  // Price adjustments on top of size × rate: a premium (e.g. 5–15% extra for a
+  // corner / view / category space) and a developer discount. Each is typed as a
+  // percentage or a flat PKR amount; both feed the net total below.
+  const [premiumMode, setPremiumMode] = useState<AdjustMode>("pct");
+  const [premiumValue, setPremiumValue] = useState("");
+  const [discountMode, setDiscountMode] = useState<AdjustMode>("pct");
+  const [discountValue, setDiscountValue] = useState("");
   // Which plan the client is viewing — the developer's published split, or a
   // custom proposal consolidated to monthly / quarterly installments.
   const [planMode, setPlanMode] = useState<PlanMode>("developer");
@@ -351,6 +432,8 @@ export function PaymentCalculator({
     setSize(firstFittingSize(project.categories[i]));
     setCustomSize("");
     setCustomRate("");
+    setPremiumValue("");
+    setDiscountValue("");
     setCustomDown("");
     setCustomMonthly("");
     setPlanMode("developer");
@@ -375,7 +458,30 @@ export function PaymentCalculator({
   const effectiveSize = parsedSize ?? size;
   const effectiveRate = category ? parsedRate ?? category.rate : 0;
 
-  const total = category ? effectiveSize * effectiveRate : 0;
+  // Base price before adjustments. The premium is added on top; the discount
+  // then comes off the gross (so a % discount is taken after any premium).
+  const basePrice = category ? effectiveSize * effectiveRate : 0;
+  const parsedPremium = parsePositive(premiumValue);
+  const parsedDiscount = parsePositive(discountValue);
+  const premiumAmount =
+    parsedPremium == null
+      ? 0
+      : premiumMode === "pct"
+      ? (basePrice * parsedPremium) / 100
+      : parsedPremium;
+  const grossPrice = basePrice + premiumAmount;
+  const rawDiscount =
+    parsedDiscount == null
+      ? 0
+      : discountMode === "pct"
+      ? (grossPrice * parsedDiscount) / 100
+      : parsedDiscount;
+  // A flat discount can't drop the price below zero.
+  const discountAmount = Math.min(rawDiscount, grossPrice);
+  const discountClamped = rawDiscount > grossPrice;
+  const hasAdjustment = premiumAmount > 0 || discountAmount > 0;
+
+  const total = category ? grossPrice - discountAmount : 0;
   const fixedSize = category ? category.sizes.length === 1 : false;
 
   const milestones = useMemo(
@@ -441,6 +547,33 @@ export function PaymentCalculator({
       installments: shownInstallments,
       buyerName: buyerName.trim() || undefined,
       custom: customPlan != null,
+      adjustments: hasAdjustment
+        ? {
+            basePrice,
+            premium:
+              premiumAmount > 0
+                ? {
+                    label:
+                      premiumMode === "pct" && parsedPremium != null
+                        ? `Premium (+${parsedPremium}%)`
+                        : "Premium / extra",
+                    amount: premiumAmount,
+                  }
+                : undefined,
+            discount:
+              discountAmount > 0
+                ? {
+                    label:
+                      discountMode === "pct" &&
+                      parsedDiscount != null &&
+                      !discountClamped
+                        ? `Discount (−${parsedDiscount}%)`
+                        : "Discount",
+                    amount: discountAmount,
+                  }
+                : undefined,
+          }
+        : undefined,
       branding: partner
         ? {
             name: partner.name,
@@ -464,11 +597,16 @@ export function PaymentCalculator({
     const downPart = customPlan
       ? ` Down payment ${formatPKR(customPlan.downPayment)}.`
       : "";
+    const pricePart = hasAdjustment
+      ? ` (base ${formatPKR(basePrice)}${
+          premiumAmount > 0 ? ` + premium ${formatPKR(premiumAmount)}` : ""
+        }${discountAmount > 0 ? ` − discount ${formatPKR(discountAmount)}` : ""})`
+      : "";
     const summary =
       `${greeting}${planKind} payment plan — ${project.name} (${c.name}, ` +
       `${effectiveSize.toLocaleString()} sqft). Total ${formatPKR(
         total
-      )}.${downPart}`;
+      )}${pricePart}.${downPart}`;
 
     try {
       const file = paymentPlanPdfFile(data);
@@ -675,6 +813,51 @@ export function PaymentCalculator({
             />
           </div>
 
+          {/* Premium & discount — adjust the price before the plan is split.
+              A premium (corner / view / category space) is added on top; a
+              developer discount comes off. Either can be a % or a flat amount. */}
+          <div className="mt-5">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-brown">
+              Premium &amp; discount
+            </span>
+            <div className="mt-2 flex flex-col gap-2">
+              <AdjustmentField
+                label="Premium / extra"
+                value={premiumValue}
+                onChange={setPremiumValue}
+                mode={premiumMode}
+                onModeChange={setPremiumMode}
+                active={premiumAmount > 0}
+                hint={
+                  premiumAmount > 0
+                    ? `+ ${formatPKR(premiumAmount)} on a base of ${formatPKR(
+                        basePrice
+                      )}`
+                    : undefined
+                }
+              />
+              <AdjustmentField
+                label="Discount"
+                value={discountValue}
+                onChange={setDiscountValue}
+                mode={discountMode}
+                onModeChange={setDiscountMode}
+                active={discountAmount > 0}
+                hint={
+                  discountAmount > 0
+                    ? discountClamped
+                      ? `Capped at ${formatPKR(
+                          discountAmount
+                        )} — the full price.`
+                      : `− ${formatPKR(discountAmount)} off ${formatPKR(
+                          grossPrice
+                        )}`
+                    : undefined
+                }
+              />
+            </div>
+          </div>
+
           {/* Plan options — the developer's published split, or a custom
               proposal that consolidates the recurring portion to a single
               monthly / quarterly installment. Only when there's a recurring
@@ -771,14 +954,53 @@ export function PaymentCalculator({
           )}
 
           <div className="mt-3 rounded-xl bg-cream/60 px-4">
-            <Row
-              label="Total unit price"
-              sub={`${effectiveSize.toLocaleString()} sqft × ${formatRate(
-                effectiveRate
-              )}`}
-              value={formatPKR(total)}
-              lead
-            />
+            {hasAdjustment ? (
+              <>
+                <Row
+                  label="Base price"
+                  sub={`${effectiveSize.toLocaleString()} sqft × ${formatRate(
+                    effectiveRate
+                  )}`}
+                  value={formatPKR(basePrice)}
+                  divider={false}
+                />
+                {premiumAmount > 0 && (
+                  <Row
+                    label={
+                      premiumMode === "pct" && parsedPremium != null
+                        ? `Premium · +${parsedPremium}%`
+                        : "Premium / extra"
+                    }
+                    sub="Added to base price"
+                    value={`+ ${formatPKR(premiumAmount)}`}
+                  />
+                )}
+                {discountAmount > 0 && (
+                  <Row
+                    label={
+                      discountMode === "pct" &&
+                      parsedDiscount != null &&
+                      !discountClamped
+                        ? `Discount · −${parsedDiscount}%`
+                        : "Discount"
+                    }
+                    sub="Off the price"
+                    value={`− ${formatPKR(discountAmount)}`}
+                  />
+                )}
+                <Row label="Total unit price" value={formatPKR(total)} lead />
+              </>
+            ) : (
+              <Row
+                label="Total unit price"
+                sub={`${effectiveSize.toLocaleString()} sqft × ${formatRate(
+                  effectiveRate
+                )}`}
+                value={formatPKR(total)}
+                lead
+                divider={false}
+              />
+            )}
           </div>
 
           <div className="mt-1">
