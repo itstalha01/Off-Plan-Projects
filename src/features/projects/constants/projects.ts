@@ -48,11 +48,13 @@ const rows: BaseTuple[] = [
   ["Icon Mall & Tower 1", "Athar Associates", "Bahria Town", ["Commercial", "Residential"], "2031", "Approved", 10, 60, 20, "Monthly", 4.5, 19000, 318, 1318, "/images/icon-mall/aerial.webp"],
   ["Icon Mall & Tower 2", "Athar Associates", "Bahria Town", "Residential", "2031", "Approved", 10, 60, 20, "Monthly", 5, 16000, 343, 1182, "/images/icon-mall/aerial.webp"],
   ["Icon Avenue", "Athar Associates", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "Monthly", 2.5, 25000, 384, 4877, "/images/icon-avenue.jpg"],
+  ["J7 Icon", "J7 Group", "Mumtaz City", ["Residential", "Commercial"], "2030", "Approved", 25, 60, 15, "Monthly", 4, 17000, 194, 2362, "/images/j7-icon.webp"],
 ];
 
 // Non-Lahore projects. Keyed by name; everything else defaults to "Lahore".
 const CITY_OVERRIDES: Record<string, string> = {
   "Pearl One Capital": "Islamabad",
+  "J7 Icon": "Islamabad",
 };
 
 // Projects with multiple purchasable layouts. Keyed by project name.
@@ -255,6 +257,17 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
   "Icon Avenue": [
     { name: "Offices", rate: 25000, sizes: [384, 424, 559, 567, 603, 624, 658, 732, 908] },
     { name: "Showrooms", rate: 50000, sizes: [1815, 2066, 2861, 3583, 4093, 4301, 4877] },
+  ],
+  // J7 Icon · the Royal Swiss Hotel by J7 Group, Mumtaz City Islamabad. Hotel
+  // apartments are quoted per type at a flat per-sqft rate; the lower-ground
+  // retail is sold per shop. Sizes are the representative covered areas from the
+  // developer's 4-year payment plan (furnished / discounted rates — see note).
+  "J7 Icon": [
+    { group: "Hotel Apartments", name: "Studio", rate: 25000, sizes: [642] },
+    { group: "Hotel Apartments", name: "1 Bed", rate: 23000, sizes: [916] },
+    { group: "Hotel Apartments", name: "2 Bed", rate: 23000, sizes: [1246] },
+    { group: "Hotel Apartments", name: "3 Bed", rate: 17000, sizes: [2362] },
+    { group: "Commercial", name: "Shop (Lower Ground)", rate: 50000, sizes: [194] },
   ],
 };
 
@@ -555,6 +568,22 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
+  // J7 Icon: 25 down payment + (1.25%×48 monthly = 60%) + 15 possession = 100%
+  // over a 4-year plan.
+  "J7 Icon": {
+    milestones: [
+      { label: "Down payment (at booking)", pct: 25 },
+      { label: "On possession", pct: 15 },
+    ],
+    installments: [
+      {
+        label: "Monthly installment",
+        pct: 60 / 48,
+        count: 48,
+        note: "48 monthly installments (60%)",
+      },
+    ],
+  },
 };
 
 // Optional plan caveats, shown beneath the breakdown. Keyed by project name.
@@ -582,6 +611,8 @@ const PLAN_NOTES: Record<string, string> = {
     "LDA approved · Pine Avenue Road, Lahore, by Athar Associates; delivery in 2029. The 2.5-year payment plan is the same for offices and showrooms: 10% booking, 10% confirmation (after 2 months), 25 monthly installments (1% each, 25%), 5 half-yearly balloon payments (7% each, 35%), and 20% on completion. Offices are sold at a flat PKR 25,000/sq ft and showrooms at PKR 50,000/sq ft. Areas are approximate and prices are subject to availability of units.",
   "Pearl One Capital":
     "Approved by CDA and DHA. Eid-ul-Fitr offer — valid till Eid-ul-Fitr 2026. Booking & down payment is a flat PKR 1,000,000 across all unit sizes, followed by 36 equal monthly installments and a final balloon payment on possession (the percentages shown are indicative splits of the total). A corner unit adds 10%, a front unit adds 10%, and front & corner adds 15% — already reflected in the per-sqft rate. All areas are gross & approximate. Instalment plan starts from April 2026 and is subject to availability of units. No discount on full cash payment. Commercial units (offices & shops) and luxury single & double-storey penthouses (LA-A, LA-B, LA-C) are also available — payment plans for these on request.",
+  "J7 Icon":
+    "Mumtaz City, Islamabad, on Srinagar Highway — minutes from the new Islamabad International Airport and the major motorways. Areas are approximate and prices are subject to availability of units.",
 };
 
 /** Generate an explicit, ascending list of snap sizes between min and max. */
@@ -690,6 +721,16 @@ const DEVELOPERS: Record<string, Developer> = {
       "Athar Homes",
     ],
   },
+  "J7 Group": {
+    name: "J7 Group",
+    blurb:
+      "J7 Group is a leading technology and development company delivering comprehensive solutions across real estate, media services and digital innovation. From initial concept through completion and ongoing support, the group takes development projects end to end — pairing modern construction with the technology and marketing muscle to bring landmark destinations to life. J7 Icon, its Royal Swiss Hotel in Mumtaz City Islamabad, reflects that ambition: a 5-star hospitality landmark built to set a new standard of prestige and comfort in the capital.",
+    stats: [
+      { value: "Technology + Development", label: "Full-stack capability" },
+      { value: "Concept to handover", label: "End-to-end delivery" },
+      { value: "Islamabad", label: "Operating market" },
+    ],
+  },
   "Zalmi Developments": {
     name: "Zalmi Developments",
     blurb:
@@ -698,6 +739,16 @@ const DEVELOPERS: Record<string, Developer> = {
       { value: "JW × Shalimar", label: "Joint venture" },
       { value: "1984", label: "Shalimar Group founded" },
       { value: "Peshawar Zalmi", label: "Owned by the group" },
+    ],
+  },
+  "The Kings Developments": {
+    name: "The Kings Developments",
+    blurb:
+      "The Kings Developments is a premier real-estate destination in the heart of Lahore, Pakistan. Established in 2018, the firm focuses on tailored services spanning the residential, commercial and industrial sectors — including land for varied uses — and ensures seamless communication between property owners, tenants, developers and investors for the sale, purchase and leasing of both commercial and non-commercial properties. In just a few years it has grown to a team of over 500 dedicated professionals, known for effective negotiation and strong relationship-building. Partnering with leading developers, The Kings Developments brings top-quality properties to market — whether you're seeking a dream home or a high-return investment opportunity.",
+    stats: [
+      { value: "2018", label: "Established" },
+      { value: "500+", label: "Professionals" },
+      { value: "Lahore", label: "Operating market" },
     ],
   },
 };
@@ -761,6 +812,18 @@ const ABOUT_OVERRIDES: Record<string, About> = {
   },
   "Icon Mall & Tower 1": ICON_MALL_ABOUT,
   "Icon Mall & Tower 2": ICON_MALL_ABOUT,
+  "J7 Icon": {
+    description:
+      "J7 Icon, the Royal Swiss Hotel, is a 5-star landmark by J7 Group in Mumtaz City, Islamabad — where Swiss-inspired elegance meets world-class hospitality. Strategically located along Srinagar Highway, just minutes from the new Islamabad International Airport and the major motorways, the project offers luxury hotel suites and serviced apartments, fine dining, wellness and spa amenities, banquet and event facilities, and exclusive concierge services. Every element is crafted to set a new standard of prestige and comfort in the capital.",
+    highlights: [
+      "Mumtaz City, Islamabad",
+      "Royal Swiss 5-star hotel",
+      "Srinagar Highway frontage",
+      "Minutes from the new Islamabad airport",
+      "Fine dining, spa & wellness",
+      "Banquet & event facilities",
+    ],
+  },
   "Zalmi X": {
     description:
       "Zalmi X is a state-of-the-art premium tower on Pine Avenue Road — a symbol of modern excellence that redefines the high-rise through innovative design. Conceived as a vibrant business centre, it offers high-end commercial spaces and top-quality office units built to spark innovation and drive growth. Premium commercial outlets across the Ground, First and Second floors are designed to house both international and national brands, creating a dynamic retail environment, while corporate offices rising from the 3rd to the 9th floor provide custom workspaces for growing companies, new startups and entrepreneurs. Two basement levels add dedicated parking beneath the tower.",
@@ -783,6 +846,18 @@ const ABOUT_OVERRIDES: Record<string, About> = {
       "Flat PKR 18,500 / sq ft",
       "Studio to 3-bed duplex penthouse",
       "Central atrium & landscaped terraces",
+    ],
+  },
+  "Emirates Mall & Residency": {
+    description:
+      "Emirates Mall & Residency is a grand mixed-use development by The Kings Developments — a perfect blend of shopping, residential living and entertainment. Rising 19 floors, it houses 1,200 units in all: 600 retail shops and 600 modern apartments. More than just a shopping destination, it is a lifestyle hub featuring a state-of-the-art gym, an open-sky swimming pool, an Islamic research centre for knowledge seekers and a dedicated playing area for recreation. Whether you're looking for luxury, business opportunities or a vibrant community, Emirates Mall offers it all in one prestigious location.",
+    highlights: [
+      "Mixed-use: retail + residences + entertainment",
+      "19 floors · 1,200 units",
+      "600 retail shops & 600 apartments",
+      "State-of-the-art gym",
+      "Open-sky swimming pool",
+      "Islamic research centre",
     ],
   },
 };
@@ -866,7 +941,16 @@ const SKY_TREE_TOWER_GALLERY = [
   "/images/sky-tree-tower/gallery/05-aerial.webp",
 ];
 
+// J7 Icon · renders supplied by J7 Group — the dusk exterior hero, the
+// double-height hotel lobby lounge, and a furnished serviced-apartment interior.
+const J7_ICON_GALLERY = [
+  "/images/j7-icon.webp",
+  "/images/j7-icon/gallery/01-lobby.webp",
+  "/images/j7-icon/gallery/02-apartment.webp",
+];
+
 const GALLERY_OVERRIDES: Record<string, string[]> = {
+  "J7 Icon": J7_ICON_GALLERY,
   "Curve – Pine Avenue Downtown": CURVE_GALLERY,
   "Sky Tree Tower": SKY_TREE_TOWER_GALLERY,
   "Pearl One Courtyard": PEARL_ONE_COURTYARD_GALLERY,
