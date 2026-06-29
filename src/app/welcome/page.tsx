@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Logo } from "@/components/shared/Logo";
 import { LeadCaptureForm } from "@/features/landing/LeadCaptureForm";
 import { GoogleAdsTag } from "@/features/landing/GoogleAdsTag";
@@ -17,9 +18,12 @@ export default function WelcomePage() {
   return (
     <main className="relative flex min-h-full flex-col overflow-hidden bg-paper">
       <GoogleAdsTag />
-      {/* Slim brand bar — no nav, so the page stays focused on the one action. */}
+      {/* Slim brand bar — no nav, so the page stays focused on the one action.
+          The logo is the one escape hatch back to the main website. */}
       <header className="mx-auto flex w-full max-w-6xl items-center px-5 py-6 sm:px-8">
-        <Logo className="flex items-center gap-2.5" />
+        <Link href="/" aria-label="Clearstoreys home">
+          <Logo className="flex items-center gap-2.5" />
+        </Link>
       </header>
 
       {/* Mobile stacks headline → form → image so the form is reachable without a
