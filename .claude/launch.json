@@ -3,6 +3,7 @@
   "configurations": [
     {
       "name": "banaao-dev",
+      "autoPort": true,
       "runtimeExecutable": "/Users/app/.nvm/versions/node/v22.22.3/bin/npm",
       "runtimeArgs": ["run", "dev"],
       "port": 3000,
