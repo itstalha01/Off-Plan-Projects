@@ -34,13 +34,13 @@ type BaseTuple = [
 ];
 
 const rows: BaseTuple[] = [
-  ["Bahria Sky 2", "OZ Developers", "Raiwind Road", ["Commercial", "Residential"], "2029", "Approved", 15, 60, 10, "6-Monthly", 3, 54000, 143, 654, "/images/bahria-sky-2.jpg"],
+  ["Bahria Sky 2", "OZ Developers", "Raiwind Road", ["Commercial", "Residential"], "2029", "Approved", 15, 60, 10, "6-Monthly", 3, 54000, 143, 654, "/images/bahria-sky-2-cover-wide.webp"],
   ["Sky Tree Tower", "HF Developers", "Pine Avenue Road", ["Commercial", "Residential"], "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 30000, 570, 4600, "/images/sky-tree-tower.webp"],
   ["Emirates Mall & Residency", "The Kings Developments", "Raiwind Road", ["Commercial", "Residential"], "2030", "Approved", 10, 65, 15, "6-Monthly", 4, 17000, 56, 1293, "/images/emirates-mall.jpg"],
   ["The Ark", "The Ark Developments", "Pine Avenue Road", "Commercial", "2027", "Approved", 10, 60, 20, "Monthly", 2.5, 31000, 637, 1345, "/images/the-ark-cover.jpg"],
   ["Falah Technology Tower", "Falah Developers", "Main Defence Road", "Commercial", "2028", "Approved", 10, 55, 25, "Monthly", 2.6, 26000, 375, 2003, "/images/falah-tower.jpg"],
   ["Curve – Pine Avenue Downtown", "HF Developers", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 24000, 225, 4800, "/images/curve.webp"],
-  ["Zalmi X", "Zalmi Developments", "Pine Avenue Road", "Commercial", "2028", "Approved", 15, 55, 0, "Quarterly", 2.5, 30000, 729, 4671, "/images/zalmi-x.webp"],
+  ["Zalmi X", "Zalmi Developments", "Pine Avenue Road", "Commercial", "2028", "Approved", 15, 55, 0, "Quarterly", 2.5, 30000, 729, 4671, "/images/zalmi-x-cover-wide.webp"],
   ["Pearl One Capital", "ABS Developers", "DHA Phase 2", ["Residential", "Commercial"], "2029", "Approved", 5, 85, 10, "Monthly", 3, 26000, 625, 1668.75, "/images/pearl-one-capital.webp"],
   ["Pearl One Courtyard", "ABS Developers", "Bahria Town", "Residential", "2029", "Approved", 7, 83, 10, "Monthly", 2, 30000, 500, 1000, "/images/pearl-one-courtyard.webp"],
   ["Classic Atrium", "Classic Living", "Bahria Town", "Residential", "2030", "Approved", 10, 48, 13, "Monthly", 4, 18500, 350, 2500, "/images/classic-atrium.webp"],
@@ -49,6 +49,7 @@ const rows: BaseTuple[] = [
   ["Icon Mall & Tower 2", "Athar Associates", "Bahria Town", "Residential", "2031", "Approved", 10, 60, 20, "Monthly", 5, 16000, 343, 1182, "/images/icon-mall/aerial.webp"],
   ["Icon Avenue", "Athar Associates", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "Monthly", 2.5, 25000, 384, 4877, "/images/icon-avenue.jpg"],
   ["J7 Icon", "J7 Group", "Mumtaz City", ["Residential", "Commercial"], "2030", "Approved", 25, 60, 15, "Monthly", 4, 17000, 194, 2362, "/images/j7-icon.webp"],
+  ["UK 13 Cove Residency", "UK Developers", "Pine Avenue Road", "Residential", "2029", "Approved", 10, 36, 10, "Monthly", 3, 24500, 475, 940, "/images/uk-13-cover-wide.webp"],
 ];
 
 // Non-Lahore projects. Keyed by name; everything else defaults to "Lahore".
@@ -268,6 +269,14 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { group: "Hotel Apartments", name: "2 Bed", rate: 23000, sizes: [1246] },
     { group: "Hotel Apartments", name: "3 Bed", rate: 17000, sizes: [2362] },
     { group: "Commercial", name: "Shop (Lower Ground)", rate: 50000, sizes: [194] },
+  ],
+  // UK 13 Cove Residency · UK Developers, Valencia roundabout on Pine Avenue,
+  // Lahore. Flat PKR 24,500/sqft across all apartment types; sizes are the gross
+  // areas from the developer's 3-year pre-launch payment plan.
+  "UK 13 Cove Residency": [
+    { name: "Studio Apartment", rate: 24500, sizes: [475] },
+    { name: "1 Bed Apartment", rate: 24500, sizes: [625] },
+    { name: "2 Bed Apartment", rate: 24500, sizes: [940] },
   ],
 };
 
@@ -584,6 +593,31 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
+  // UK 13 Cove Residency: 10 booking + 15 confirmation + (0.83%×36 monthly = 30%)
+  // + (5%×5 half-yearly balloons = 25%) + 10 grey structure + 10 possession = 100%
+  // over a 3-year pre-launch plan.
+  "UK 13 Cove Residency": {
+    milestones: [
+      { label: "Booking", pct: 10 },
+      { label: "Confirmation", pct: 15 },
+      { label: "On grey structure", pct: 10 },
+      { label: "On possession", pct: 10 },
+    ],
+    installments: [
+      {
+        label: "Monthly installment",
+        pct: 30 / 36,
+        count: 36,
+        note: "36 monthly installments (30%)",
+      },
+      {
+        label: "Half-yearly balloon payment",
+        pct: 5,
+        count: 5,
+        note: "5% × 5 (every 6 months, 25%)",
+      },
+    ],
+  },
 };
 
 // Optional plan caveats, shown beneath the breakdown. Keyed by project name.
@@ -613,6 +647,8 @@ const PLAN_NOTES: Record<string, string> = {
     "Approved by CDA and DHA. Eid-ul-Fitr offer — valid till Eid-ul-Fitr 2026. Booking & down payment is a flat PKR 1,000,000 across all unit sizes, followed by 36 equal monthly installments and a final balloon payment on possession (the percentages shown are indicative splits of the total). A corner unit adds 10%, a front unit adds 10%, and front & corner adds 15% — already reflected in the per-sqft rate. All areas are gross & approximate. Instalment plan starts from April 2026 and is subject to availability of units. No discount on full cash payment. Commercial units (offices & shops) and luxury single & double-storey penthouses (LA-A, LA-B, LA-C) are also available — payment plans for these on request.",
   "J7 Icon":
     "Mumtaz City, Islamabad, on Srinagar Highway — minutes from the new Islamabad International Airport and the major motorways. Areas are approximate and prices are subject to availability of units.",
+  "UK 13 Cove Residency":
+    "Actual measurement of the apartment area shall be done before the possession of the property and price will be adjusted accordingly. Additionally, Corner and View charges will apply to the units, which will be either 10% or 5%.",
 };
 
 /** Generate an explicit, ascending list of snap sizes between min and max. */
@@ -729,6 +765,16 @@ const DEVELOPERS: Record<string, Developer> = {
       { value: "Technology + Development", label: "Full-stack capability" },
       { value: "Concept to handover", label: "End-to-end delivery" },
       { value: "Islamabad", label: "Operating market" },
+    ],
+  },
+  "UK Developers": {
+    name: "UK Developers",
+    blurb:
+      "UK Developers is a Lahore-based real-estate developer working under the promise of “developing more than expectations.” Its flagship UK 13 Cove Residency — an LDA-approved luxury high-rise at the Valencia roundabout on Pine Avenue, Lahore — brings a resort-style residential tower of studio, one- and two-bed apartments wrapped in a signature wave-form façade, topped by a rooftop pool, jogging track, event hall and gym, with a full suite of lifestyle amenities inside.",
+    stats: [
+      { value: "Pine Avenue, Lahore", label: "Operating market" },
+      { value: "LDA approved", label: "Regulatory status" },
+      { value: "Developing More Than Expectations", label: "Brand promise" },
     ],
   },
   "Zalmi Developments": {
@@ -860,6 +906,18 @@ const ABOUT_OVERRIDES: Record<string, About> = {
       "Islamic research centre",
     ],
   },
+  "UK 13 Cove Residency": {
+    description:
+      "UK 13 Cove Residency is a luxury residential landmark by UK Developers at the Valencia roundabout on Pine Avenue, Lahore. Behind its sculptural, wave-form façade, the LDA-approved high-rise offers studio, one-bed and two-bed apartments finished at a flat PKR 24,500 per sq ft, arranged around a landscaped central atrium with a fountain courtyard and capsule glass lifts. Residents enjoy a resort-style rooftop with a swimming pool, jogging track and badminton court, plus a gym, event hall, café, gaming zone, kids' play area, day care, prayer hall, reading corner and community lounge — all secured by 24/7 CCTV, fire-safety systems and round-the-clock backup power.",
+    highlights: [
+      "Valencia roundabout, Pine Avenue, Lahore",
+      "LDA approved",
+      "Flat PKR 24,500 / sq ft",
+      "Studio, 1-bed & 2-bed apartments",
+      "Rooftop pool, jogging track & event hall",
+      "Central atrium with capsule glass lifts",
+    ],
+  },
 };
 
 // Classic Atrium · curated renders from the project brochure, ordered exterior
@@ -919,7 +977,7 @@ const ZALMI_X_GALLERY = [
 
 // Curve · renders from the project brochure, ordered exterior hero →
 // street-level facade → twin curved blocks → central courtyard → branded
-// retail → aerial.
+// retail → aerial (night, day, dusk).
 const CURVE_GALLERY = [
   "/images/curve/gallery/01-facade-dusk.webp",
   "/images/curve/gallery/02-facade-night.webp",
@@ -929,6 +987,8 @@ const CURVE_GALLERY = [
   "/images/curve/gallery/06-central-courtyard.webp",
   "/images/curve/gallery/07-branded-night.webp",
   "/images/curve/gallery/08-aerial.webp",
+  "/images/curve/gallery/09-aerial-day.webp",
+  "/images/curve/gallery/10-aerial-dusk.webp",
 ];
 
 // Sky Tree Tower · renders from the project brochure, ordered front elevation →
@@ -949,7 +1009,32 @@ const J7_ICON_GALLERY = [
   "/images/j7-icon/gallery/02-apartment.webp",
 ];
 
+// UK 13 Cove Residency · renders from the developer's presentation, ordered
+// front elevation hero → atrium lobbies → furnished units by size → amenities
+// (reception, lounge, prayer hall, rooftop, café, event hall, gaming, gym,
+// kids' play, salon) → rooftop aerial.
+const UK_13_GALLERY = [
+  "/images/uk-13/gallery/01-facade.jpg",
+  "/images/uk-13/gallery/02-lobby.jpg",
+  "/images/uk-13/gallery/03-lobby.jpg",
+  "/images/uk-13/gallery/04-studio.jpg",
+  "/images/uk-13/gallery/05-one-bed.jpg",
+  "/images/uk-13/gallery/06-two-bed.jpg",
+  "/images/uk-13/gallery/07-reception.jpg",
+  "/images/uk-13/gallery/08-lounge.jpg",
+  "/images/uk-13/gallery/09-prayer-hall.jpg",
+  "/images/uk-13/gallery/10-rooftop-lounge.jpg",
+  "/images/uk-13/gallery/11-cafe.jpg",
+  "/images/uk-13/gallery/12-event-hall.jpg",
+  "/images/uk-13/gallery/13-gaming-zone.jpg",
+  "/images/uk-13/gallery/14-gym.jpg",
+  "/images/uk-13/gallery/15-kids-play-area.jpg",
+  "/images/uk-13/gallery/16-salon.jpg",
+  "/images/uk-13/gallery/17-rooftop.jpg",
+];
+
 const GALLERY_OVERRIDES: Record<string, string[]> = {
+  "UK 13 Cove Residency": UK_13_GALLERY,
   "J7 Icon": J7_ICON_GALLERY,
   "Curve – Pine Avenue Downtown": CURVE_GALLERY,
   "Sky Tree Tower": SKY_TREE_TOWER_GALLERY,

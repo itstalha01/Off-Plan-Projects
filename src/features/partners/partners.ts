@@ -32,10 +32,10 @@ export const PARTNERS: Record<string, Partner> = {
     whatsapp: "923072926111",
     accent: "#ed3a1c",
     accentDeep: "#c8300f",
-    // "All projects except The Ark and Falah." A deny-list means new projects
-    // added later show for them automatically — switch to `projects` (an
-    // allow-list) if you'd rather curate each one in.
-    exclude: ["the-ark", "falah-technology-tower"],
+    // "All projects except The Ark, Falah and Skyline Boulevard." A deny-list
+    // means new projects added later show for them automatically — switch to
+    // `projects` (an allow-list) if you'd rather curate each one in.
+    exclude: ["the-ark", "falah-technology-tower", "skyline-boulevard"],
     website: "https://cornerbrickgroup.com",
   },
 };
