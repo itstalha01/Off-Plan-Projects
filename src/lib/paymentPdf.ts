@@ -370,6 +370,14 @@ function buildPaymentPlanPdf(data: PaymentPlanPdf): {
       MARGIN,
       PAGE_H - 10
     );
+    // Website link, centred and clickable, on every page of every PDF.
+    const site = "https://clearstoreys.com/";
+    doc.setTextColor(...GOLD_DEEP);
+    doc.textWithLink(site, PAGE_W / 2, PAGE_H - 10, {
+      url: site,
+      align: "center",
+    });
+    doc.setTextColor(...BROWN);
     doc.text(`Page ${p} of ${pageCount}`, PAGE_W - MARGIN, PAGE_H - 10, {
       align: "right",
     });
