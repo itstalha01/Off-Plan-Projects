@@ -50,6 +50,7 @@ const rows: BaseTuple[] = [
   ["Icon Avenue", "Athar Associates", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "Monthly", 2.5, 25000, 384, 4877, "/images/icon-avenue.jpg"],
   ["J7 Icon", "J7 Group", "Mumtaz City", ["Residential", "Commercial"], "2030", "Approved", 25, 60, 15, "Monthly", 4, 17000, 194, 2362, "/images/j7-icon.webp"],
   ["UK 13 Cove Residency", "UK Developers", "Pine Avenue Road", "Residential", "2029", "Approved", 10, 36, 10, "Monthly", 3, 24500, 475, 940, "/images/uk-13-cover-wide.webp"],
+  ["Sunset Square", "Q-Links", "Pine Avenue Road", "Commercial", "2028", "Verify", 10, 65, 10, "Monthly", 2, 118700, 1845, 3600, "/images/sunset-square.webp"],
 ];
 
 // Non-Lahore projects. Keyed by name; everything else defaults to "Lahore".
@@ -618,6 +619,23 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
+  // Sunset Square: 10 booking + 15 confirmation + 10 possession + (65% across
+  // 24 monthly = 2.708% each) = 100% over a 2-year plan.
+  "Sunset Square": {
+    milestones: [
+      { label: "Booking", pct: 10 },
+      { label: "Confirmation", pct: 15 },
+      { label: "On possession", pct: 10 },
+    ],
+    installments: [
+      {
+        label: "Monthly installment",
+        pct: 65 / 24,
+        count: 24,
+        note: "24 monthly installments (65%)",
+      },
+    ],
+  },
 };
 
 // Optional plan caveats, shown beneath the breakdown. Keyed by project name.
@@ -649,6 +667,8 @@ const PLAN_NOTES: Record<string, string> = {
     "Mumtaz City, Islamabad, on Srinagar Highway — minutes from the new Islamabad International Airport and the major motorways. Areas are approximate and prices are subject to availability of units.",
   "UK 13 Cove Residency":
     "Actual measurement of the apartment area shall be done before the possession of the property and price will be adjusted accordingly. Additionally, Corner and View charges will apply to the units, which will be either 10% or 5%.",
+  "Sunset Square":
+    "final pricing depends on tower, floor and unit position and is subject to availability.",
 };
 
 /** Generate an explicit, ascending list of snap sizes between min and max. */
@@ -775,6 +795,16 @@ const DEVELOPERS: Record<string, Developer> = {
       { value: "Pine Avenue, Lahore", label: "Operating market" },
       { value: "LDA approved", label: "Regulatory status" },
       { value: "Developing More Than Expectations", label: "Brand promise" },
+    ],
+  },
+  "Q-Links": {
+    name: "Q-Links Property Management (Pvt.) Ltd",
+    blurb:
+      "Q-Links Property Management (Pvt.) Ltd, established in 2002, operates at the intersection of strategic land acquisition, development expertise and investor-focused structuring. Based in Lahore, the firm specialises in premium residential communities, commercial hubs and mixed-use developments designed for long-term appreciation. Its leadership brings together more than two decades of real-estate expertise, market foresight and operational discipline — building with foresight, managing with precision and delivering with accountability. Sunset Square is delivered in partnership with UK Developers, a trusted real-estate pioneer with a 27-year legacy rooted in Lahore's historic Azam Cloth Market. With 12+ commercial projects successfully delivered, UK Developers is recognised as a pioneer of modern high-rise construction in heritage commercial zones. Guided by Islamic, Shariah-compliant principles (no riba), it pairs ethical, transparent dealing with future-ready architecture as it expands from the Old City to prime corridors such as Pine Avenue Road and planned communities like Ittehad Town.",
+    stats: [
+      { value: "2002", label: "Established" },
+      { value: "20+ yrs", label: "Real-estate expertise" },
+      { value: "Lahore", label: "Operating market" },
     ],
   },
   "Zalmi Developments": {
@@ -918,6 +948,18 @@ const ABOUT_OVERRIDES: Record<string, About> = {
       "Central atrium with capsule glass lifts",
     ],
   },
+  "Sunset Square": {
+    description:
+      "Sunset Square is a next-generation commercial destination on Pine Avenue — one of Lahore's most promising commercial corridors — developed by Q-Links Property Management in partnership with UK Developers. Conceived as a single, seamlessly connected hub, three interconnected towers bring high-footfall retail, elevated sky dining and modern business suites together across open spaces, courtyards and rooftop gardens. A continuous walkthrough design with no dead ends maximises brand visibility and footfall, while a 120 ft wide boulevard frontage, dedicated parking, digital brand screens, smart infrastructure and advanced security round out a premium environment built for long-term growth.",
+    highlights: [
+      "Pine Avenue, near Lake City Interchange",
+      "Three interconnected commercial towers",
+      "120 ft wide boulevard frontage",
+      "Sky dining & skywalk experience",
+      "High-footfall seamless-flow design",
+      "Open courtyards & rooftop gardens",
+    ],
+  },
 };
 
 // Classic Atrium · curated renders from the project brochure, ordered exterior
@@ -1033,7 +1075,20 @@ const UK_13_GALLERY = [
   "/images/uk-13/gallery/17-rooftop.jpg",
 ];
 
+// Sunset Square · exterior renders of the three-tower commercial precinct,
+// ordered plaza hero (the Sunset Square / Peak tower) → courtyard water feature
+// → retail street → dining terrace → boulevard arrival → evening promenade.
+const SUNSET_SQUARE_GALLERY = [
+  "/images/sunset-square/gallery/01-plaza-sunset-square.webp",
+  "/images/sunset-square/gallery/02-courtyard-water-feature.webp",
+  "/images/sunset-square/gallery/03-retail-street.webp",
+  "/images/sunset-square/gallery/04-dining-terrace.webp",
+  "/images/sunset-square/gallery/05-boulevard-arrival.webp",
+  "/images/sunset-square/gallery/06-evening-promenade.webp",
+];
+
 const GALLERY_OVERRIDES: Record<string, string[]> = {
+  "Sunset Square": SUNSET_SQUARE_GALLERY,
   "UK 13 Cove Residency": UK_13_GALLERY,
   "J7 Icon": J7_ICON_GALLERY,
   "Curve – Pine Avenue Downtown": CURVE_GALLERY,
@@ -1046,6 +1101,9 @@ const GALLERY_OVERRIDES: Record<string, string[]> = {
 };
 
 const FLOORPLAN_OVERRIDES: Record<string, FloorPlan[]> = {
+  "Sunset Square": [
+    { label: "Ground Floor", img: "/images/sunset-square/floor-ground.webp" },
+  ],
   "Curve – Pine Avenue Downtown": [
     { label: "Ground Floor", img: "/images/curve/floor-ground.jpg" },
     { label: "First Floor", img: "/images/curve/floor-first.jpg" },
