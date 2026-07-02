@@ -50,7 +50,7 @@ const rows: BaseTuple[] = [
   ["Icon Avenue", "Athar Associates", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "Monthly", 2.5, 25000, 384, 4877, "/images/icon-avenue.jpg"],
   ["J7 Icon", "J7 Group", "Mumtaz City", ["Residential", "Commercial"], "2030", "Approved", 25, 60, 15, "Monthly", 4, 17000, 194, 2362, "/images/j7-icon.webp"],
   ["UK 13 Cove Residency", "UK Developers", "Pine Avenue Road", "Residential", "2029", "Approved", 10, 36, 10, "Monthly", 3, 24500, 475, 940, "/images/uk-13-cover-wide.webp"],
-  ["Sunset Square", "Q-Links", "Pine Avenue Road", "Commercial", "2028", "Verify", 10, 65, 10, "Monthly", 2, 118700, 1845, 3600, "/images/sunset-square.webp"],
+  ["Sunset Square", "Q-Links", "Pine Avenue Road", "Commercial", "2028", "Approved", 10, 65, 10, "Monthly", 2, 118700, 1845, 3600, "/images/sunset-square.webp"],
 ];
 
 // Non-Lahore projects. Keyed by name; everything else defaults to "Lahore".
