@@ -32,7 +32,9 @@ import {
 } from "../constants/projects";
 import {
   buildConsolidatedPlan,
+  buildSplitMonthlyPlan,
   modeCadenceMonths,
+  planHasHigherInstallment,
   planSupportsCustomDownPayment,
   standardDownPayment,
   type PlanMode,
@@ -511,6 +513,12 @@ export function PaymentCalculator({
   const customPlan = useMemo(() => {
     if (planMode === "developer" || total <= 0) return null;
     const down = parsedDown ?? standardDownPayment(project.plan, total);
+    // Monthly mode on a plan that pairs a monthly stream with a higher
+    // installment keeps both lines: the monthly leads and the higher installment
+    // absorbs the difference. Everything else consolidates to one stream.
+    if (planMode === "monthly" && planHasHigherInstallment(project.plan)) {
+      return buildSplitMonthlyPlan(project.plan, total, down, parsedMonthly);
+    }
     // The target monthly only applies to the monthly cadence.
     const per = planMode === "monthly" ? parsedMonthly : null;
     return buildConsolidatedPlan(
@@ -525,6 +533,12 @@ export function PaymentCalculator({
   // Rows actually rendered / exported — custom when active, else the standard split.
   const shownMilestones = customPlan ? customPlan.milestones : milestones;
   const shownInstallments = customPlan ? customPlan.installments : installments;
+
+  // In split-monthly mode the higher installment is the non-monthly row — the
+  // one that flexes as the monthly changes. Used only for the hint copy.
+  const splitHigherRow = customPlan?.split
+    ? customPlan.installments.find((i) => i.label !== "Monthly installment")
+    : undefined;
 
   // Plan-mode options offered for this project (developer always; custom modes
   // only when there's a recurring portion to restructure).
@@ -937,19 +951,40 @@ export function PaymentCalculator({
                 onChange={setCustomMonthly}
                 active={parsedMonthly != null && !customPlan.monthlyClamped}
               />
-              <p className="mt-1.5 text-xs text-brown/70">
-                {customPlan.monthlyClamped
-                  ? `Minimum ${formatPKR(
-                      customPlan.requiredMonthly
-                    )}/month — the least that still finishes by possession.`
-                  : parsedMonthly != null
-                  ? `${formatPKR(
-                      customPlan.installments[0]?.per ?? 0
-                    )}/month · finishes in ${customPlan.count} payments.`
-                  : `Minimum ${formatPKR(
-                      customPlan.requiredMonthly
-                    )}/month. Enter more to finish sooner.`}
-              </p>
+              {customPlan.split ? (
+                <p className="mt-1.5 text-xs text-brown/70">
+                  {customPlan.monthlyClamped
+                    ? `Capped at ${formatPKR(
+                        customPlan.maxMonthly
+                      )}/month — above this the ${
+                        splitHigherRow?.label.toLowerCase() ??
+                        "higher installment"
+                      } is fully absorbed.`
+                    : splitHigherRow
+                    ? `${formatPKR(
+                        customPlan.installments[0]?.per ?? 0
+                      )}/month · ${splitHigherRow.label.toLowerCase()} adjusts to ${formatPKR(
+                        splitHigherRow.per
+                      )} × ${splitHigherRow.count}.`
+                    : `${formatPKR(
+                        customPlan.installments[0]?.per ?? 0
+                      )}/month covers the balance — no higher installment left.`}
+                </p>
+              ) : (
+                <p className="mt-1.5 text-xs text-brown/70">
+                  {customPlan.monthlyClamped
+                    ? `Minimum ${formatPKR(
+                        customPlan.requiredMonthly
+                      )}/month — the least that still finishes by possession.`
+                    : parsedMonthly != null
+                    ? `${formatPKR(
+                        customPlan.installments[0]?.per ?? 0
+                      )}/month · finishes in ${customPlan.count} payments.`
+                    : `Minimum ${formatPKR(
+                        customPlan.requiredMonthly
+                      )}/month. Enter more to finish sooner.`}
+                </p>
+              )}
             </div>
           )}
 
