@@ -118,15 +118,15 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { group: "Fourth Floor · Food Court", name: "Main Boulevard", rate: 39600, sizes: [227, 234, 435] },
     { group: "Fourth Floor · Food Court", name: "Main Boulevard & Corner", rate: 41400, sizes: [494] },
 
-    { group: "Apartments (5th–13th)", name: "Standard", rate: 15500, sizes: [533, 539, 591, 650] },
-    { group: "Apartments (5th–13th)", name: "Facing 60ft Road", rate: 17050, sizes: [397, 442, 546, 559, 572, 624, 663, 702, 708] },
-    { group: "Apartments (5th–13th)", name: "Facing 60ft Road & Corner", rate: 17825, sizes: [1209] },
-    { group: "Apartments (5th–13th)", name: "Main Boulevard", rate: 17050, sizes: [604, 611] },
-    { group: "Apartments (5th–13th)", name: "Main Boulevard & Corner", rate: 17825, sizes: [1274, 1287] },
+    { group: "Apartments (5th–13th)", name: "Standard", rate: 17000, sizes: [533, 539, 591, 650] },
+    { group: "Apartments (5th–13th)", name: "Facing 60ft Road", rate: 17000, sizes: [397, 442, 546, 559, 572, 624, 663, 702, 708] },
+    { group: "Apartments (5th–13th)", name: "Facing 60ft Road & Corner", rate: 17000, sizes: [1209] },
+    { group: "Apartments (5th–13th)", name: "Main Boulevard", rate: 17000, sizes: [604, 611] },
+    { group: "Apartments (5th–13th)", name: "Main Boulevard & Corner", rate: 17000, sizes: [1274, 1287] },
 
-    { group: "14th Floor · Apartments", name: "Standard", rate: 22500, sizes: [2483] },
-    { group: "14th Floor · Apartments", name: "Facing 60ft Road", rate: 24750, sizes: [2993] },
-    { group: "14th Floor · Apartments", name: "Main Boulevard & Corner", rate: 25875, sizes: [2330, 2737, 3381] },
+    { group: "14th Floor · Apartments", name: "Standard", rate: 25000, sizes: [2483] },
+    { group: "14th Floor · Apartments", name: "Facing 60ft Road", rate: 25000, sizes: [2993] },
+    { group: "14th Floor · Apartments", name: "Main Boulevard & Corner", rate: 25000, sizes: [2330, 2737, 3381] },
   ],
   // Emirates Mall · rate is flat per floor; a +10% corner / Main-Boulevard
   // factor applies to some units (see disclaimer).
