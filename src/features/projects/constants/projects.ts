@@ -51,6 +51,7 @@ const rows: BaseTuple[] = [
   ["J7 Icon", "J7 Group", "Mumtaz City", ["Residential", "Commercial"], "2030", "Approved", 25, 60, 15, "Monthly", 4, 17000, 194, 2362, "/images/j7-icon.webp"],
   ["UK 13 Cove Residency", "UK Developers", "Pine Avenue Road", "Residential", "2029", "Approved", 10, 36, 10, "Monthly", 3, 24500, 475, 940, "/images/uk-13-cover-wide.webp"],
   ["Sunset Square", "Q-Links", "Pine Avenue Road", "Commercial", "2028", "Approved", 10, 65, 10, "Monthly", 2, 118700, 1845, 3600, "/images/sunset-square.webp"],
+  ["Aureum Mall & Residences", "Alfalah Real Estate & Builders", "Bahria Town", ["Commercial", "Residential"], "2028", "Approved", 10, 55, 20, "Monthly", 4.6, 19500, 172, 1491, "/images/aureum-mall/cover.webp"],
 ];
 
 // Non-Lahore projects. Keyed by name; everything else defaults to "Lahore".
@@ -278,6 +279,18 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { name: "Studio Apartment", rate: 24500, sizes: [475] },
     { name: "1 Bed Apartment", rate: 24500, sizes: [625] },
     { name: "2 Bed Apartment", rate: 24500, sizes: [940] },
+  ],
+  // Aureum Mall & Residences · Alfalah Real Estate & Builders, Bahria Town
+  // Lahore. Apartments price by inner/outer view; offices and each shop floor
+  // are flat per-sqft rates. Sizes are net areas from the developer's payment plan.
+  "Aureum Mall & Residences": [
+    { group: "Apartments", name: "Studio (Inner)", rate: 19500, sizes: [426] },
+    { group: "Apartments", name: "1 Bed (Inner)", rate: 19500, sizes: [622] },
+    { group: "Apartments", name: "1 Bed (Outer)", rate: 20500, sizes: [658] },
+    { group: "Apartments", name: "2 Bed (Outer)", rate: 20500, sizes: [1103, 1316, 1491] },
+    { name: "Offices", rate: 23500, sizes: [620, 640, 856, 1100] },
+    { group: "1st Floor", name: "Shops", rate: 45000, sizes: [172, 366, 571, 707] },
+    { group: "2nd Floor", name: "Shops", rate: 40000, sizes: [478, 502, 608, 643] },
   ],
 };
 
@@ -636,6 +649,25 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
+  // Aureum Mall & Residences: 10 booking + 15 confirmation + 20 completion +
+  // (1%×55 monthly = 55%) = 100%, as published for apartments & offices. Shops
+  // run a different 42-month schedule with an added half-yearly top-up — see
+  // planNote.
+  "Aureum Mall & Residences": {
+    milestones: [
+      { label: "Booking", pct: 10 },
+      { label: "Confirmation", pct: 15 },
+      { label: "On completion", pct: 20 },
+    ],
+    installments: [
+      {
+        label: "Monthly installment",
+        pct: 1,
+        count: 55,
+        note: "1% × 55 (monthly)",
+      },
+    ],
+  },
 };
 
 // Optional plan caveats, shown beneath the breakdown. Keyed by project name.
@@ -669,6 +701,8 @@ const PLAN_NOTES: Record<string, string> = {
     "Actual measurement of the apartment area shall be done before the possession of the property and price will be adjusted accordingly. Additionally, Corner and View charges will apply to the units, which will be either 10% or 5%.",
   "Sunset Square":
     "final pricing depends on tower, floor and unit position and is subject to availability.",
+  "Aureum Mall & Residences":
+    "Bahria Town Lahore, opposite Icon Mall and directly facing Ring Road, by Alfalah Real Estate & Builders; possession in 2 years.",
 };
 
 /** Generate an explicit, ascending list of snap sizes between min and max. */
@@ -827,6 +861,23 @@ const DEVELOPERS: Record<string, Developer> = {
       { value: "Lahore", label: "Operating market" },
     ],
   },
+  "Alfalah Real Estate & Builders": {
+    name: "Alfalah Real Estate & Builders",
+    blurb:
+      "Alfalah Real Estate & Builders delivers and develops landmark projects across Pakistan's premium private urban hubs — Alfalah Tower, Maison Theme Heights and Liberty Clock Tower in Karachi, and Aureum Royal and Aureum Grand in Lahore. The Aureum Mall is its flagship upcoming development, planned as Bahria Town Lahore's biggest mall and highest-footfall investment magnet.",
+    stats: [
+      { value: "5+", label: "Landmark projects delivered" },
+      { value: "Karachi & Lahore", label: "Operating markets" },
+      { value: "16 Kanal", label: "Aureum Mall land size" },
+    ],
+    trackRecord: [
+      "Alfalah Tower",
+      "Maison Theme Heights",
+      "Liberty Clock Tower",
+      "Aureum Royal",
+      "Aureum Grand",
+    ],
+  },
 };
 
 // Tower 1 & Tower 2 are the same development — they share project copy & renders.
@@ -960,6 +1011,18 @@ const ABOUT_OVERRIDES: Record<string, About> = {
       "Open courtyards & rooftop gardens",
     ],
   },
+  "Aureum Mall & Residences": {
+    description:
+      "Aureum Mall & Residences is Alfalah Real Estate & Builders' flagship development on a 16-Kanal plot in Bahria Town Lahore — directly opposite Icon Mall and facing Ring Road. A single glass-atrium tower stacks premium commercial shops, a destination food court, corporate office floors and the in-house Aureum Hotel, with Aureum Apartments rising above and a rooftop leisure deck on top — engineered to be Bahria Town Lahore's highest footfall investment magnet.",
+    highlights: [
+      "16-Kanal mixed-use tower",
+      "Ring Road frontage, opposite Icon Mall",
+      "Destination food court",
+      "Corporate office floors",
+      "In-house Aureum Hotel",
+      "Rooftop leisure deck",
+    ],
+  },
 };
 
 // Classic Atrium · curated renders from the project brochure, ordered exterior
@@ -1087,8 +1150,25 @@ const SUNSET_SQUARE_GALLERY = [
   "/images/sunset-square/gallery/06-evening-promenade.webp",
 ];
 
+// Aureum Mall & Residences · renders supplied by Alfalah Real Estate &
+// Builders, ordered exterior hero (day) → dusk exterior → aerial site context
+// → mall atrium → shopping-mall interior → food court → entertainment zone
+// (trampoline park) → apartment lounge → apartment bedroom.
+const AUREUM_MALL_GALLERY = [
+  "/images/aureum-mall/gallery/01-exterior-day.webp",
+  "/images/aureum-mall/gallery/02-exterior-dusk.webp",
+  "/images/aureum-mall/gallery/03-aerial.webp",
+  "/images/aureum-mall/gallery/04-atrium.webp",
+  "/images/aureum-mall/gallery/05-shopping-mall.webp",
+  "/images/aureum-mall/gallery/06-food-court.webp",
+  "/images/aureum-mall/gallery/07-entertainment-zone.webp",
+  "/images/aureum-mall/gallery/08-apartment-lounge.webp",
+  "/images/aureum-mall/gallery/09-apartment-bedroom.webp",
+];
+
 const GALLERY_OVERRIDES: Record<string, string[]> = {
   "Sunset Square": SUNSET_SQUARE_GALLERY,
+  "Aureum Mall & Residences": AUREUM_MALL_GALLERY,
   "UK 13 Cove Residency": UK_13_GALLERY,
   "J7 Icon": J7_ICON_GALLERY,
   "Curve – Pine Avenue Downtown": CURVE_GALLERY,
