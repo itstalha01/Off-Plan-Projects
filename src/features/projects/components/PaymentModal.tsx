@@ -414,6 +414,9 @@ export function PaymentCalculator({
     c.sizes[0];
 
   const category = catIndex >= 0 ? project.categories[catIndex] : null;
+  // A category can publish its own plan (e.g. fixed rupee milestones that
+  // don't scale with size) instead of sharing the project-wide split.
+  const plan = category?.plan ?? project.plan;
 
   // When categories carry a `group` (e.g. floor), render them grouped in
   // declaration order; otherwise fall back to a flat grid.
@@ -488,47 +491,47 @@ export function PaymentCalculator({
 
   const milestones = useMemo(
     () =>
-      project.plan.milestones.map((m) => ({
+      plan.milestones.map((m) => ({
         ...m,
         amount: (total * m.pct) / 100,
       })),
-    [project, total]
+    [plan, total]
   );
 
   const installments = useMemo(
     () =>
-      project.plan.installments.map((ins) => {
+      plan.installments.map((ins) => {
         const per = (total * ins.pct) / 100;
         return { ...ins, per, streamTotal: per * ins.count };
       }),
-    [project, total]
+    [plan, total]
   );
 
   // Custom modes are only offered for plans that have installments to
   // consolidate. Each builds a proposal at the chosen cadence; an empty down
   // payment field falls back to the standard down payment.
-  const supportsCustom = planSupportsCustomDownPayment(project.plan);
+  const supportsCustom = planSupportsCustomDownPayment(plan);
   const parsedDown = parsePositive(customDown);
   const parsedMonthly = parsePositive(customMonthly);
   const customPlan = useMemo(() => {
     if (planMode === "developer" || total <= 0) return null;
-    const down = parsedDown ?? standardDownPayment(project.plan, total);
+    const down = parsedDown ?? standardDownPayment(plan, total);
     // Monthly mode on a plan that pairs a monthly stream with a higher
     // installment keeps both lines: the monthly leads and the higher installment
     // absorbs the difference. Everything else consolidates to one stream.
-    if (planMode === "monthly" && planHasHigherInstallment(project.plan)) {
-      return buildSplitMonthlyPlan(project.plan, total, down, parsedMonthly);
+    if (planMode === "monthly" && planHasHigherInstallment(plan)) {
+      return buildSplitMonthlyPlan(plan, total, down, parsedMonthly);
     }
     // The target monthly only applies to the monthly cadence.
     const per = planMode === "monthly" ? parsedMonthly : null;
     return buildConsolidatedPlan(
-      project.plan,
+      plan,
       total,
       modeCadenceMonths(planMode),
       down,
       per
     );
-  }, [project, total, planMode, parsedDown, parsedMonthly]);
+  }, [plan, total, planMode, parsedDown, parsedMonthly]);
 
   // Rows actually rendered / exported — custom when active, else the standard split.
   const shownMilestones = customPlan ? customPlan.milestones : milestones;
@@ -909,7 +912,7 @@ export function PaymentCalculator({
                 label="Down payment"
                 suffix="PKR"
                 placeholder={Math.round(
-                  standardDownPayment(project.plan, total)
+                  standardDownPayment(plan, total)
                 ).toLocaleString()}
                 value={customDown}
                 onChange={setCustomDown}

@@ -60,6 +60,87 @@ const CITY_OVERRIDES: Record<string, string> = {
   "J7 Icon": "Islamabad",
 };
 
+// Classic Atrium: down payment + equal payment after 2 months + 48 monthly
+// + 7 half-yearly balloons + final payment on possession, published as fixed
+// rupee amounts per unit type (not a flat percentage of the total price) —
+// see the "Post Possession Payment Plan" brochure. Each entry's `pct` values
+// are the exact amount ÷ (that unit's grand total ÷ 100), so they reproduce
+// the brochure's rupee figures precisely for that category.
+const CLASSIC_ATRIUM_PLANS: Record<string, Plan> = {
+  "Studio Apartment": {
+    // Grand total 6,475,000.
+    milestones: [
+      { label: "Down payment (at booking)", pct: 595000 / 64750 },
+      { label: "Payment after 2 months", pct: 595000 / 64750 },
+      { label: "Last payment (on possession)", pct: 893000 / 64750 },
+    ],
+    installments: [
+      { label: "Monthly installment", pct: 39000 / 64750, count: 48, note: "48 monthly installments" },
+      { label: "Half-yearly balloon payment", pct: 360000 / 64750, count: 7, note: "7 half-yearly balloons" },
+    ],
+  },
+  "1 Bed Apartment": {
+    // Grand total 9,250,000.
+    milestones: [
+      { label: "Down payment (at booking)", pct: 1095000 / 92500 },
+      { label: "Payment after 2 months", pct: 1095000 / 92500 },
+      { label: "Last payment (on possession)", pct: 1271000 / 92500 },
+    ],
+    installments: [
+      { label: "Monthly installment", pct: 49000 / 92500, count: 48, note: "48 monthly installments" },
+      { label: "Half-yearly balloon payment", pct: 491000 / 92500, count: 7, note: "7 half-yearly balloons" },
+    ],
+  },
+  "2 Bed Apartment": {
+    // Grand total 14,800,000.
+    milestones: [
+      { label: "Down payment (at booking)", pct: 1495000 / 148000 },
+      { label: "Payment after 2 months", pct: 1495000 / 148000 },
+      { label: "Last payment (on possession)", pct: 2621000 / 148000 },
+    ],
+    installments: [
+      { label: "Monthly installment", pct: 89500 / 148000, count: 48, note: "48 monthly installments" },
+      { label: "Half-yearly balloon payment", pct: 699000 / 148000, count: 7, note: "7 half-yearly balloons" },
+    ],
+  },
+  "3 Bed Apartment": {
+    // Grand total 20,350,000.
+    milestones: [
+      { label: "Down payment (at booking)", pct: 1695000 / 203500 },
+      { label: "Payment after 2 months", pct: 1695000 / 203500 },
+      { label: "Last payment (on possession)", pct: 3864000 / 203500 },
+    ],
+    installments: [
+      { label: "Monthly installment", pct: 109500 / 203500, count: 48, note: "48 monthly installments" },
+      { label: "Half-yearly balloon payment", pct: 1120000 / 203500, count: 7, note: "7 half-yearly balloons" },
+    ],
+  },
+  "3 Bed Lawn Apartment": {
+    // Grand total 30,525,000.
+    milestones: [
+      { label: "Down payment (at booking)", pct: 2895000 / 305250 },
+      { label: "Payment after 2 months", pct: 2895000 / 305250 },
+      { label: "Last payment (on possession)", pct: 5073000 / 305250 },
+    ],
+    installments: [
+      { label: "Monthly installment", pct: 169000 / 305250, count: 48, note: "48 monthly installments" },
+      { label: "Half-yearly balloon payment", pct: 1650000 / 305250, count: 7, note: "7 half-yearly balloons" },
+    ],
+  },
+  "3 Bed Penthouse": {
+    // Grand total 46,250,000.
+    milestones: [
+      { label: "Down payment (at booking)", pct: 4495000 / 462500 },
+      { label: "Payment after 2 months", pct: 4495000 / 462500 },
+      { label: "Last payment (on possession)", pct: 7095000 / 462500 },
+    ],
+    installments: [
+      { label: "Monthly installment", pct: 250000 / 462500, count: 48, note: "48 monthly installments" },
+      { label: "Half-yearly balloon payment", pct: 2595000 / 462500, count: 7, note: "7 half-yearly balloons" },
+    ],
+  },
+};
+
 // Projects with multiple purchasable layouts. Keyed by project name.
 const CATEGORY_OVERRIDES: Record<string, Category[]> = {
   // Real data from the developer's published payment plan.
@@ -196,14 +277,17 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { group: "2 Bed Apartment", name: "General", rate: 30000, sizes: [800, 1000] },
   ],
   // Classic Atrium · residential apartments, flat 18,500/sqft across all types.
-  // Sizes are the approximate covered areas published in the payment plan.
+  // Sizes are the approximate covered areas published in the payment plan. The
+  // developer quotes fixed rupee milestones per unit type rather than one split
+  // that scales with size, so each category carries its own exact `plan` (see
+  // CLASSIC_ATRIUM_PLANS below) instead of sharing the project-level plan.
   "Classic Atrium": [
-    { name: "Studio Apartment", rate: 18500, sizes: [350] },
-    { name: "1 Bed Apartment", rate: 18500, sizes: [500] },
-    { name: "2 Bed Apartment", rate: 18500, sizes: [800] },
-    { name: "3 Bed Apartment", rate: 18500, sizes: [1100] },
-    { name: "3 Bed Lawn Apartment", rate: 18500, sizes: [1650] },
-    { name: "3 Bed Penthouse", rate: 18500, sizes: [2500] },
+    { name: "Studio Apartment", rate: 18500, sizes: [350], plan: CLASSIC_ATRIUM_PLANS["Studio Apartment"] },
+    { name: "1 Bed Apartment", rate: 18500, sizes: [500], plan: CLASSIC_ATRIUM_PLANS["1 Bed Apartment"] },
+    { name: "2 Bed Apartment", rate: 18500, sizes: [800], plan: CLASSIC_ATRIUM_PLANS["2 Bed Apartment"] },
+    { name: "3 Bed Apartment", rate: 18500, sizes: [1100], plan: CLASSIC_ATRIUM_PLANS["3 Bed Apartment"] },
+    { name: "3 Bed Lawn Apartment", rate: 18500, sizes: [1650], plan: CLASSIC_ATRIUM_PLANS["3 Bed Lawn Apartment"] },
+    { name: "3 Bed Penthouse", rate: 18500, sizes: [2500], plan: CLASSIC_ATRIUM_PLANS["3 Bed Penthouse"] },
   ],
   // Skyline Boulevard · Brother Developers, Al Kabir Downtown, Main Raiwind Road.
   // Rates shown are the general per-sqft rates published per floor; corner /
@@ -483,32 +567,13 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
-  // Classic Atrium: down payment + equal payment after 2 months + 48 monthly
-  // + 7 half-yearly balloons + final payment on possession. The developer quotes
-  // fixed rupee amounts per unit, so the percentages are indicative — derived
-  // from the 350 sqft studio (total 6,475,000; ÷100 = 64,750). 9.19 + 9.19 +
-  // (0.602%×48 = 28.9%) + (5.56%×7 = 38.9%) + 13.79 = 100%.
-  "Classic Atrium": {
-    milestones: [
-      { label: "Down payment (at booking)", pct: 595000 / 64750 },
-      { label: "Payment after 2 months", pct: 595000 / 64750 },
-      { label: "Last payment (on possession)", pct: 893000 / 64750 },
-    ],
-    installments: [
-      {
-        label: "Monthly installment",
-        pct: 39000 / 64750,
-        count: 48,
-        note: "48 monthly installments (≈29% on the 350 sqft studio)",
-      },
-      {
-        label: "Half-yearly balloon payment",
-        pct: 360000 / 64750,
-        count: 7,
-        note: "7 half-yearly balloons (≈39% on the 350 sqft studio)",
-      },
-    ],
-  },
+  // Classic Atrium: every category now carries its own exact plan (see
+  // CLASSIC_ATRIUM_PLANS above) since the developer's rupee milestones don't
+  // scale linearly with size. This project-level entry is just the studio's
+  // plan, kept as the fallback the budget-fraction helpers (downPaymentFraction,
+  // monthlyInstallmentFraction) read — correct as-is, since the studio is also
+  // the project's cheapest ("entry") unit.
+  "Classic Atrium": CLASSIC_ATRIUM_PLANS["Studio Apartment"],
   // Skyline Boulevard: 15 booking + 15 confirmation + (42 monthly = 25%)
   // + (half-yearly after every 6 months = 20% over 7 payments) + 10 grey
   // structure + 15 possession = 100%. Pay over 3.5 years, possession in 3 years.

@@ -43,6 +43,13 @@ export type Category = {
   rate: number; // PKR per sqft
   sizes: number[]; // allowed sqft sizes, ascending — slider snaps to these
   group?: string; // optional grouping (e.g. floor) for the modal's category list
+  /**
+   * Overrides the project's shared `plan` for this category only. Use when the
+   * developer quotes a genuinely different split per unit type (not just a
+   * different rate) — e.g. fixed rupee milestones that don't scale linearly
+   * with size, so a single project-wide percentage split can't reproduce them.
+   */
+  plan?: Plan;
 };
 
 /** A one-off payment milestone, expressed as a % of the total unit price. */
