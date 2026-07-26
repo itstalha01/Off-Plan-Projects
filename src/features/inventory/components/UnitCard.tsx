@@ -21,7 +21,7 @@ export function UnitCard({ unit }: { unit: Unit }) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card">
+    <div className="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-colors hover:border-gold/40">
       <div className="absolute left-1.5 top-1.5 z-10 flex size-5 items-center justify-center rounded-md bg-background/90 shadow-sm">
         <Checkbox
           checked={isSelected}
@@ -41,7 +41,7 @@ export function UnitCard({ unit }: { unit: Unit }) {
       </div>
       <div
         onClick={cover ? () => setLightboxIndex(0) : undefined}
-        className={`flex aspect-[16/10] items-center justify-center bg-muted ${cover ? "cursor-pointer" : ""}`}
+        className={`flex aspect-[16/10] items-center justify-center bg-cream ${cover ? "cursor-pointer" : ""}`}
       >
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -51,7 +51,7 @@ export function UnitCard({ unit }: { unit: Unit }) {
             className="h-full w-full object-cover"
           />
         ) : (
-          <span className="text-sm font-semibold text-muted-foreground">
+          <span className="font-heading text-base font-semibold tracking-wide text-gold-deep">
             {formatSize(unit.areaSqft)}
           </span>
         )}
