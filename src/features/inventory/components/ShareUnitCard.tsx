@@ -8,12 +8,15 @@ export function ShareUnitCard({ unit }: { unit: SharedUnitView }) {
 
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border border-border bg-card">
-      <div className="flex aspect-[4/3] items-center justify-center bg-muted">
+      <div className="flex aspect-[4/3] flex-col items-center justify-center gap-2 bg-muted">
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={cover.blobUrl} alt="" className="h-full w-full object-cover" />
         ) : (
-          <ImageOff className="size-8 text-muted-foreground" />
+          <>
+            <ImageOff className="size-8 text-muted-foreground" />
+            {unit.size && <span className="text-sm text-muted-foreground">{unit.size}</span>}
+          </>
         )}
       </div>
 
