@@ -53,9 +53,9 @@ export function ShareUnitCard({ unit }: { unit: SharedUnitView }) {
           </a>
         )}
 
-        {((unit.size && cover) || unit.price) && (
+        {(unit.size || unit.price) && (
           <div className="mt-1 flex items-end justify-between">
-            {unit.size && cover && <span>{unit.size}</span>}
+            {unit.size && <span>{unit.size}</span>}
             {unit.price && <span className="font-semibold">{unit.price}</span>}
           </div>
         )}
