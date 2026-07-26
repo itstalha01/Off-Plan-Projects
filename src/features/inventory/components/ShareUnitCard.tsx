@@ -1,4 +1,4 @@
-import { ImageOff, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { unitTypeLabel } from "../constants/unit-types";
 import { StatusBadge } from "./StatusBadge";
 import type { SharedUnitView } from "../lib/share-view";
@@ -8,15 +8,16 @@ export function ShareUnitCard({ unit }: { unit: SharedUnitView }) {
 
   return (
     <div className="flex flex-col overflow-hidden rounded-xl border border-border bg-card">
-      <div className="flex aspect-[4/3] flex-col items-center justify-center gap-2 bg-muted">
+      <div className="flex aspect-[4/3] items-center justify-center bg-cream">
         {cover ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={cover.blobUrl} alt="" className="h-full w-full object-cover" />
         ) : (
-          <>
-            <ImageOff className="size-8 text-muted-foreground" />
-            {unit.size && <span className="text-sm text-muted-foreground">{unit.size}</span>}
-          </>
+          unit.size && (
+            <span className="font-heading text-base font-semibold tracking-wide text-gold-deep">
+              {unit.size}
+            </span>
+          )
         )}
       </div>
 
