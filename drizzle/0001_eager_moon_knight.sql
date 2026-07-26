@@ -1,0 +1,1 @@
+ALTER TABLE "inventory_shares" ADD COLUMN "expires_at" timestamp;

@@ -25,6 +25,9 @@ export async function POST(request: Request) {
       token: nanoid(24),
       unitIds: parsed.data.unitIds,
       visibleFields: parsed.data.fields,
+      expiresAt: parsed.data.expiresInHours
+        ? new Date(Date.now() + parsed.data.expiresInHours * 60 * 60 * 1000)
+        : null,
     })
     .returning();
 

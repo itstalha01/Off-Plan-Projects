@@ -53,39 +53,54 @@ export function ManageSharesDialog() {
 
         {shares && shares.length > 0 && (
           <ul className="max-h-96 space-y-2 overflow-y-auto">
-            {shares.map((share) => (
-              <li
-                key={share.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-border p-3"
-              >
-                <div className="min-w-0">
-                  <p className="text-sm font-medium">
-                    {share.unitIds.length} unit{share.unitIds.length === 1 ? "" : "s"}
-                  </p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {new Date(share.createdAt).toLocaleDateString()}
-                    {share.revokedAt ? " · Revoked" : ""}
-                  </p>
-                </div>
-                <div className="flex shrink-0 gap-2">
-                  {!share.revokedAt && (
-                    <>
-                      <Button size="sm" variant="outline" onClick={() => handleCopy(share.token)}>
-                        Copy link
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleRevoke(share.token)}
-                        disabled={revokeShare.isPending}
-                      >
-                        Revoke
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </li>
-            ))}
+            {shares.map((share) => {
+              const isExpired = !!share.expiresAt && new Date(share.expiresAt) < new Date();
+              const isActive = !share.revokedAt && !isExpired;
+
+              return (
+                <li
+                  key={share.id}
+                  className="flex items-center justify-between gap-3 rounded-lg border border-border p-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium">
+                      {share.unitIds.length} unit{share.unitIds.length === 1 ? "" : "s"}
+                    </p>
+                    <p className="truncate text-xs text-muted-foreground">
+                      {new Date(share.createdAt).toLocaleDateString()}
+                      {share.revokedAt
+                        ? " · Revoked"
+                        : isExpired
+                          ? " · Expired"
+                          : share.expiresAt
+                            ? ` · Expires ${new Date(share.expiresAt).toLocaleString()}`
+                            : " · No expiry"}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 gap-2">
+                    {isActive && (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleCopy(share.token)}
+                        >
+                          Copy link
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleRevoke(share.token)}
+                          disabled={revokeShare.isPending}
+                        >
+                          Revoke
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </DialogContent>

@@ -55,6 +55,7 @@ export const inventoryShares = pgTable("inventory_shares", {
   visibleFields: jsonb("visible_fields").$type<string[]>().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   revokedAt: timestamp("revoked_at"),
+  expiresAt: timestamp("expires_at"),
 });
 
 export type Unit = typeof units.$inferSelect;

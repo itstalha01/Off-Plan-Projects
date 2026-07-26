@@ -14,7 +14,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCreateShare } from "../api/use-shares";
+import {
+  DEFAULT_SHARE_EXPIRY_KEY,
+  SHARE_EXPIRY_OPTIONS,
+  type ShareExpiryKey,
+} from "../constants/share-expiry";
 import { ALL_SHAREABLE_FIELD_KEYS, SHAREABLE_FIELDS } from "../constants/shareable-fields";
 import { useInventorySelectionStore } from "../store/inventory-selection-store";
 
@@ -25,6 +37,7 @@ export function ShareBuilderDialog() {
 
   const [open, setOpen] = useState(false);
   const [fields, setFields] = useState<Set<string>>(new Set(ALL_SHAREABLE_FIELD_KEYS));
+  const [expiryKey, setExpiryKey] = useState<ShareExpiryKey>(DEFAULT_SHARE_EXPIRY_KEY);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
 
   const count = selectedIds.size;
@@ -44,14 +57,17 @@ export function ShareBuilderDialog() {
     if (!next) {
       setShareUrl(null);
       setFields(new Set(ALL_SHAREABLE_FIELD_KEYS));
+      setExpiryKey(DEFAULT_SHARE_EXPIRY_KEY);
     }
   }
 
   async function handleGenerate() {
     try {
+      const expiryOption = SHARE_EXPIRY_OPTIONS.find((o) => o.key === expiryKey);
       const share = await createShare.mutateAsync({
         unitIds: Array.from(selectedIds),
         fields: Array.from(fields),
+        expiresInHours: expiryOption?.hours ?? null,
       });
       setShareUrl(`${window.location.origin}/inventory/share/${share.token}`);
     } catch {
@@ -108,6 +124,20 @@ export function ShareBuilderDialog() {
                 </label>
               ))}
             </div>
+
+            <p className="pt-2 text-sm text-muted-foreground">Link expires after</p>
+            <Select value={expiryKey} onValueChange={(v) => setExpiryKey(v as ShareExpiryKey)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {SHARE_EXPIRY_OPTIONS.map((option) => (
+                  <SelectItem key={option.key} value={option.key}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         )}
 

@@ -7,4 +7,5 @@ export type InventoryShare = {
   visibleFields: ShareableFieldKey[];
   createdAt: string;
   revokedAt: string | null;
+  expiresAt: string | null;
 };

@@ -1,4 +1,4 @@
-import { and, eq, inArray, isNull } from "drizzle-orm";
+import { and, eq, gt, inArray, isNull, or } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { db } from "@/db/client";
 import { inventoryShares, unitPhotos, units } from "@/db/schema";
@@ -16,7 +16,13 @@ export default async function InventorySharePage({ params }: Params) {
   const [share] = await db
     .select()
     .from(inventoryShares)
-    .where(and(eq(inventoryShares.token, token), isNull(inventoryShares.revokedAt)));
+    .where(
+      and(
+        eq(inventoryShares.token, token),
+        isNull(inventoryShares.revokedAt),
+        or(isNull(inventoryShares.expiresAt), gt(inventoryShares.expiresAt, new Date())),
+      ),
+    );
 
   if (!share || share.unitIds.length === 0) notFound();
 
