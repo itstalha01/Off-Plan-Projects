@@ -8,7 +8,8 @@ type RequestOptions = Omit<RequestInit, "body"> & {
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const { body, params, ...rest } = options;
 
-  const url = new URL(`${config.api.baseUrl}${endpoint}`, config.app.url);
+  const base = typeof window !== "undefined" ? window.location.origin : config.app.url;
+  const url = new URL(`${config.api.baseUrl}${endpoint}`, base);
   if (params) {
     Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, String(v)));
   }
