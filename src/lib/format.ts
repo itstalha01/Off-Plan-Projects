@@ -14,10 +14,12 @@ export function formatPKR(amount: number): string {
 
 /**
  * Format a raw PKR amount in the Pakistani crore/lakh convention:
- * 200_000_000 -> "PKR 20 Cr", 5_500_000 -> "PKR 55 Lakh", 50_000 -> "PKR 50,000".
+ * 1_000_000_000 -> "PKR 1 Arab", 200_000_000 -> "PKR 20 Cr", 5_500_000 -> "PKR 55 Lakh",
+ * 50_000 -> "PKR 50,000". 100 Cr rolls over into 1 Arab, per South Asian numbering.
  */
 export function formatCroreLakh(amount: number): string {
   const abs = Math.abs(amount);
+  if (abs >= 1_000_000_000) return `PKR ${trim(amount / 1_000_000_000)} Arab`;
   if (abs >= 10_000_000) return `PKR ${trim(amount / 10_000_000)} Cr`;
   if (abs >= 100_000) return `PKR ${trim(amount / 100_000)} Lakh`;
   return `PKR ${pkr.format(Math.round(amount))}`;

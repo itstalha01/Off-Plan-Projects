@@ -29,10 +29,10 @@ const labelClass = "text-xs font-medium text-muted-foreground";
 const selectClass =
   "h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none transition-colors focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
-// The Demand field is entered/displayed in Lakhs (e.g. "140" for PKR 1.4 Cr)
+// The Demand field is entered/displayed in Cr (e.g. "1.4" for PKR 1.4 Cr)
 // since that's how rates are quoted in conversation — the stored `rate` is
 // always the raw PKR-per-Marla/Kanal figure used in price calculations.
-const PKR_PER_LAKH = 100_000;
+const PKR_PER_CR = 10_000_000;
 
 type Props = {
   unit?: Unit;
@@ -61,7 +61,7 @@ export function UnitFormDrawer({ unit, trigger, triggerClassName }: Props) {
   const [frontFt, setFrontFt] = useState(unit?.frontFt?.toString() ?? "");
   const [depthFt, setDepthFt] = useState(unit?.depthFt?.toString() ?? "");
   const [areaSqft, setAreaSqft] = useState(unit?.areaSqft?.toString() ?? "");
-  const [rate, setRate] = useState(unit ? (unit.rate / PKR_PER_LAKH).toString() : "");
+  const [rate, setRate] = useState(unit ? (unit.rate / PKR_PER_CR).toString() : "");
   const [rateUnit, setRateUnit] = useState<RateUnit>(unit?.rateUnit ?? "marla");
   const [status, setStatus] = useState(unit?.status ?? "available");
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -77,7 +77,7 @@ export function UnitFormDrawer({ unit, trigger, triggerClassName }: Props) {
       : parseFloat(areaSqft) || 0;
   const previewTotal = calculateTotalPrice(
     previewAreaSqft,
-    (parseFloat(rate) || 0) * PKR_PER_LAKH,
+    (parseFloat(rate) || 0) * PKR_PER_CR,
     rateUnit
   );
 
@@ -126,7 +126,7 @@ export function UnitFormDrawer({ unit, trigger, triggerClassName }: Props) {
       frontFt: frontFt ? parseFloat(frontFt) : undefined,
       depthFt: depthFt ? parseFloat(depthFt) : undefined,
       areaSqft: areaSqft ? parseFloat(areaSqft) : undefined,
-      rate: (parseFloat(rate) || 0) * PKR_PER_LAKH,
+      rate: (parseFloat(rate) || 0) * PKR_PER_CR,
       rateUnit,
       status,
     });
@@ -280,11 +280,12 @@ export function UnitFormDrawer({ unit, trigger, triggerClassName }: Props) {
           <div className="border-t border-border pt-4">
             <div className="grid grid-cols-2 gap-3">
               <label className="flex flex-col gap-1">
-                <span className={labelClass}>Demand (Lakhs)</span>
+                <span className={labelClass}>Demand (Cr)</span>
                 <Input
                   type="number"
                   min="0"
-                  placeholder="e.g. 140 for 1.4 Cr"
+                  step="0.01"
+                  placeholder="e.g. 1.4 for 1.4 Cr"
                   value={rate}
                   onChange={(e) => setRate(e.target.value)}
                 />
