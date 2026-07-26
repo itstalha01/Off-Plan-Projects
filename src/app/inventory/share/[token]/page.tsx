@@ -51,7 +51,7 @@ export default async function InventorySharePage({ params }: Params) {
         {unitsList.length} unit{unitsList.length === 1 ? "" : "s"} shared with you — view only.
       </p>
 
-      <div className="mt-6 grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
+      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
         {unitsList.map((unit) => (
           <ShareUnitCard key={unit.id} unit={pickVisibleFields(unit, visibleFields)} />
         ))}
