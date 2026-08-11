@@ -7,7 +7,8 @@ import { FilterToolbar } from "@/features/projects/components/FilterToolbar";
 import { ProjectGrid } from "@/features/projects/components/ProjectGrid";
 import { partnerById } from "@/features/partners/partners";
 import { partnerStaticParams } from "@/features/partners/partnerParams";
-import { InviteDownload } from "@/features/invite/InviteDownload";
+// TEMP: kept for the Bahria Sky One open-house invite banner, currently hidden.
+// import { InviteDownload } from "@/features/invite/InviteDownload";
 
 export const dynamicParams = false;
 
@@ -44,7 +45,8 @@ export default async function PartnerCatalogPage({
       <main className="flex-1">
         <Hero partner={partner} />
         {/* TEMP: Bahria Sky One open-house invite download (remove after the event). */}
-        {partner.id === "corner-brick-group" && <InviteDownload />}
+        {/* Hidden for now — re-enable by uncommenting when needed. */}
+        {/* {partner.id === "corner-brick-group" && <InviteDownload />} */}
         <FilterToolbar />
         <ProjectGrid />
       </main>

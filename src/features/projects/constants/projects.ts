@@ -52,6 +52,7 @@ const rows: BaseTuple[] = [
   ["UK 13 Cove Residency", "UK Developers", "Pine Avenue Road", "Residential", "2029", "Approved", 10, 36, 10, "Monthly", 3, 24500, 475, 940, "/images/uk-13-cover-wide.webp"],
   ["Sunset Square", "Q-Links", "Pine Avenue Road", "Commercial", "2028", "Approved", 10, 65, 10, "Monthly", 2, 118700, 1845, 3600, "/images/sunset-square.webp"],
   ["Aureum Mall & Residences", "Alfalah Real Estate & Builders", "Bahria Town", ["Commercial", "Residential"], "2028", "Approved", 10, 55, 20, "Monthly", 4.6, 19500, 172, 1491, "/images/aureum-mall/cover.webp"],
+  ["Canton Sky Tower", "OZ Developers", "Ring Road", ["Commercial", "Residential"], "2029", "Approved", 30, 60, 10, "6-Monthly", 3, 17000, 126, 1718, "/images/canton-sky-tower.webp"],
 ];
 
 // Non-Lahore projects. Keyed by name; everything else defaults to "Lahore".
@@ -219,8 +220,8 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { name: "First Floor · Shops", rate: 35000, sizes: [146, 148, 151, 160, 172, 186, 196, 206, 208, 213, 214, 218, 222, 231, 239, 252, 253, 258, 301, 306, 328, 350, 365, 400, 406, 560, 699] },
     { name: "Second Floor · Shops", rate: 32000, sizes: [146, 148, 151, 160, 172, 186, 196, 206, 208, 213, 214, 218, 222, 231, 239, 252, 253, 258, 301, 306, 328, 350, 365, 400, 406, 560, 699] },
     { name: "Third Floor · Shops", rate: 30000, sizes: [135, 139, 141, 149, 160, 173, 182, 191, 215, 235, 240, 260, 280, 285, 326, 372, 378, 521, 651] },
-    { name: "Signature Apartments", rate: 17000, sizes: [343, 402, 412, 451, 463, 492, 502, 513, 599, 613, 630, 795, 1000, 1079, 1084, 1293] },
-    { name: "Hotel Suites", rate: 17000, sizes: [284, 296, 303, 315, 338, 405] },
+    { name: "Signature Apartments", rate: 22000, sizes: [343, 402, 412, 451, 463, 492, 502, 513, 599, 613, 630, 795, 1000, 1079, 1084, 1293] },
+    { name: "Hotel Suites", rate: 22000, sizes: [284, 296, 303, 315, 338, 405] },
   ],
   "Sky Tree Tower": [
     { name: "Showroom", rate: 75000, sizes: [4600] },
@@ -375,6 +376,21 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { name: "Offices", rate: 23500, sizes: [620, 640, 856, 1100] },
     { group: "1st Floor", name: "Shops", rate: 45000, sizes: [172, 366, 571, 707] },
     { group: "2nd Floor", name: "Shops", rate: 40000, sizes: [478, 502, 608, 643] },
+  ],
+  // Canton Sky Tower · OZ Developers, Adda Plot facing Ring Road, Lahore.
+  // Ground Floor shops run 60,000–70,000/sqft — Main Boulevard-facing units
+  // carry the premium rate; kiosks are priced near the standard-shop rate.
+  // Floors 1–3 are each a flat per-sqft rate. Sizes are the published size
+  // ranges from the developer's inventory sheet (min/mid/max snap points).
+  "Canton Sky Tower": [
+    { group: "Ground Floor", name: "Standard Shop", rate: 60000, sizes: genSizes(266, 750) },
+    { group: "Ground Floor", name: "Main Boulevard", rate: 70000, sizes: genSizes(757, 784) },
+    { group: "Ground Floor", name: "Kiosk", rate: 60000, sizes: genSizes(126, 140) },
+    { group: "First Floor", name: "Shops", rate: 40000, sizes: genSizes(149, 650) },
+    { group: "Second Floor", name: "Shops", rate: 30000, sizes: genSizes(292, 910) },
+    { group: "Third Floor", name: "Food Court", rate: 35000, sizes: genSizes(210, 1345) },
+    { group: "Apartments (5th–8th)", name: "1 Bed Apartment", rate: 17000, sizes: genSizes(550, 625) },
+    { group: "Apartments (5th–8th)", name: "2 Bed Apartment", rate: 17000, sizes: genSizes(1193, 1718) },
   ],
 };
 
@@ -733,6 +749,28 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
+  // Canton Sky Tower: 30 down payment + (5%×6 bi-annual = 30%)
+  // + (1%×30 monthly = 30%) + 10 possession = 100%.
+  "Canton Sky Tower": {
+    milestones: [
+      { label: "Down payment (at booking)", pct: 30 },
+      { label: "On possession", pct: 10 },
+    ],
+    installments: [
+      {
+        label: "Bi-annual installment",
+        pct: 5,
+        count: 6,
+        note: "6 × 5% (every 6 months)",
+      },
+      {
+        label: "Monthly installment",
+        pct: 1,
+        count: 30,
+        note: "30 × 1% (monthly)",
+      },
+    ],
+  },
 };
 
 // Optional plan caveats, shown beneath the breakdown. Keyed by project name.
@@ -768,6 +806,8 @@ const PLAN_NOTES: Record<string, string> = {
     "final pricing depends on tower, floor and unit position and is subject to availability.",
   "Aureum Mall & Residences":
     "Bahria Town Lahore, opposite Icon Mall and directly facing Ring Road, by Alfalah Real Estate & Builders; possession in 2 years.",
+  "Canton Sky Tower":
+    "LDA approved · Adda Plot, facing Ring Road, Lahore, developed by OZ Developers in joint venture with Guangdong Huashu International Economic & Trade Group Co., Ltd. Commercial floors (Ground to 3rd) are handed over in 1.5 years; the complete project, including the 5th–8th floor apartments, in 3 years. Ground Floor rate is 60,000/sq ft for standard shops and 70,000/sq ft for Main Boulevard-facing shops; kiosk pricing may carry additional frontage premiums. Areas are approximate and prices are subject to availability of units.",
 };
 
 /** Generate an explicit, ascending list of snap sizes between min and max. */
@@ -943,6 +983,16 @@ const DEVELOPERS: Record<string, Developer> = {
       "Aureum Grand",
     ],
   },
+  "OZ Developers": {
+    name: "OZ Developers",
+    blurb:
+      "OZ Developers Pvt. Ltd builds mixed-use towers across Lahore under the promise of \"Rising Beyond\" — pairing commercial retail podiums with residential apartments above. Canton Sky Tower is developed in joint venture with Guangdong Huashu International Economic & Trade Group Co., Ltd, bringing a Chinese trade and investment partner alongside OZ's local execution.",
+    stats: [
+      { value: "Rising Beyond", label: "Brand promise" },
+      { value: "OZ × Guangdong Huashu", label: "Joint venture" },
+      { value: "Lahore", label: "Operating market" },
+    ],
+  },
 };
 
 // Tower 1 & Tower 2 are the same development — they share project copy & renders.
@@ -1086,6 +1136,18 @@ const ABOUT_OVERRIDES: Record<string, About> = {
       "Corporate office floors",
       "In-house Aureum Hotel",
       "Rooftop leisure deck",
+    ],
+  },
+  "Canton Sky Tower": {
+    description:
+      "Canton Sky Tower is a mixed-use high-rise by OZ Developers, built in joint venture with Guangdong Huashu International Economic & Trade Group Co., Ltd, on the Adda Plot facing Ring Road, Lahore. Rising over a 15.25-Kanal plot, the tower stacks 331 commercial units — Ground Floor shops and kiosks, First and Second Floor retail, and a Third Floor food court — beneath 228 one- and two-bed apartments on the 5th to 8th floors. Vertical movement is handled by 6 residential lifts (4 passenger + 2 cargo), 4 commercial elevators and 4 glass capsule lifts.",
+    highlights: [
+      "Adda Plot, facing Ring Road, Lahore",
+      "LDA approved",
+      "JV with Guangdong Huashu International (China)",
+      "331 commercial units + 228 apartments",
+      "Ground–3rd Floor retail & food court",
+      "1 & 2-bed apartments, 5th–8th Floor",
     ],
   },
 };
