@@ -43,7 +43,7 @@ const rows: BaseTuple[] = [
   ["Zalmi X", "Zalmi Developments", "Pine Avenue Road", "Commercial", "2028", "Approved", 15, 55, 0, "Quarterly", 2.5, 30000, 729, 4671, "/images/zalmi-x-cover-wide.webp"],
   ["Pearl One Capital", "ABS Developers", "DHA Phase 2", ["Residential", "Commercial"], "2029", "Approved", 5, 85, 10, "Monthly", 3, 26000, 625, 1668.75, "/images/pearl-one-capital.webp"],
   ["Pearl One Courtyard", "ABS Developers", "Bahria Town", "Residential", "2029", "Approved", 7, 83, 10, "Monthly", 2, 30000, 500, 1000, "/images/pearl-one-courtyard.webp"],
-  ["Classic Atrium", "Classic Living", "Bahria Town", "Residential", "2030", "Approved", 10, 48, 13, "Monthly", 4, 18500, 350, 2500, "/images/classic-atrium.webp"],
+  ["Classic Atrium", "Classic Living", "Bahria Town", "Residential", "2030", "Approved", 10, 48, 13, "Monthly", 4, 20000, 350, 2500, "/images/classic-atrium.webp"],
   ["Skyline Boulevard", "Brother Developers", "Raiwind Road", ["Commercial", "Residential"], "2030", "Approved", 15, 45, 15, "Monthly", 3.5, 15000, 100, 4668, "/images/skyline-boulevard.jpg"],
   ["Icon Mall & Tower 1", "Athar Associates", "Bahria Town", ["Commercial", "Residential"], "2031", "Approved", 10, 60, 20, "Monthly", 4.5, 19000, 318, 1318, "/images/icon-mall/aerial.webp"],
   ["Icon Mall & Tower 2", "Athar Associates", "Bahria Town", "Residential", "2031", "Approved", 10, 60, 20, "Monthly", 5, 16000, 343, 1182, "/images/icon-mall/aerial.webp"],
@@ -277,18 +277,18 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { group: "1 Bed Apartment", name: "General", rate: 30000, sizes: [500] },
     { group: "2 Bed Apartment", name: "General", rate: 30000, sizes: [800, 1000] },
   ],
-  // Classic Atrium · residential apartments, flat 18,500/sqft across all types.
+  // Classic Atrium · residential apartments, flat 20,000/sqft across all types.
   // Sizes are the approximate covered areas published in the payment plan. The
   // developer quotes fixed rupee milestones per unit type rather than one split
   // that scales with size, so each category carries its own exact `plan` (see
   // CLASSIC_ATRIUM_PLANS below) instead of sharing the project-level plan.
   "Classic Atrium": [
-    { name: "Studio Apartment", rate: 18500, sizes: [350], plan: CLASSIC_ATRIUM_PLANS["Studio Apartment"] },
-    { name: "1 Bed Apartment", rate: 18500, sizes: [500], plan: CLASSIC_ATRIUM_PLANS["1 Bed Apartment"] },
-    { name: "2 Bed Apartment", rate: 18500, sizes: [800], plan: CLASSIC_ATRIUM_PLANS["2 Bed Apartment"] },
-    { name: "3 Bed Apartment", rate: 18500, sizes: [1100], plan: CLASSIC_ATRIUM_PLANS["3 Bed Apartment"] },
-    { name: "3 Bed Lawn Apartment", rate: 18500, sizes: [1650], plan: CLASSIC_ATRIUM_PLANS["3 Bed Lawn Apartment"] },
-    { name: "3 Bed Penthouse", rate: 18500, sizes: [2500], plan: CLASSIC_ATRIUM_PLANS["3 Bed Penthouse"] },
+    { name: "Studio Apartment", rate: 20000, sizes: [350], plan: CLASSIC_ATRIUM_PLANS["Studio Apartment"] },
+    { name: "1 Bed Apartment", rate: 20000, sizes: [500], plan: CLASSIC_ATRIUM_PLANS["1 Bed Apartment"] },
+    { name: "2 Bed Apartment", rate: 20000, sizes: [800], plan: CLASSIC_ATRIUM_PLANS["2 Bed Apartment"] },
+    { name: "3 Bed Apartment", rate: 20000, sizes: [1100], plan: CLASSIC_ATRIUM_PLANS["3 Bed Apartment"] },
+    { name: "3 Bed Lawn Apartment", rate: 20000, sizes: [1650], plan: CLASSIC_ATRIUM_PLANS["3 Bed Lawn Apartment"] },
+    { name: "3 Bed Penthouse", rate: 20000, sizes: [2500], plan: CLASSIC_ATRIUM_PLANS["3 Bed Penthouse"] },
   ],
   // Skyline Boulevard · Brother Developers, Al Kabir Downtown, Main Raiwind Road.
   // Rates shown are the general per-sqft rates published per floor; corner /
@@ -1080,12 +1080,12 @@ const ABOUT_OVERRIDES: Record<string, About> = {
   },
   "Classic Atrium": {
     description:
-      "Classic Atrium is a residential high-rise by Classic Living in the Tipu Sultan Block of Bahria Town, Lahore. The tower offers a full range of homes — from studio and one-bed apartments to spacious two- and three-bed residences, lawn apartments and duplex penthouses — each finished at a flat PKR 18,500 per sq ft and scheduled for possession in 2030. Floors are arranged around a central atrium with capsule glass lifts and landscaped terraces, blending luxury and comfort into everyday living.",
+      "Classic Atrium is a residential high-rise by Classic Living in the Tipu Sultan Block of Bahria Town, Lahore. The tower offers a full range of homes — from studio and one-bed apartments to spacious two- and three-bed residences, lawn apartments and duplex penthouses — each finished at a flat PKR 20,000 per sq ft and scheduled for possession in 2030. Floors are arranged around a central atrium with capsule glass lifts and landscaped terraces, blending luxury and comfort into everyday living.",
     highlights: [
       "Tipu Sultan Block, Bahria Town Lahore",
       "LDA approved",
       "Possession in 2030",
-      "Flat PKR 18,500 / sq ft",
+      "Flat PKR 20,000 / sq ft",
       "Studio to 3-bed duplex penthouse",
       "Central atrium & landscaped terraces",
     ],
