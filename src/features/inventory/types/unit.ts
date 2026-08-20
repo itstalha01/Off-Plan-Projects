@@ -10,12 +10,20 @@ export type UnitPhoto = {
   sortOrder: number;
 };
 
+export type UnitDocument = {
+  id: string;
+  blobUrl: string;
+  name: string;
+  createdAt: string;
+};
+
 export type Unit = {
   id: string;
   category: string;
   type: UnitTypeValue;
   city: string;
   area: string;
+  sector: string | null;
   address: string;
   unitNumber: string | null;
   mapLink: string | null;
@@ -32,6 +40,7 @@ export type Unit = {
   status: UnitStatusValue;
 
   photos: UnitPhoto[];
+  documents: UnitDocument[];
 
   createdAt: string;
   updatedAt: string;
@@ -40,6 +49,7 @@ export type Unit = {
 export type UnitFilters = {
   city?: string;
   area?: string;
+  sector?: string;
   type?: string;
   status?: string;
 };

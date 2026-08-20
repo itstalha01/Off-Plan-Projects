@@ -1,6 +1,7 @@
 export const UNIT_CATEGORIES = [
   { value: "commercial", label: "Commercial" },
   { value: "non-commercial", label: "Non-Commercial" },
+  { value: "residential", label: "Residential" },
 ] as const;
 
 export type UnitCategoryValue = (typeof UNIT_CATEGORIES)[number]["value"];

@@ -23,6 +23,7 @@ import { formatSize } from "../lib/size";
 import type { AreaInputMode, RateUnit, Unit } from "../types/unit";
 import { unitInputSchema } from "../validations/unit";
 import { AreaModeToggle } from "./AreaModeToggle";
+import { DocumentUploader } from "./DocumentUploader";
 import { PhotoUploader } from "./PhotoUploader";
 
 const labelClass = "text-xs font-medium text-muted-foreground";
@@ -52,6 +53,7 @@ export function UnitFormDrawer({ unit, trigger, triggerClassName }: Props) {
   const [category, setCategory] = useState(unit?.category ?? "commercial");
   const [city, setCity] = useState(unit?.city ?? "");
   const [area, setArea] = useState(unit?.area ?? "");
+  const [sector, setSector] = useState(unit?.sector ?? "");
   const [address, setAddress] = useState(unit?.address ?? "");
   const [unitNumber, setUnitNumber] = useState(unit?.unitNumber ?? "");
   const [mapLink, setMapLink] = useState(unit?.mapLink ?? "");
@@ -97,6 +99,7 @@ export function UnitFormDrawer({ unit, trigger, triggerClassName }: Props) {
       setCategory("commercial");
       setCity("");
       setArea("");
+      setSector("");
       setAddress("");
       setUnitNumber("");
       setMapLink("");
@@ -119,6 +122,7 @@ export function UnitFormDrawer({ unit, trigger, triggerClassName }: Props) {
       category,
       city,
       area,
+      sector: sector || undefined,
       address,
       unitNumber: unitNumber || undefined,
       mapLink: mapLink || undefined,
@@ -232,6 +236,15 @@ export function UnitFormDrawer({ unit, trigger, triggerClassName }: Props) {
           </div>
 
           <label className="flex flex-col gap-1">
+            <span className={labelClass}>Sector / Phase / Block</span>
+            <Input
+              value={sector}
+              onChange={(e) => setSector(e.target.value)}
+              placeholder="e.g. Sector A, Phase 2, Block Ali"
+            />
+          </label>
+
+          <label className="flex flex-col gap-1">
             <span className={labelClass}>Address</span>
             <Input value={address} onChange={(e) => setAddress(e.target.value)} />
             {errors.address && (
@@ -332,6 +345,15 @@ export function UnitFormDrawer({ unit, trigger, triggerClassName }: Props) {
               <span className={labelClass}>Photos</span>
               <div className="mt-2">
                 <PhotoUploader unitId={savedUnit.id} />
+              </div>
+            </div>
+          )}
+
+          {savedUnit && (
+            <div className="border-t border-border pt-4">
+              <span className={labelClass}>Property documents</span>
+              <div className="mt-2">
+                <DocumentUploader unitId={savedUnit.id} />
               </div>
             </div>
           )}

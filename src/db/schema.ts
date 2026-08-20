@@ -9,16 +9,25 @@ import {
 } from "drizzle-orm/pg-core";
 import { nanoid } from "nanoid";
 
-export const unitTypeEnum = pgEnum("unit_type", ["plot", "shop", "plaza", "hotel"]);
+export const unitTypeEnum = pgEnum("unit_type", ["plot", "shop", "plaza", "hotel", "house"]);
 export const unitStatusEnum = pgEnum("unit_status", ["available", "hold", "sold_out"]);
 export const rateUnitEnum = pgEnum("rate_unit", ["marla", "kanal"]);
 
+export const users = pgTable("users", {
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  username: text("username").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const units = pgTable("units", {
   id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  ownerId: text("owner_id").notNull().references(() => users.id),
   category: text("category").notNull().default("commercial"),
   type: unitTypeEnum("type").notNull(),
   city: text("city").notNull(),
   area: text("area").notNull(),
+  sector: text("sector"),
   address: text("address").notNull(),
   unitNumber: text("unit_number"),
   mapLink: text("map_link"),
@@ -48,8 +57,19 @@ export const unitPhotos = pgTable("unit_photos", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+export const unitDocuments = pgTable("unit_documents", {
+  id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  unitId: text("unit_id")
+    .notNull()
+    .references(() => units.id, { onDelete: "cascade" }),
+  blobUrl: text("blob_url").notNull(),
+  name: text("name").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const inventoryShares = pgTable("inventory_shares", {
   id: text("id").primaryKey().$defaultFn(() => nanoid()),
+  ownerId: text("owner_id").notNull().references(() => users.id),
   token: text("token").notNull().unique(),
   unitIds: jsonb("unit_ids").$type<string[]>().notNull(),
   visibleFields: jsonb("visible_fields").$type<string[]>().notNull(),
@@ -58,8 +78,11 @@ export const inventoryShares = pgTable("inventory_shares", {
   expiresAt: timestamp("expires_at"),
 });
 
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
 export type Unit = typeof units.$inferSelect;
 export type NewUnit = typeof units.$inferInsert;
 export type UnitPhoto = typeof unitPhotos.$inferSelect;
+export type UnitDocument = typeof unitDocuments.$inferSelect;
 export type InventoryShare = typeof inventoryShares.$inferSelect;
 export type NewInventoryShare = typeof inventoryShares.$inferInsert;

@@ -1,7 +1,8 @@
 import type { NextRequest } from "next/server";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db/client";
-import { unitPhotos, units } from "@/db/schema";
+import { unitDocuments, unitPhotos, units } from "@/db/schema";
+import { getSessionUser } from "@/lib/inventory-auth";
 import { isUnitTypeValue } from "@/features/inventory/constants/unit-types";
 import { isUnitStatusValue } from "@/features/inventory/constants/unit-statuses";
 import { resolveUnit, toUnit } from "@/features/inventory/lib/resolve-unit";
@@ -9,17 +10,22 @@ import { unitFilterSchema, unitInputSchema } from "@/features/inventory/validati
 import type { Unit } from "@/features/inventory/types/unit";
 
 export async function GET(request: NextRequest) {
+  const session = await getSessionUser();
+  if (!session) return Response.json({ error: "unauthorized" }, { status: 401 });
+
   const { searchParams } = request.nextUrl;
   const filters = unitFilterSchema.parse({
     city: searchParams.get("city") ?? undefined,
     area: searchParams.get("area") ?? undefined,
+    sector: searchParams.get("sector") ?? undefined,
     type: searchParams.get("type") ?? undefined,
     status: searchParams.get("status") ?? undefined,
   });
 
-  const conditions = [];
+  const conditions = [eq(units.ownerId, session.userId)];
   if (filters.city) conditions.push(eq(units.city, filters.city));
   if (filters.area) conditions.push(eq(units.area, filters.area));
+  if (filters.sector) conditions.push(eq(units.sector, filters.sector));
   if (filters.type && isUnitTypeValue(filters.type)) {
     conditions.push(eq(units.type, filters.type));
   }
@@ -30,7 +36,7 @@ export async function GET(request: NextRequest) {
   const rows = await db
     .select()
     .from(units)
-    .where(conditions.length ? and(...conditions) : undefined)
+    .where(and(...conditions))
     .orderBy(desc(units.createdAt));
 
   const unitIds = rows.map((r) => r.id);
@@ -49,12 +55,32 @@ export async function GET(request: NextRequest) {
     photosByUnit.set(photo.unitId, list);
   }
 
-  const result: Unit[] = rows.map((row) => toUnit(row, photosByUnit.get(row.id) ?? []));
+  const documents = unitIds.length
+    ? await db
+        .select()
+        .from(unitDocuments)
+        .where(inArray(unitDocuments.unitId, unitIds))
+        .orderBy(unitDocuments.createdAt)
+    : [];
+
+  const documentsByUnit = new Map<string, typeof documents>();
+  for (const document of documents) {
+    const list = documentsByUnit.get(document.unitId) ?? [];
+    list.push(document);
+    documentsByUnit.set(document.unitId, list);
+  }
+
+  const result: Unit[] = rows.map((row) =>
+    toUnit(row, photosByUnit.get(row.id) ?? [], documentsByUnit.get(row.id) ?? [])
+  );
 
   return Response.json(result);
 }
 
 export async function POST(request: NextRequest) {
+  const session = await getSessionUser();
+  if (!session) return Response.json({ error: "unauthorized" }, { status: 401 });
+
   const parsed = unitInputSchema.safeParse(await request.json());
   if (!parsed.success) {
     return Response.json({ error: parsed.error.flatten() }, { status: 400 });
@@ -65,10 +91,12 @@ export async function POST(request: NextRequest) {
   const [row] = await db
     .insert(units)
     .values({
+      ownerId: session.userId,
       type: parsed.data.type,
       category: parsed.data.category,
       city: parsed.data.city,
       area: parsed.data.area,
+      sector: parsed.data.sector || null,
       address: parsed.data.address,
       unitNumber: parsed.data.unitNumber || null,
       mapLink: parsed.data.mapLink || null,

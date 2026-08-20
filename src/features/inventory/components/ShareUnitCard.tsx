@@ -30,9 +30,11 @@ export function ShareUnitCard({ unit }: { unit: SharedUnitView }) {
                 {unit.unitNumber ? ` · ${unit.unitNumber}` : ""}
               </p>
             )}
-            {(unit.area || unit.city) && (
+            {(unit.area || unit.sector || unit.city) && (
               <p className="font-semibold">
-                {[unit.area, unit.city].filter(Boolean).join(", ")}
+                {[[unit.area, unit.sector].filter(Boolean).join(" · "), unit.city]
+                  .filter(Boolean)
+                  .join(", ")}
               </p>
             )}
           </div>

@@ -7,6 +7,7 @@ export type SharedUnitView = Partial<{
   type: string;
   city: string;
   area: string;
+  sector: string | null;
   address: string;
   unitNumber: string | null;
   mapLink: string | null;
@@ -27,6 +28,7 @@ export function pickVisibleFields(
   if (has("type")) view.type = unit.type;
   if (has("city")) view.city = unit.city;
   if (has("area")) view.area = unit.area;
+  if (has("sector")) view.sector = unit.sector;
   if (has("address")) view.address = unit.address;
   if (has("unitNumber")) view.unitNumber = unit.unitNumber;
   if (has("mapLink")) view.mapLink = unit.mapLink;

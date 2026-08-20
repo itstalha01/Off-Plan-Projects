@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { INVENTORY_SESSION_COOKIE, verifySession } from "@/lib/inventory-session";
+import { INVENTORY_SESSION_COOKIE, getSession } from "@/lib/inventory-session";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -14,8 +14,8 @@ export function proxy(request: NextRequest) {
   const isApi = pathname.startsWith("/api/inventory");
   if (!pathname.startsWith("/inventory") && !isApi) return NextResponse.next();
 
-  const authed = verifySession(request.cookies.get(INVENTORY_SESSION_COOKIE)?.value);
-  if (authed) return NextResponse.next();
+  const session = getSession(request.cookies.get(INVENTORY_SESSION_COOKIE)?.value);
+  if (session) return NextResponse.next();
 
   if (isApi) {
     return Response.json({ error: "unauthorized" }, { status: 401 });

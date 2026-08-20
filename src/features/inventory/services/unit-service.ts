@@ -1,5 +1,5 @@
 import { apiClient } from "@/services/client/api-client";
-import type { Unit, UnitFilters, UnitPhoto } from "../types/unit";
+import type { Unit, UnitDocument, UnitFilters, UnitPhoto } from "../types/unit";
 import type { UnitInput } from "../validations/unit";
 
 export const unitService = {
@@ -25,5 +25,13 @@ export const unitService = {
   removePhoto: (unitId: string, photoId: string) =>
     apiClient.delete<{ ok: true }>(`/inventory/units/${unitId}/photos`, {
       params: { photoId },
+    }),
+
+  addDocument: (unitId: string, blobUrl: string, name: string) =>
+    apiClient.post<UnitDocument>(`/inventory/units/${unitId}/documents`, { blobUrl, name }),
+
+  removeDocument: (unitId: string, documentId: string) =>
+    apiClient.delete<{ ok: true }>(`/inventory/units/${unitId}/documents`, {
+      params: { documentId },
     }),
 };

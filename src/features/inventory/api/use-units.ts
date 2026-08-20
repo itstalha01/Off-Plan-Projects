@@ -6,11 +6,11 @@ import { useInventoryFilterStore } from "../store/inventory-filter-store";
 import type { UnitInput } from "../validations/unit";
 
 export function useUnits() {
-  const { city, area, type, status } = useInventoryFilterStore();
+  const { city, area, sector, type, status } = useInventoryFilterStore();
 
   return useQuery({
-    queryKey: ["inventory", "units", { city, area, type, status }],
-    queryFn: () => unitService.list({ city, area, type, status }),
+    queryKey: ["inventory", "units", { city, area, sector, type, status }],
+    queryFn: () => unitService.list({ city, area, sector, type, status }),
   });
 }
 
@@ -71,6 +71,29 @@ export function useRemovePhoto(unitId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (photoId: string) => unitService.removePhoto(unitId, photoId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["inventory", "units", "detail", unitId] });
+      queryClient.invalidateQueries({ queryKey: ["inventory", "units"] });
+    },
+  });
+}
+
+export function useAddDocument(unitId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ blobUrl, name }: { blobUrl: string; name: string }) =>
+      unitService.addDocument(unitId, blobUrl, name),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["inventory", "units", "detail", unitId] });
+      queryClient.invalidateQueries({ queryKey: ["inventory", "units"] });
+    },
+  });
+}
+
+export function useRemoveDocument(unitId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (documentId: string) => unitService.removeDocument(unitId, documentId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["inventory", "units", "detail", unitId] });
       queryClient.invalidateQueries({ queryKey: ["inventory", "units"] });

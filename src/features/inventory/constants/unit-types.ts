@@ -3,6 +3,7 @@ export const UNIT_TYPES = [
   { value: "shop", label: "Shop" },
   { value: "plaza", label: "Plaza" },
   { value: "hotel", label: "Hotel" },
+  { value: "house", label: "House" },
 ] as const;
 
 export type UnitTypeValue = (typeof UNIT_TYPES)[number]["value"];

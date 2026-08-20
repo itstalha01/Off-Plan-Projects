@@ -3,6 +3,7 @@ import { z } from "zod";
 export const unitFilterSchema = z.object({
   city: z.string().optional(),
   area: z.string().optional(),
+  sector: z.string().optional(),
   type: z.string().optional(),
   status: z.string().optional(),
 });
@@ -11,10 +12,11 @@ export type UnitFilterInput = z.infer<typeof unitFilterSchema>;
 
 export const unitInputSchema = z
   .object({
-    type: z.enum(["plot", "shop", "plaza", "hotel"]),
-    category: z.enum(["commercial", "non-commercial"]).default("commercial"),
+    type: z.enum(["plot", "shop", "plaza", "hotel", "house"]),
+    category: z.enum(["commercial", "non-commercial", "residential"]).default("commercial"),
     city: z.string().min(1, "City is required"),
     area: z.string().min(1, "Area is required"),
+    sector: z.string().optional(),
     address: z.string().min(1, "Address is required"),
     unitNumber: z.string().optional(),
     mapLink: z.string().optional(),

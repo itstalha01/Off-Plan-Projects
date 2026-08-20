@@ -4,6 +4,7 @@ export const SHAREABLE_FIELDS = [
   { key: "type", label: "Type" },
   { key: "city", label: "City" },
   { key: "area", label: "Area" },
+  { key: "sector", label: "Sector / Phase / Block" },
   { key: "address", label: "Address" },
   { key: "unitNumber", label: "Unit / Plot Number" },
   { key: "mapLink", label: "Map Pin" },

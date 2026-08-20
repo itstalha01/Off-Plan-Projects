@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function InventoryLoginPage() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,15 +22,18 @@ export default function InventoryLoginPage() {
     const res = await fetch("/api/inventory/auth", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password }),
+      body: JSON.stringify({ username, password }),
     });
 
     if (!res.ok) {
-      setError("Incorrect password");
+      setError("Incorrect username or password");
       setIsSubmitting(false);
       return;
     }
 
+    // Wipe any cached units/shares from a previous session in this tab —
+    // otherwise a different user logging in here would briefly see them.
+    queryClient.clear();
     router.replace("/inventory");
     router.refresh();
   }
@@ -41,12 +47,17 @@ export default function InventoryLoginPage() {
         <div className="space-y-1">
           <h1 className="text-lg font-semibold">Inventory</h1>
           <p className="text-sm text-muted-foreground">
-            Enter the password to continue.
+            Sign in with your username and password to continue.
           </p>
         </div>
         <Input
-          type="password"
           autoFocus
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Username"
+        />
+        <Input
+          type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"

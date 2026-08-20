@@ -15,6 +15,34 @@
       "when": 1785060390412,
       "tag": "0001_eager_moon_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787220149485,
+      "tag": "0002_productive_felicia_hardy",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1787220229551,
+      "tag": "0003_jittery_hammerhead",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1787223445789,
+      "tag": "0004_next_leo",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1787223839776,
+      "tag": "0005_daily_post",
+      "breakpoints": true
     }
   ]
 }

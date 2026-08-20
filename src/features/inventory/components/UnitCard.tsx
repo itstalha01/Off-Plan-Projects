@@ -71,11 +71,12 @@ export function UnitCard({ unit }: { unit: Unit }) {
           <div className="min-w-0">
             <p className="truncate text-xs font-medium text-muted-foreground">
               {unitTypeLabel(unit.type)}
-              {unit.category === "non-commercial" ? ` · ${unitCategoryLabel(unit.category)}` : ""}
+              {unit.category !== "commercial" ? ` · ${unitCategoryLabel(unit.category)}` : ""}
               {unit.unitNumber ? ` · ${unit.unitNumber}` : ""}
             </p>
             <p className="truncate text-sm font-semibold">
-              {unit.area}, {unit.city}
+              {unit.area}
+              {unit.sector ? ` · ${unit.sector}` : ""}, {unit.city}
             </p>
           </div>
           <StatusBadge status={unit.status} />

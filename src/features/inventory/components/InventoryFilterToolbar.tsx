@@ -13,8 +13,19 @@ const labelClass = "text-xs font-medium text-muted-foreground";
 
 export function InventoryFilterToolbar() {
   const { data: allUnits } = useAllUnitsForOptions();
-  const { city, area, type, status, setCity, setArea, setType, setStatus, reset } =
-    useInventoryFilterStore();
+  const {
+    city,
+    area,
+    sector,
+    type,
+    status,
+    setCity,
+    setArea,
+    setSector,
+    setType,
+    setStatus,
+    reset,
+  } = useInventoryFilterStore();
 
   const cities = useMemo(
     () => Array.from(new Set(allUnits?.map((u) => u.city) ?? [])).sort(),
@@ -24,11 +35,16 @@ export function InventoryFilterToolbar() {
     () => Array.from(new Set(allUnits?.map((u) => u.area) ?? [])).sort(),
     [allUnits]
   );
+  const sectors = useMemo(
+    () =>
+      Array.from(new Set(allUnits?.map((u) => u.sector).filter(Boolean) ?? [])).sort() as string[],
+    [allUnits]
+  );
 
-  const hasActiveFilters = Boolean(city || area || type || status);
+  const hasActiveFilters = Boolean(city || area || sector || type || status);
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:items-end lg:grid-cols-5">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:items-end lg:grid-cols-6">
       <label className="flex flex-col gap-1">
         <span className={labelClass}>City</span>
         <select
@@ -56,6 +72,22 @@ export function InventoryFilterToolbar() {
           {areas.map((a) => (
             <option key={a} value={a}>
               {a}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label className="flex flex-col gap-1">
+        <span className={labelClass}>Sector / Phase</span>
+        <select
+          value={sector}
+          onChange={(e) => setSector(e.target.value)}
+          className={selectClass}
+        >
+          <option value="">Any</option>
+          {sectors.map((s) => (
+            <option key={s} value={s}>
+              {s}
             </option>
           ))}
         </select>

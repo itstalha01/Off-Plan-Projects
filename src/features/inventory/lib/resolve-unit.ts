@@ -1,4 +1,4 @@
-import type { units } from "@/db/schema";
+import type { unitDocuments, units } from "@/db/schema";
 import type { Unit, UnitPhoto } from "../types/unit";
 import type { UnitInput } from "../validations/unit";
 import { calculateTotalPrice } from "./price";
@@ -28,6 +28,10 @@ export function resolveUnit(input: UnitInput) {
  * `createdAt`/`updatedAt` are `Date` here (vs. `Unit`'s `string`) until
  * `Response.json()` serializes them — server components that read these rows
  * directly never touch those two fields. */
-export function toUnit(row: typeof units.$inferSelect, photos: UnitPhoto[]): Unit {
-  return { ...row, photos } as unknown as Unit;
+export function toUnit(
+  row: typeof units.$inferSelect,
+  photos: UnitPhoto[],
+  documents: (typeof unitDocuments.$inferSelect)[] = []
+): Unit {
+  return { ...row, photos, documents } as unknown as Unit;
 }

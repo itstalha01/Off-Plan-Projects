@@ -1,15 +1,13 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Toaster } from "@/components/ui/sonner";
-import { INVENTORY_SESSION_COOKIE, verifySession } from "@/lib/inventory-session";
+import { getSessionUser } from "@/lib/inventory-auth";
 
 export default async function InventoryAdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const cookieStore = await cookies();
-  const authed = verifySession(cookieStore.get(INVENTORY_SESSION_COOKIE)?.value);
+  const session = await getSessionUser();
 
-  if (!authed) redirect("/inventory/login");
+  if (!session) redirect("/inventory/login");
 
   return (
     <>
