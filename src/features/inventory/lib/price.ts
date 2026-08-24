@@ -1,4 +1,4 @@
-import { formatPKR } from "@/lib/format";
+import { formatCroreLakh } from "@/lib/format";
 import { sqftToMarla, MARLA_PER_KANAL } from "./size";
 
 export type RateUnit = "marla" | "kanal";
@@ -41,5 +41,5 @@ export function getDisplayRate(
 
 export function formatDisplayRate(areaSqft: number, totalPrice: number): string {
   const { rate, unit } = getDisplayRate(areaSqft, totalPrice);
-  return `${formatPKR(rate)}/${unit === "marla" ? "Marla" : "Kanal"}`;
+  return `${formatCroreLakh(rate)}/${unit === "marla" ? "Marla" : "Kanal"}`;
 }
