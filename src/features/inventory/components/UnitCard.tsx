@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { formatCroreLakh } from "@/lib/format";
 import { unitCategoryLabel } from "../constants/unit-categories";
 import { unitTypeLabel } from "../constants/unit-types";
+import { formatDisplayRate } from "../lib/price";
 import { formatSize } from "../lib/size";
 import { useInventorySelectionStore } from "../store/inventory-selection-store";
 import type { Unit } from "../types/unit";
@@ -93,7 +94,12 @@ export function UnitCard({ unit }: { unit: Unit }) {
             frontFt={unit.frontFt}
             depthFt={unit.depthFt}
           />
-          <span className="text-sm font-semibold">{formatCroreLakh(unit.totalPrice)}</span>
+          <div className="flex flex-col items-end">
+            <span className="text-sm font-semibold">{formatCroreLakh(unit.totalPrice)}</span>
+            <span className="text-[11px] text-muted-foreground">
+              {formatDisplayRate(unit.areaSqft, unit.totalPrice)}
+            </span>
+          </div>
         </div>
       </div>
     </div>
