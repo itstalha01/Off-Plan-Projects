@@ -1,4 +1,4 @@
-import { formatSize } from "../lib/size";
+import { formatDimensions, formatSize } from "../lib/size";
 
 export function SizeDisplay({
   areaSqft,
@@ -9,12 +9,11 @@ export function SizeDisplay({
   frontFt?: number | null;
   depthFt?: number | null;
 }) {
+  const dimensions = formatDimensions(frontFt, depthFt);
   return (
     <span>
       {formatSize(areaSqft)}
-      {frontFt && depthFt ? (
-        <span className="text-muted-foreground"> ({frontFt}x{depthFt})</span>
-      ) : null}
+      {dimensions ? <span className="text-muted-foreground"> ({dimensions})</span> : null}
     </span>
   );
 }

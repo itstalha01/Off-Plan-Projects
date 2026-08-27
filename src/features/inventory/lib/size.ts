@@ -35,3 +35,13 @@ export function formatSize(sqft: number): string {
   if (remainder === 0) return `${kanal} Kanal`;
   return `${kanal} Kanal ${remainder} Marla`;
 }
+
+/** Formats plot dimensions, degrading gracefully when only the front is known. */
+export function formatDimensions(
+  frontFt: number | null | undefined,
+  depthFt: number | null | undefined
+): string | null {
+  if (!frontFt) return null;
+  if (!depthFt) return `${frontFt}ft front`;
+  return `${frontFt}x${depthFt}`;
+}

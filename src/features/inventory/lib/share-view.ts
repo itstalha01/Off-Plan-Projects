@@ -1,7 +1,7 @@
 import { formatCroreLakh } from "@/lib/format";
 import type { ShareableFieldKey } from "../constants/shareable-fields";
 import type { Unit, UnitPhoto } from "../types/unit";
-import { formatSize } from "./size";
+import { formatDimensions, formatSize } from "./size";
 
 export type SharedUnitView = Partial<{
   type: string;
@@ -12,6 +12,7 @@ export type SharedUnitView = Partial<{
   unitNumber: string | null;
   mapLink: string | null;
   size: string;
+  dimensions: string;
   price: string;
   status: string;
   photos: UnitPhoto[];
@@ -32,7 +33,10 @@ export function pickVisibleFields(
   if (has("address")) view.address = unit.address;
   if (has("unitNumber")) view.unitNumber = unit.unitNumber;
   if (has("mapLink")) view.mapLink = unit.mapLink;
-  if (has("size")) view.size = formatSize(unit.areaSqft);
+  if (has("size")) {
+    view.size = formatSize(unit.areaSqft);
+    view.dimensions = formatDimensions(unit.frontFt, unit.depthFt) ?? undefined;
+  }
   if (has("price")) view.price = formatCroreLakh(unit.totalPrice);
   if (has("status")) view.status = unit.status;
   if (has("photos")) view.photos = unit.photos;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatSize, marlaToKanalMarla, sqftToMarla, SQFT_PER_MARLA } from "./size";
+import { formatDimensions, formatSize, marlaToKanalMarla, sqftToMarla, SQFT_PER_MARLA } from "./size";
 
 describe("formatSize", () => {
   it("formats 25 marla as 1 Kanal 5 Marla", () => {
@@ -31,5 +31,20 @@ describe("formatSize", () => {
 describe("sqftToMarla", () => {
   it("divides by 225", () => {
     expect(sqftToMarla(4500)).toBe(20);
+  });
+});
+
+describe("formatDimensions", () => {
+  it("shows front x depth when both are known", () => {
+    expect(formatDimensions(67.5, 55)).toBe("67.5x55");
+  });
+
+  it("shows front only when depth is missing", () => {
+    expect(formatDimensions(67.5, null)).toBe("67.5ft front");
+  });
+
+  it("returns null when front is missing", () => {
+    expect(formatDimensions(null, 55)).toBeNull();
+    expect(formatDimensions(null, null)).toBeNull();
   });
 });
