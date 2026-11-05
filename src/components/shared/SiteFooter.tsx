@@ -20,7 +20,7 @@ export function SiteFooter() {
           <p className="mt-1 text-sm text-paper/60">
             {partner
               ? "Powered by Clearstoreys · Pakistan commercial off-plan."
-              : "Pakistan commercial off-plan, decoded."}
+              : "Compare off-plan property in Lahore & Islamabad."}
           </p>
         </div>
         <a

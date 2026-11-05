@@ -114,7 +114,9 @@ export function Hero({ partner }: { partner?: Partner | null }) {
         {/* Right: headline + CTA */}
         <div className="order-1 flex flex-col justify-center lg:order-2">
           <p className="font-serif text-lg italic text-gold-deep">
-            Pakistan commercial off-plan, made simple
+            {partner
+              ? "Pakistan commercial off-plan, made simple"
+              : "Apartments, shops & offices on installment plans"}
           </p>
 
           <p
@@ -126,18 +128,36 @@ export function Hero({ partner }: { partner?: Partner | null }) {
             صاف بات، <span className="text-gold">بلند عمارت</span>
           </p>
 
-          <h1 className="mt-3 font-sans text-5xl font-extrabold uppercase leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
-            The project
-            <br />
-            that <span className="text-gold">fits</span>
-            <br />
-            you<span className="text-gold">.</span>
-          </h1>
+          {partner ? (
+            <h1 className="mt-3 font-sans text-5xl font-extrabold uppercase leading-[0.95] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+              The project
+              <br />
+              that <span className="text-gold">fits</span>
+              <br />
+              you<span className="text-gold">.</span>
+            </h1>
+          ) : (
+            <h1 className="mt-3 font-sans text-4xl font-extrabold uppercase leading-[1.05] tracking-tight text-ink sm:text-5xl xl:text-6xl">
+              Compare Off-Plan Properties in{" "}
+              <span className="text-gold">Lahore &amp; Islamabad</span>
+            </h1>
+          )}
 
           <p className="mt-6 max-w-md text-base leading-relaxed text-brown">
-            Payment plans, possession timelines and approval status, laid bare.
-            Tell us your budget, we&rsquo;ll match you to the towers worth your
-            money.
+            {partner ? (
+              <>
+                Payment plans, possession timelines and approval status, laid bare.
+                Tell us your budget, we&rsquo;ll match you to the towers worth your
+                money.
+              </>
+            ) : (
+              <>
+                Explore apartments, shops and offices with installment payment
+                plans. Compare starting prices, unit sizes, listed approval status
+                and expected possession dates to find a project that fits your
+                budget.
+              </>
+            )}
           </p>
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
@@ -148,14 +168,14 @@ export function Hero({ partner }: { partner?: Partner | null }) {
               className="group inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3.5 text-sm font-semibold text-paper transition-colors hover:bg-gold-deep"
             >
               <MessageCircle className="size-4" />
-              Connect to the Advisor
+              {partner ? "Connect to the Advisor" : "Get Help Choosing a Property"}
               <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </a>
             <a
               href="#projects"
               className="text-sm font-semibold text-ink underline-offset-4 hover:underline"
             >
-              Browse all projects
+              {partner ? "Browse all projects" : "Browse Projects"}
             </a>
           </div>
 
