@@ -38,11 +38,8 @@ const rows: BaseTuple[] = [
   ["Sky Tree Tower", "HF Developers", "Pine Avenue Road", ["Commercial", "Residential"], "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 30000, 570, 4600, "/images/sky-tree-tower.webp"],
   ["Emirates Mall & Residency", "The Kings Developments", "Raiwind Road", ["Commercial", "Residential"], "2030", "Approved", 10, 65, 15, "6-Monthly", 4, 17000, 56, 1293, "/images/emirates-mall.jpg"],
   ["The Ark", "The Ark Developments", "Pine Avenue Road", "Commercial", "2027", "Approved", 10, 60, 20, "Monthly", 2.5, 31000, 637, 1345, "/images/the-ark-cover.jpg"],
-  ["Falah Technology Tower", "Falah Developers", "Main Defence Road", "Commercial", "2028", "Approved", 10, 55, 25, "Monthly", 2.6, 26000, 375, 2003, "/images/falah-tower.jpg"],
   ["Curve – Pine Avenue Downtown", "HF Developers", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 24000, 225, 4800, "/images/curve.webp"],
   ["Zalmi X", "Zalmi Developments", "Pine Avenue Road", "Commercial", "2028", "Approved", 15, 55, 0, "Quarterly", 2.5, 30000, 729, 4671, "/images/zalmi-x-cover-wide.webp"],
-  ["Pearl One Capital", "ABS Developers", "DHA Phase 2", ["Residential", "Commercial"], "2029", "Approved", 5, 85, 10, "Monthly", 3, 26000, 625, 1668.75, "/images/pearl-one-capital.webp"],
-  ["Pearl One Courtyard", "ABS Developers", "Bahria Town", "Residential", "2029", "Approved", 7, 83, 10, "Monthly", 2, 30000, 500, 1000, "/images/pearl-one-courtyard.webp"],
   ["Classic Atrium", "Classic Living", "Bahria Town", "Residential", "2030", "Approved", 10, 48, 13, "Monthly", 4, 20000, 350, 2500, "/images/classic-atrium.webp"],
   ["Skyline Boulevard", "Brother Developers", "Raiwind Road", ["Commercial", "Residential"], "2030", "Approved", 15, 45, 15, "Monthly", 3.5, 15000, 100, 4668, "/images/skyline-boulevard.jpg"],
   ["Icon Mall & Tower 1", "Athar Associates", "Bahria Town", ["Commercial", "Residential"], "2031", "Approved", 10, 60, 20, "Monthly", 4.5, 19000, 318, 1318, "/images/icon-mall/aerial.webp"],
@@ -50,14 +47,12 @@ const rows: BaseTuple[] = [
   ["Icon Avenue", "Athar Associates", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "Monthly", 2.5, 25000, 384, 4877, "/images/icon-avenue.jpg"],
   ["J7 Icon", "J7 Group", "Mumtaz City", ["Residential", "Commercial"], "2030", "Approved", 25, 60, 15, "Monthly", 4, 17000, 194, 2362, "/images/j7-icon.webp"],
   ["UK 13 Cove Residency", "UK Developers", "Pine Avenue Road", "Residential", "2029", "Approved", 10, 36, 10, "Monthly", 3, 24500, 475, 940, "/images/uk-13-cover-wide.webp"],
-  ["Sunset Square", "Q-Links", "Pine Avenue Road", "Commercial", "2028", "Approved", 10, 65, 10, "Monthly", 2, 118700, 1845, 3600, "/images/sunset-square.webp"],
   ["Aureum Mall & Residences", "Alfalah Real Estate & Builders", "Bahria Town", ["Commercial", "Residential"], "2028", "Approved", 10, 55, 20, "Monthly", 4.6, 19500, 172, 1491, "/images/aureum-mall/cover.webp"],
   ["Canton Sky Tower", "OZ Developers", "Ring Road", ["Commercial", "Residential"], "2029", "Approved", 30, 60, 10, "6-Monthly", 3, 17000, 126, 1718, "/images/canton-sky-tower.webp"],
 ];
 
 // Non-Lahore projects. Keyed by name; everything else defaults to "Lahore".
 const CITY_OVERRIDES: Record<string, string> = {
-  "Pearl One Capital": "Islamabad",
   "J7 Icon": "Islamabad",
 };
 
@@ -243,39 +238,11 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { name: "Corporate Offices (3rd–9th Floor)", rate: 30000, sizes: [729, 751, 892, 1073, 1128, 1265] },
     { name: "Commercial Outlet (Ground, 1st & 2nd)", rate: 62000, sizes: [4671] },
   ],
-  // Falah Technology Tower · published office sizes from the payment plan,
-  // flat 26,000/sqft rate. Co-working is sold per chair (see plan note).
-  "Falah Technology Tower": [
-    { name: "Corporate Offices", rate: 26000, sizes: [375, 870, 974, 1038, 1149, 1163, 1200, 1316, 1410, 1531, 1620, 1779, 1811, 2003] },
-  ],
   // The Ark · published office sizes from the payment plan; the 8,897 sqft
   // unit at the premium rate is the signature restaurant space.
   "The Ark": [
     { name: "Corporate Offices", rate: 31000, sizes: [637, 661, 690, 718, 808, 829, 937, 980, 1033, 1040, 1092, 1302, 1345] },
     { name: "Signature Restaurant", rate: 40000, sizes: [8897] },
-  ],
-  // Pearl One Capital · residential apartments. Base rate is 26,000/sqft; the
-  // location premium is baked into each sub-category's effective rate —
-  // Front +10% and Corner +10% → 28,600, Front & Corner +15% → 29,900.
-  // Sizes are the gross areas published in the developer's payment plan.
-  "Pearl One Capital": [
-    { group: "1 Bed Apartment", name: "General", rate: 26000, sizes: [625, 770] },
-    { group: "1 Bed Apartment", name: "Front", rate: 28600, sizes: [630, 635, 715, 716.25, 728.75, 731.25, 741.25, 743.75, 768.75] },
-    { group: "1 Bed Apartment", name: "Corner", rate: 28600, sizes: [727.5] },
-
-    { group: "2 Bed Apartment", name: "General", rate: 26000, sizes: [1015, 1128.75] },
-    { group: "2 Bed Apartment", name: "Front", rate: 28600, sizes: [1083.75, 1093.75, 1095, 1101.25, 1125, 1175, 1187.5] },
-    { group: "2 Bed Apartment", name: "Corner", rate: 28600, sizes: [1282.5] },
-    { group: "2 Bed Apartment", name: "Front & Corner", rate: 29900, sizes: [1200] },
-
-    { group: "3 Bed Apartment", name: "General", rate: 26000, sizes: [1668.75] },
-    { group: "3 Bed Apartment", name: "Front & Corner", rate: 29900, sizes: [1490] },
-  ],
-  // Pearl One Courtyard · Tower 1 general apartments, flat 30,000/sqft. Sizes
-  // are the gross areas published in the developer's payment plans.
-  "Pearl One Courtyard": [
-    { group: "1 Bed Apartment", name: "General", rate: 30000, sizes: [500] },
-    { group: "2 Bed Apartment", name: "General", rate: 30000, sizes: [800, 1000] },
   ],
   // Classic Atrium · residential apartments, flat 20,000/sqft across all types.
   // Sizes are the approximate covered areas published in the payment plan. The
@@ -500,29 +467,6 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
-  // Falah Technology Tower: 10 booking + 10 confirmation + 25 possession
-  // + (1%×31 monthly = 31%) + (4.8%×5 half-yearly balloons = 24%) = 100%
-  "Falah Technology Tower": {
-    milestones: [
-      { label: "Booking", pct: 10 },
-      { label: "Confirmation", pct: 10 },
-      { label: "On possession", pct: 25 },
-    ],
-    installments: [
-      {
-        label: "Monthly installment",
-        pct: 1,
-        count: 31,
-        note: "1% × 31 (monthly)",
-      },
-      {
-        label: "Half-yearly balloon payment",
-        pct: 4.8,
-        count: 5,
-        note: "4.8% × 5 (half-yearly)",
-      },
-    ],
-  },
   // Zalmi X: 15 booking + 15 confirmation + (5.5%×10 quarterly = 55%)
   // + 15 balloon after 18 months = 100% over 30 months
   "Zalmi X": {
@@ -537,49 +481,6 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
         pct: 5.5,
         count: 10,
         note: "5.5% × 10 (quarterly)",
-      },
-    ],
-  },
-  // Pearl One Capital: flat PKR 1,000,000 booking + 36 monthly installments
-  // + final balloon on possession. The developer quotes a fixed booking amount
-  // (not a %), so the 5% shown is indicative; the exact flat figure is in the
-  // plan note. 5 + (2.36% × 36 = 85%) + 10 = 100% over 36 months.
-  "Pearl One Capital": {
-    milestones: [
-      { label: "Booking & down payment", pct: 5 },
-      { label: "On possession", pct: 10 },
-    ],
-    installments: [
-      {
-        label: "Monthly installment",
-        pct: 85 / 36,
-        count: 36,
-        note: "36 monthly installments (85%)",
-      },
-    ],
-  },
-  // Pearl One Courtyard: flat-amount schedule (down payment + final instalment
-  // are fixed PKR figures, so the percentages shown are based on the entry
-  // 1-bed unit — see plan note). Down payment + 11 monthly + yearly instalment
-  // + 11 monthly + final instalment over ~24 months.
-  "Pearl One Courtyard": {
-    milestones: [
-      { label: "Down payment (at booking)", pct: 100 / 15 },
-      { label: "Yearly instalment (1 Apr 2027)", pct: 100 / 15 },
-      { label: "Final instalment (1 Apr 2028)", pct: 9.5 },
-    ],
-    installments: [
-      {
-        label: "Monthly instalment · Year 1",
-        pct: 3.5,
-        count: 11,
-        note: "11 monthly (May 2026 – Mar 2027)",
-      },
-      {
-        label: "Monthly instalment · Year 2",
-        pct: 3.5,
-        count: 11,
-        note: "11 monthly (May 2027 – Mar 2028)",
       },
     ],
   },
@@ -713,23 +614,6 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
       },
     ],
   },
-  // Sunset Square: 10 booking + 15 confirmation + 10 possession + (65% across
-  // 24 monthly = 2.708% each) = 100% over a 2-year plan.
-  "Sunset Square": {
-    milestones: [
-      { label: "Booking", pct: 10 },
-      { label: "Confirmation", pct: 15 },
-      { label: "On possession", pct: 10 },
-    ],
-    installments: [
-      {
-        label: "Monthly installment",
-        pct: 65 / 24,
-        count: 24,
-        note: "24 monthly installments (65%)",
-      },
-    ],
-  },
   // Aureum Mall & Residences: 10 booking + 15 confirmation + 20 completion +
   // (1%×55 monthly = 55%) = 100%, as published for apartments & offices. Shops
   // run a different 42-month schedule with an added half-yearly top-up — see
@@ -775,8 +659,6 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
 
 // Optional plan caveats, shown beneath the breakdown. Keyed by project name.
 const PLAN_NOTES: Record<string, string> = {
-  "Falah Technology Tower":
-    "Co-working space is also available at PKR 2,600,000 per chair on the same payment plan (booking 260,000 / monthly 26,000). Located at Plot 30, Main Defence Road, near Indus Hospital, Lahore.",
   "Bahria Sky 2":
     "Rates shown are the discounted launch rates, with each sub-category's location, corner and atrium premiums already included. Final availability is confirmed by the developer.",
   "Emirates Mall & Residency":
@@ -785,8 +667,6 @@ const PLAN_NOTES: Record<string, string> = {
     "Corner corporate offices (stacks 303-903 & 304-904) are charged 5% extra. 5% discount on full cash payment. Prices are exclusive of taxes and government dues.",
   "The Ark":
     "A 5% premium factor applies to corner units and a further 5% to front-facing units. Prices are subject to change without prior notice.",
-  "Pearl One Courtyard":
-    "LDA approved · Tower 1, Bahria Town Lahore, Tipu Sultan Main Boulevard. All apartments are sold at a flat PKR 30,000/sq ft; areas are gross & approximate. The down payment and final instalment are fixed rupee amounts that vary by unit, so the percentages shown are indicative (based on the entry 1-bed unit). Down payment at booking is PKR 1,000,000 for the 1-bed and PKR 1,500,000 for the 2-bed units. The schedule runs as a down payment, 11 monthly instalments (1 May 2026 – 1 Mar 2027), a yearly instalment on 1 Apr 2027, 11 more monthly instalments (1 May 2027 – 1 Mar 2028), and a final instalment on 1 Apr 2028. Down payment is due by 30 April 2026, failing which the booking is cancelled.",
   "Classic Atrium": "Tipu Sultan Block, Bahria Town Lahore.",
   "Skyline Boulevard":
     "LDA approved · Al Kabir Downtown, Main Raiwind Road, Lahore, by Brother Developers. Pay over 3.5 years with possession in 3 years. Rates shown are the general per-sqft rates published per floor; corner and premium (“category”) units carry a higher rate — Lower Ground 24,200, Ground Floor shops 44,000, 1st & 2nd Floor 27,500, and apartments 16,500 per sq ft. Triple-height main-boulevard premium outlets are quoted at 35,000 (up to 49,500 for prime positions). The schedule runs as 15% booking, 15% on confirmation within 45 days, 42 monthly installments (25%), a half-yearly installment after every 6 months (20%), 10% on grey structure, and 15% on possession. Areas are gross & approximate and prices are subject to availability of units.",
@@ -796,14 +676,10 @@ const PLAN_NOTES: Record<string, string> = {
     "LDA approved · Bahria Town Lahore, by Athar Associates; delivery in 2031. Tower 2 offers non-furnished apartments on a 5-year plan: 10% booking, 10% confirmation (after 2 months), 60 monthly installments (60%), and 20% on completion. Standard units are 16,000/sq ft and courtyard-view units 17,500/sq ft. Areas are gross & approximate and prices are subject to availability of units.",
   "Icon Avenue":
     "LDA approved · Pine Avenue Road, Lahore, by Athar Associates; delivery in 2029. The 2.5-year payment plan is the same for offices and showrooms: 10% booking, 10% confirmation (after 2 months), 25 monthly installments (1% each, 25%), 5 half-yearly balloon payments (7% each, 35%), and 20% on completion. Offices are sold at a flat PKR 25,000/sq ft and showrooms at PKR 50,000/sq ft. Areas are approximate and prices are subject to availability of units.",
-  "Pearl One Capital":
-    "Approved by CDA and DHA. Eid-ul-Fitr offer — valid till Eid-ul-Fitr 2026. Booking & down payment is a flat PKR 1,000,000 across all unit sizes, followed by 36 equal monthly installments and a final balloon payment on possession (the percentages shown are indicative splits of the total). A corner unit adds 10%, a front unit adds 10%, and front & corner adds 15% — already reflected in the per-sqft rate. All areas are gross & approximate. Instalment plan starts from April 2026 and is subject to availability of units. No discount on full cash payment. Commercial units (offices & shops) and luxury single & double-storey penthouses (LA-A, LA-B, LA-C) are also available — payment plans for these on request.",
   "J7 Icon":
     "Mumtaz City, Islamabad, on Srinagar Highway — minutes from the new Islamabad International Airport and the major motorways. Areas are approximate and prices are subject to availability of units.",
   "UK 13 Cove Residency":
     "Actual measurement of the apartment area shall be done before the possession of the property and price will be adjusted accordingly. Additionally, Corner and View charges will apply to the units, which will be either 10% or 5%.",
-  "Sunset Square":
-    "final pricing depends on tower, floor and unit position and is subject to availability.",
   "Aureum Mall & Residences":
     "Bahria Town Lahore, opposite Icon Mall and directly facing Ring Road, by Alfalah Real Estate & Builders; possession in 2 years.",
   "Canton Sky Tower":
@@ -863,16 +739,6 @@ function genericPlan(
 // one bio; project copy and floor plans are keyed by project name.
 
 const DEVELOPERS: Record<string, Developer> = {
-  "ABS Developers": {
-    name: "ABS Developers",
-    blurb:
-      "ABS is an emerging real-estate developer on a mission to transform the way people live — bringing luxury into everyday residences through state-of-the-art technology and modern amenities. Founded in 2015, ABS Builders set out to create projects that cater to the luxury-living needs of both the middle and elite classes, and has since completed multiple grand developments that mirror that mission. What sets the company apart is its focus on furnishing luxurious dwellings — apartments and buildings equipped with world-class amenities at genuinely affordable rates. Operating in an Islamic state, ABS is proud to be among the first Sharia-compliant real-estate companies, reflecting its commitment to honesty in trade and regard for its clientele. Quality, luxury and affordability are at the heart of everything it builds.",
-    stats: [
-      { value: "2015", label: "Founded" },
-      { value: "Sharia-compliant", label: "First-of-its-kind" },
-      { value: "Bahria Town & DHA", label: "Operating markets" },
-    ],
-  },
   "Classic Living": {
     name: "Classic Living",
     blurb:
@@ -934,16 +800,6 @@ const DEVELOPERS: Record<string, Developer> = {
       { value: "Pine Avenue, Lahore", label: "Operating market" },
       { value: "LDA approved", label: "Regulatory status" },
       { value: "Developing More Than Expectations", label: "Brand promise" },
-    ],
-  },
-  "Q-Links": {
-    name: "Q-Links Property Management (Pvt.) Ltd",
-    blurb:
-      "Q-Links Property Management (Pvt.) Ltd, established in 2002, operates at the intersection of strategic land acquisition, development expertise and investor-focused structuring. Based in Lahore, the firm specialises in premium residential communities, commercial hubs and mixed-use developments designed for long-term appreciation. Its leadership brings together more than two decades of real-estate expertise, market foresight and operational discipline — building with foresight, managing with precision and delivering with accountability. Sunset Square is delivered in partnership with UK Developers, a trusted real-estate pioneer with a 27-year legacy rooted in Lahore's historic Azam Cloth Market. With 12+ commercial projects successfully delivered, UK Developers is recognised as a pioneer of modern high-rise construction in heritage commercial zones. Guided by Islamic, Shariah-compliant principles (no riba), it pairs ethical, transparent dealing with future-ready architecture as it expands from the Old City to prime corridors such as Pine Avenue Road and planned communities like Ittehad Town.",
-    stats: [
-      { value: "2002", label: "Established" },
-      { value: "20+ yrs", label: "Real-estate expertise" },
-      { value: "Lahore", label: "Operating market" },
     ],
   },
   "Zalmi Developments": {
@@ -1016,18 +872,6 @@ const ICON_MALL_GALLERY = [
 ];
 
 const ABOUT_OVERRIDES: Record<string, About> = {
-  "Pearl One Courtyard": {
-    description:
-      "Pearl One Courtyard Tower 1 is one of the most modern projects by ABS Developers — designed to offer a life full of comfort, peace and luxury. The building rises Ground + 25 storeys, with basement parking, a G+5-storey shopping mall, and 1, 2 and 3-bedroom apartments topped by double-storey penthouses. Set in the heart of Bahria Town Lahore on Tipu Sultan Main Boulevard, it sits just 10 seconds from Winter Land and the Food Court, 3 minutes from Bahria Hospital and Imtiaz Mall, and 5 minutes from Ring Road, Raiwind Road and Canal Road — a prime address that blends comfort, style and convenience for both residents and businesses.",
-    highlights: [
-      "Tipu Sultan Main Boulevard, Bahria Town Lahore",
-      "LDA approved",
-      "Ground + 25 storeys with basement parking",
-      "G+5 shopping mall podium",
-      "1, 2 & 3-bed apartments + double-storey penthouses",
-      "Minutes from Ring Road, Raiwind Road & Canal Road",
-    ],
-  },
   "Curve – Pine Avenue Downtown": {
     description:
       "The Curve is a contemporary commercial landmark on Pine Avenue Road. Positioned along a prominent curve of the avenue, the project benefits from strong frontage and natural exposure, making it an ideal destination for retail outlets, showrooms and modern office spaces. With its smart layout, premium construction and proximity to established residential communities and popular lifestyle destinations, The Curve creates a dynamic environment for both businesses and customers.",
@@ -1114,18 +958,6 @@ const ABOUT_OVERRIDES: Record<string, About> = {
       "Central atrium with capsule glass lifts",
     ],
   },
-  "Sunset Square": {
-    description:
-      "Sunset Square is a next-generation commercial destination on Pine Avenue — one of Lahore's most promising commercial corridors — developed by Q-Links Property Management in partnership with UK Developers. Conceived as a single, seamlessly connected hub, three interconnected towers bring high-footfall retail, elevated sky dining and modern business suites together across open spaces, courtyards and rooftop gardens. A continuous walkthrough design with no dead ends maximises brand visibility and footfall, while a 120 ft wide boulevard frontage, dedicated parking, digital brand screens, smart infrastructure and advanced security round out a premium environment built for long-term growth.",
-    highlights: [
-      "Pine Avenue, near Lake City Interchange",
-      "Three interconnected commercial towers",
-      "120 ft wide boulevard frontage",
-      "Sky dining & skywalk experience",
-      "High-footfall seamless-flow design",
-      "Open courtyards & rooftop gardens",
-    ],
-  },
   "Aureum Mall & Residences": {
     description:
       "Aureum Mall & Residences is Alfalah Real Estate & Builders' flagship development on a 16-Kanal plot in Bahria Town Lahore — directly opposite Icon Mall and facing Ring Road. A single glass-atrium tower stacks premium commercial shops, a destination food court, corporate office floors and the in-house Aureum Hotel, with Aureum Apartments rising above and a rooftop leisure deck on top — engineered to be Bahria Town Lahore's highest footfall investment magnet.",
@@ -1182,20 +1014,6 @@ const CLASSIC_ATRIUM_GALLERY = [
   "/images/classic-atrium/gallery/24-three-bed.jpg",
   "/images/classic-atrium/gallery/25-three-bed.jpg",
   "/images/classic-atrium/gallery/26-three-bed.jpg",
-];
-
-// Pearl One Courtyard · Tower 1 renders from the project brochure, ordered
-// shopping-mall podium → furnished apartment interiors by unit size → penthouse.
-const PEARL_ONE_COURTYARD_GALLERY = [
-  "/images/pearl-one-courtyard/gallery/01-mall-lower-ground.webp",
-  "/images/pearl-one-courtyard/gallery/02-mall-ground.webp",
-  "/images/pearl-one-courtyard/gallery/03-mall-first.webp",
-  "/images/pearl-one-courtyard/gallery/04-one-bed.webp",
-  "/images/pearl-one-courtyard/gallery/05-two-bed.webp",
-  "/images/pearl-one-courtyard/gallery/06-three-bed.webp",
-  "/images/pearl-one-courtyard/gallery/07-three-bed.webp",
-  "/images/pearl-one-courtyard/gallery/08-penthouse.webp",
-  "/images/pearl-one-courtyard/gallery/09-penthouse.webp",
 ];
 
 // Zalmi X · renders from the project brochure — branded entrance lobby (the
@@ -1265,18 +1083,6 @@ const UK_13_GALLERY = [
   "/images/uk-13/gallery/17-rooftop.jpg",
 ];
 
-// Sunset Square · exterior renders of the three-tower commercial precinct,
-// ordered plaza hero (the Sunset Square / Peak tower) → courtyard water feature
-// → retail street → dining terrace → boulevard arrival → evening promenade.
-const SUNSET_SQUARE_GALLERY = [
-  "/images/sunset-square/gallery/01-plaza-sunset-square.webp",
-  "/images/sunset-square/gallery/02-courtyard-water-feature.webp",
-  "/images/sunset-square/gallery/03-retail-street.webp",
-  "/images/sunset-square/gallery/04-dining-terrace.webp",
-  "/images/sunset-square/gallery/05-boulevard-arrival.webp",
-  "/images/sunset-square/gallery/06-evening-promenade.webp",
-];
-
 // Aureum Mall & Residences · renders supplied by Alfalah Real Estate &
 // Builders, ordered exterior hero (day) → dusk exterior → aerial site context
 // → mall atrium → shopping-mall interior → food court → entertainment zone
@@ -1294,13 +1100,11 @@ const AUREUM_MALL_GALLERY = [
 ];
 
 const GALLERY_OVERRIDES: Record<string, string[]> = {
-  "Sunset Square": SUNSET_SQUARE_GALLERY,
   "Aureum Mall & Residences": AUREUM_MALL_GALLERY,
   "UK 13 Cove Residency": UK_13_GALLERY,
   "J7 Icon": J7_ICON_GALLERY,
   "Curve – Pine Avenue Downtown": CURVE_GALLERY,
   "Sky Tree Tower": SKY_TREE_TOWER_GALLERY,
-  "Pearl One Courtyard": PEARL_ONE_COURTYARD_GALLERY,
   "Icon Mall & Tower 1": ICON_MALL_GALLERY,
   "Icon Mall & Tower 2": ICON_MALL_GALLERY,
   "Classic Atrium": CLASSIC_ATRIUM_GALLERY,
@@ -1308,9 +1112,6 @@ const GALLERY_OVERRIDES: Record<string, string[]> = {
 };
 
 const FLOORPLAN_OVERRIDES: Record<string, FloorPlan[]> = {
-  "Sunset Square": [
-    { label: "Ground Floor", img: "/images/sunset-square/floor-ground.webp" },
-  ],
   "Curve – Pine Avenue Downtown": [
     { label: "Ground Floor", img: "/images/curve/floor-ground.jpg" },
     { label: "First Floor", img: "/images/curve/floor-first.jpg" },
