@@ -1,6 +1,7 @@
 "use client";
 
 import { MessageCircle } from "lucide-react";
+import Link from "next/link";
 import { whatsappLink } from "@/lib/whatsapp";
 import { brandName } from "@/features/partners/partners";
 import { usePartner } from "@/features/partners/usePartner";
@@ -22,6 +23,12 @@ export function SiteFooter() {
               ? "Powered by Clearstoreys · Pakistan commercial off-plan."
               : "Compare off-plan property in Lahore & Islamabad."}
           </p>
+          <Link
+            href="/privacy-policy"
+            className="mt-3 inline-block text-sm text-paper/80 underline underline-offset-4 hover:text-paper"
+          >
+            Privacy policy
+          </Link>
         </div>
         <a
           href={whatsappLink(

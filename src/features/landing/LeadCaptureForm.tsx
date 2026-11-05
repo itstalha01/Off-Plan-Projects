@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ArrowUpRight, Check, MessageCircle } from "lucide-react";
 import { whatsappLink } from "@/lib/whatsapp";
 import { trackLeadConversion } from "./gtag";
@@ -168,7 +169,11 @@ export function LeadCaptureForm() {
       </button>
 
       <p className="mt-3 text-center text-xs text-brown">
-        We&rsquo;ll only use your details to help with your property search.
+        We use your details to respond to your property enquiry. Read our{" "}
+        <Link href="/privacy-policy" className="text-ink underline underline-offset-4">
+          privacy policy
+        </Link>
+        . You can ask us to stop contacting you at any time.
       </p>
     </form>
   );

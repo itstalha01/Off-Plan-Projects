@@ -7,6 +7,7 @@ const SITE_URL = "https://clearstoreys.com";
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: `${SITE_URL}/` },
+    { url: `${SITE_URL}/privacy-policy` },
     ...PROJECTS.flatMap((project) => {
       const url = `${SITE_URL}/projects/${slugOf(project)}`;
       return [
