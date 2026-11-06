@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Download, MessageCircle, Send } from "lucide-react";
+import { Download, Send } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -10,14 +10,13 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { formatPKR, formatRate } from "@/lib/format";
-import { whatsappLink, whatsappShareLink } from "@/lib/whatsapp";
+import { whatsappShareLink } from "@/lib/whatsapp";
 import {
   downloadPaymentPlanPdf,
   paymentPlanPdfFile,
   type PaymentPlanPdf,
 } from "@/lib/paymentPdf";
 import { hexToRgb, loadLogoImage, type LogoImage } from "@/lib/partnerLogo";
-import { brandName, type Partner } from "@/features/partners/partners";
 import { usePartner } from "@/features/partners/usePartner";
 import type { Category, Project } from "../types/project";
 import {
@@ -41,6 +40,7 @@ import {
 } from "../lib/customPlan";
 import { useBudgetFilter } from "../hooks/useBudgetFilter";
 import { UnitSizeSlider } from "./UnitSizeSlider";
+import { ProjectEnquiry, useEnquiryUnit } from "./ProjectEnquiry";
 
 type BudgetMode = BudgetFilter["budgetMode"];
 
@@ -66,22 +66,6 @@ function seedMax(mode: BudgetMode, b: BudgetFilter): string {
   return b.maxEntryPrice < MAX_ENTRY_PRICE
     ? String(Math.round(b.maxEntryPrice * 1_000_000))
     : "";
-}
-
-function advisorWhatsapp(
-  project: Project,
-  category: Category,
-  size: number,
-  rate: number,
-  brand: string,
-  number?: string
-): string {
-  const ratePart =
-    rate !== category.rate ? ` at a custom rate of ${formatRate(rate)}` : "";
-  return whatsappLink(
-    `Hi ${brand}, I'd like the full payment schedule and to book a viewing for ${project.name} (${project.dev}, ${project.area}), ${category.name}, roughly ${size.toLocaleString()} sqft${ratePart}.`,
-    number
-  );
 }
 
 /** Parse a free-typed override field; returns null unless it's a positive number. */
@@ -293,7 +277,6 @@ export function PaymentCalculator({
   // White-label context: route enquiries to the partner's WhatsApp and stamp
   // their logo on the exported PDF. Null on the main Clearstoreys site.
   const partner = usePartner();
-  const brand = brandName(partner);
   const [partnerLogo, setPartnerLogo] = useState<LogoImage | null>(null);
   useEffect(() => {
     if (!partner?.logo) {
@@ -469,6 +452,10 @@ export function PaymentCalculator({
   const parsedRate = parsePositive(customRate);
   const effectiveSize = parsedSize ?? size;
   const effectiveRate = category ? parsedRate ?? category.rate : 0;
+  const enquiryUnit = category
+    ? `${category.group ? `${category.group} · ` : ""}${category.name}, ${effectiveSize.toLocaleString("en-PK")} sqft${effectiveRate !== category.rate ? ` at a custom rate of ${formatRate(effectiveRate)}` : ""}`
+    : "";
+  useEnquiryUnit(enquiryUnit);
 
   // Base price before adjustments. The premium is added on top; the discount
   // then comes off the gross (so a % discount is taken after any premium).
@@ -1103,22 +1090,7 @@ export function PaymentCalculator({
           </label>
 
           <div className="mt-4 flex flex-wrap gap-3">
-            <a
-              href={advisorWhatsapp(
-                project,
-                category,
-                effectiveSize,
-                effectiveRate,
-                brand,
-                partner?.whatsapp
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-gold px-5 text-sm font-semibold text-ink transition-colors hover:bg-gold-deep hover:text-paper"
-            >
-              <MessageCircle className="size-4" />
-              Connect to the advisor
-            </a>
+            <ProjectEnquiry project={project} unit={enquiryUnit} />
             <button
               type="button"
               onClick={() => shareViaWhatsApp(category)}

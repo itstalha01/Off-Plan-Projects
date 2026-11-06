@@ -45,7 +45,7 @@ function Stat({
 export function Hero({ partner }: { partner?: Partner | null }) {
   const brand = brandName(partner);
   const heroWhatsapp = whatsappLink(
-    `Hi ${brand}, I'd like help finding a Pakistan off-plan project that fits me.`,
+    `Hi ${brand}, Please send available units and latest prices for off-plan properties matching my budget.`,
     partner?.whatsapp
   );
 
@@ -168,7 +168,7 @@ export function Hero({ partner }: { partner?: Partner | null }) {
               className="group inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3.5 text-sm font-semibold text-paper transition-colors hover:bg-gold-deep"
             >
               <MessageCircle className="size-4" />
-              {partner ? "Connect to the Advisor" : "Get Help Choosing a Property"}
+              Get available units and latest prices
               <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </a>
             <a

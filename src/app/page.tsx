@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Header } from "@/components/shared/Header";
 import { SiteFooter } from "@/components/shared/SiteFooter";
 import { Hero } from "@/features/projects/components/Hero";
+import { FeaturedProjects } from "@/features/projects/components/FeaturedProjects";
 import { FilterToolbar } from "@/features/projects/components/FilterToolbar";
 import { ProjectGrid } from "@/features/projects/components/ProjectGrid";
 // TEMP: kept for the Bahria Sky One open-house invite banner, currently hidden.
@@ -23,6 +24,7 @@ export default function HomePage() {
         {/* TEMP: Bahria Sky One open-house invite download (remove after the event). */}
         {/* Hidden for now — re-enable by uncommenting when needed. */}
         {/* <InviteDownload /> */}
+        <FeaturedProjects />
         <FilterToolbar />
         <ProjectGrid />
       </main>

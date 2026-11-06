@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ProjectEnquiry } from "./ProjectEnquiry";
 import { cn } from "@/lib/utils";
 import { formatMillionsCr } from "@/lib/format";
 import {
@@ -86,6 +87,7 @@ export function ProjectHero({ project }: { project: Project }) {
         />
         <Fact label="Approval" value={badge.label} />
       </dl>
+      <div className="mt-6"><ProjectEnquiry project={project} /></div>
     </div>
   );
 }

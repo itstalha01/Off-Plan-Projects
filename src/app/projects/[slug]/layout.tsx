@@ -1,3 +1,4 @@
+import { ProjectEnquiryProvider } from "@/features/projects/components/ProjectEnquiry";
 import { notFound } from "next/navigation";
 import { Header } from "@/components/shared/Header";
 import { SiteFooter } from "@/components/shared/SiteFooter";
@@ -20,7 +21,7 @@ export default async function ProjectLayout({
   if (!project) notFound();
 
   return (
-    <>
+    <ProjectEnquiryProvider key={slug} project={project}>
       <Header />
       <main className="flex-1">
         <div className="mx-auto w-full max-w-4xl px-5 pt-6 sm:px-8 sm:pt-8">
@@ -36,6 +37,6 @@ export default async function ProjectLayout({
         <RelatedProjects projects={relatedProjects(project)} />
       </main>
       <SiteFooter />
-    </>
+    </ProjectEnquiryProvider>
   );
 }

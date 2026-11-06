@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { ChevronRight, MessageCircle } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { whatsappLink } from "@/lib/whatsapp";
 import { slugOf, typesOf } from "../constants/projects";
 import {
   basePathFor,
-  brandName,
   type Partner,
 } from "@/features/partners/partners";
 import { SECTION_META, sectionsOf } from "../constants/sections";
@@ -23,7 +21,6 @@ export function ProjectHub({
 }) {
   const sections = sectionsOf(project);
   const base = `${basePathFor(partner)}/projects/${slugOf(project)}`;
-  const brand = brandName(partner);
 
   return (
     <section className="py-8">
@@ -136,18 +133,6 @@ export function ProjectHub({
         })}
       </div>
 
-      <a
-        href={whatsappLink(
-          `Hi ${brand}, I'd like more information about ${project.name} (${project.dev}, ${project.area}).`,
-          partner?.whatsapp
-        )}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="mt-6 inline-flex h-11 items-center justify-center gap-2 rounded-full bg-gold px-6 text-sm font-semibold text-ink transition-colors hover:bg-gold-deep hover:text-paper"
-      >
-        <MessageCircle className="size-4" />
-        Enquire on WhatsApp
-      </a>
     </section>
   );
 }
