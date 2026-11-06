@@ -8,6 +8,7 @@ import { ProjectGrid } from "@/features/projects/components/ProjectGrid";
 // import { InviteDownload } from "@/features/invite/InviteDownload";
 
 export const metadata: Metadata = {
+  alternates: { canonical: "https://clearstoreys.com/" },
   title: "Off-Plan Property in Lahore & Islamabad | Clearstoreys",
   description:
     "Compare off-plan apartments, shops and offices in Lahore and Islamabad. Explore installment payment plans, starting prices and expected possession dates.",

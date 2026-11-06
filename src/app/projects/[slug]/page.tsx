@@ -21,15 +21,17 @@ export async function generateMetadata({
   const project = projectBySlug(slug);
   if (!project) return {};
 
-  const title = `${project.name} · ${project.dev} | Clearstoreys`;
-  const description =
-    project.about?.description ??
-    `${project.name} by ${project.dev} in ${project.area}, ${project.city}. Payment plan, possession timeline and approval status on Clearstoreys.`;
+  const title = `${project.name}, ${project.city} | Payment Plan | Clearstoreys`;
+  const description = `${project.name} by ${project.dev} in ${project.area}, ${project.city}. Compare available layouts and installment payment plans, with expected possession in ${project.poss}.`;
+  const url = `https://clearstoreys.com/projects/${slug}`;
 
   return {
     title,
     description,
+    alternates: { canonical: url },
     openGraph: {
+      type: "website",
+      url,
       title,
       description,
       images: project.img ? [{ url: project.img }] : undefined,

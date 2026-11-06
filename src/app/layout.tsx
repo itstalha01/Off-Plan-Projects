@@ -24,10 +24,10 @@ const nastaliq = Noto_Nastaliq_Urdu({
 });
 
 export const metadata: Metadata = {
-  // Resolves relative Open Graph / Twitter image paths (e.g. a project's cover)
-  // to absolute URLs. Set NEXT_PUBLIC_SITE_URL in production; localhost in dev.
+  // Public metadata must resolve to the production domain even when the
+  // deployment does not supply NEXT_PUBLIC_SITE_URL.
   metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://clearstoreys.com"
   ),
   title: "Clearstoreys · Pakistan Commercial Off-Plan",
   description:

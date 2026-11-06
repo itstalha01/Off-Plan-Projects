@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ChevronRight, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { whatsappLink } from "@/lib/whatsapp";
-import { slugOf } from "../constants/projects";
+import { slugOf, typesOf } from "../constants/projects";
 import {
   basePathFor,
   brandName,
@@ -26,6 +26,45 @@ export function ProjectHub({
 
   return (
     <section className="py-8">
+      <div className="mb-8 space-y-4 text-sm leading-7 text-brown">
+        <h2 className="font-serif text-2xl font-semibold text-ink">
+          {project.name} in {project.area}, {project.city}
+        </h2>
+        <p>
+          {project.name} is a {typesOf(project).join(" and ").toLowerCase()} project
+          by {project.dev} in {project.area}, {project.city}. Expected possession
+          is {project.poss}. Explore the available unit types below, then open
+          the payment plan to compare sizes, prices and installments.
+        </p>
+        {project.about?.description && <p>{project.about.description}</p>}
+        {project.about?.highlights && project.about.highlights.length > 0 && (
+          <ul className="list-disc space-y-1 pl-5">
+            {project.about.highlights.map((highlight) => (
+              <li key={highlight}>{highlight}</li>
+            ))}
+          </ul>
+        )}
+        <div>
+          <h3 className="font-semibold text-ink">Available unit types</h3>
+          <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+            {project.categories.map((category) => (
+              <li key={category.name} className="rounded-xl border border-ink/10 p-3">
+                <span className="font-medium text-ink">{category.name}</span>
+                <span className="block">
+                  {Math.min(...category.sizes).toLocaleString("en-PK")}
+                  {Math.max(...category.sizes) !== Math.min(...category.sizes) &&
+                    `–${Math.max(...category.sizes).toLocaleString("en-PK")}`} sqft
+                  {" · PKR "}{category.rate.toLocaleString("en-PK")} per sqft
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p className="text-xs leading-5">
+          Listed prices and possession dates are indicative. Confirm current
+          availability, charges and timelines before booking.
+        </p>
+      </div>
       <h2 className="font-serif text-2xl font-semibold text-ink">
         Explore this project
       </h2>

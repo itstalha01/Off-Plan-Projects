@@ -6,6 +6,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Project } from "../types/project";
+import { slugOf } from "./projects";
 
 /**
  * The explorable sections of a project, each its own route under
@@ -91,5 +92,8 @@ export function sectionMetadata(p: Project, key: SectionKey) {
   return {
     title: `${m.title} · ${p.name} | Clearstoreys`,
     description: `${m.title} for ${p.name} by ${p.dev} — ${p.area}, ${p.city}. ${m.blurb}.`,
+    alternates: {
+      canonical: `https://clearstoreys.com/projects/${slugOf(p)}/${m.segment}`,
+    },
   };
 }
