@@ -33,8 +33,8 @@ export function ProjectHub({
         <p>
           {project.name} is a {typesOf(project).join(" and ").toLowerCase()} project
           by {project.dev} in {project.area}, {project.city}. Expected possession
-          is {project.poss}. Explore the available unit types below, then open
-          the payment plan to compare sizes, prices and installments.
+          is {project.poss}. Select a unit type below to compare sizes, prices
+          and installments in the payment calculator.
         </p>
         {project.about?.description && <p>{project.about.description}</p>}
         {project.about?.highlights && project.about.highlights.length > 0 && (
@@ -46,16 +46,42 @@ export function ProjectHub({
         )}
         <div>
           <h3 className="font-semibold text-ink">Available unit types</h3>
+          <p className="mt-1 text-sm">
+            Select a unit type to explore its sizes and payment plan.
+          </p>
           <ul className="mt-2 grid gap-2 sm:grid-cols-2">
             {project.categories.map((category) => (
-              <li key={category.name} className="rounded-xl border border-ink/10 p-3">
-                <span className="font-medium text-ink">{category.name}</span>
-                <span className="block">
-                  {Math.min(...category.sizes).toLocaleString("en-PK")}
-                  {Math.max(...category.sizes) !== Math.min(...category.sizes) &&
-                    `–${Math.max(...category.sizes).toLocaleString("en-PK")}`} sqft
-                  {" · PKR "}{category.rate.toLocaleString("en-PK")} per sqft
-                </span>
+              <li key={`${category.group ?? ""}:${category.name}`}>
+                <Link
+                  href={{
+                    pathname: `${base}/payment`,
+                    query: {
+                      category: category.name,
+                      ...(category.group ? { group: category.group } : {}),
+                    },
+                  }}
+                  className="group flex h-full flex-col rounded-xl border border-ink/10 bg-paper p-4 transition-colors hover:border-gold hover:bg-cream focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
+                >
+                  {category.group && (
+                    <span className="text-xs font-medium text-gold-deep">
+                      {category.group}
+                    </span>
+                  )}
+                  <span className="font-medium text-ink">{category.name}</span>
+                  <span className="block">
+                    {Math.min(...category.sizes).toLocaleString("en-PK")}
+                    {Math.max(...category.sizes) !== Math.min(...category.sizes) &&
+                      `–${Math.max(...category.sizes).toLocaleString("en-PK")}`} sqft
+                    {" · PKR "}{category.rate.toLocaleString("en-PK")} per sqft
+                  </span>
+                  <span className="mt-3 flex items-center gap-2 text-sm font-medium text-ink group-hover:text-gold-deep">
+                    View sizes &amp; payment plan
+                    <ChevronRight
+                      aria-hidden="true"
+                      className="size-4 shrink-0 transition-transform group-hover:translate-x-0.5"
+                    />
+                  </span>
+                </Link>
               </li>
             ))}
           </ul>

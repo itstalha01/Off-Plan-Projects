@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { PaymentCalculator } from "@/features/projects/components/PaymentModal";
+import { PaymentPageCalculator } from "@/features/projects/components/PaymentPageCalculator";
 import { ProjectSection } from "@/features/projects/components/ProjectSection";
 import { hasSection } from "@/features/projects/constants/sections";
 import { partnerById } from "@/features/partners/partners";
@@ -27,7 +27,7 @@ export default async function PartnerPaymentPage({
 
   return (
     <ProjectSection title="Payment plan">
-      <PaymentCalculator project={project} />
+      <PaymentPageCalculator project={project} />
     </ProjectSection>
   );
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PaymentCalculator } from "@/features/projects/components/PaymentModal";
+import { PaymentPageCalculator } from "@/features/projects/components/PaymentPageCalculator";
 import { ProjectSection } from "@/features/projects/components/ProjectSection";
 import { projectBySlug } from "@/features/projects/constants/projects";
 import {
@@ -32,7 +32,7 @@ export default async function PaymentPage({
 
   return (
     <ProjectSection title="Payment plan">
-      <PaymentCalculator project={project} />
+      <PaymentPageCalculator project={project} />
     </ProjectSection>
   );
 }

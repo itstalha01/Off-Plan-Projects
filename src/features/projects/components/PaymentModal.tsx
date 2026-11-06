@@ -280,12 +280,14 @@ function CategoryButton({
 
 export function PaymentCalculator({
   project,
+  initialCategoryIndex = -1,
   // The modal renders this inside a fixed-height dialog, so it caps the height
   // and scrolls internally. On the dedicated payment page we want it to flow at
   // full height instead, so the whole plan is visible before Related projects.
   scrollContained = false,
 }: {
   project: Project;
+  initialCategoryIndex?: number;
   scrollContained?: boolean;
 }) {
   // White-label context: route enquiries to the partner's WhatsApp and stamp
@@ -308,9 +310,14 @@ export function PaymentCalculator({
   }, [partner?.logo]);
 
   const single = project.categories.length === 1;
-  const [catIndex, setCatIndex] = useState(single ? 0 : -1);
+  const initialIndex =
+    Number.isInteger(initialCategoryIndex) &&
+    initialCategoryIndex >= 0 && initialCategoryIndex < project.categories.length
+      ? initialCategoryIndex
+      : single ? 0 : -1;
+  const [catIndex, setCatIndex] = useState(initialIndex);
   const [size, setSize] = useState(
-    single ? project.categories[0].sizes[0] : 0
+    initialIndex >= 0 ? project.categories[initialIndex].sizes[0] : 0
   );
   // Free-typed overrides for off-plan sizes / revised (old) rates.
   const [customSize, setCustomSize] = useState("");
