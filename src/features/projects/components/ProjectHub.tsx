@@ -10,6 +10,7 @@ import {
 } from "@/features/partners/partners";
 import { SECTION_META, sectionsOf } from "../constants/sections";
 import type { Project } from "../types/project";
+import { CURVE_ARTICLE_PATH } from "@/features/articles/curve-brands";
 
 /** The project "hub": lets a visitor choose which section to explore. Each tile
  *  is a real link to that section's route. */
@@ -37,6 +38,13 @@ export function ProjectHub({
           and installments in the payment calculator.
         </p>
         {project.about?.description && <p>{project.about.description}</p>}
+        {!partner && slugOf(project) === "curve-pine-avenue-downtown" && (
+          <Link href={CURVE_ARTICLE_PATH} className="block rounded-xl border border-gold/40 bg-cream p-5 text-ink transition-colors hover:border-gold">
+            <span className="text-xs font-semibold uppercase tracking-widest text-gold-deep">From the Journal</span>
+            <span className="mt-2 block font-serif text-2xl">Five brands. One Curve.</span>
+            <span className="mt-2 block text-sm">Explore the MOU lineup and the appeal of Pine Avenue →</span>
+          </Link>
+        )}
         {project.about?.highlights && project.about.highlights.length > 0 && (
           <ul className="list-disc space-y-1 pl-5">
             {project.about.highlights.map((highlight) => (

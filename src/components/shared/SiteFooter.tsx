@@ -23,6 +23,9 @@ export function SiteFooter() {
               ? "Powered by Clearstoreys · Pakistan commercial off-plan."
               : "Compare off-plan property in Lahore & Islamabad."}
           </p>
+          <Link href="/articles" className="mt-3 mr-5 inline-block text-sm text-paper/80 underline underline-offset-4 hover:text-paper">
+            The Journal
+          </Link>
           <Link
             href="/privacy-policy"
             className="mt-3 inline-block text-sm text-paper/80 underline underline-offset-4 hover:text-paper"

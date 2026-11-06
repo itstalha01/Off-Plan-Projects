@@ -38,10 +38,9 @@ const rows: BaseTuple[] = [
   ["Sky Tree Tower", "HF Developers", "Pine Avenue Road", ["Commercial", "Residential"], "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 30000, 570, 4600, "/images/sky-tree-tower.webp"],
   ["Emirates Mall & Residency", "The Kings Developments", "Raiwind Road", ["Commercial", "Residential"], "2030", "Approved", 10, 65, 15, "6-Monthly", 4, 17000, 56, 1293, "/images/emirates-mall.jpg"],
   ["The Ark", "The Ark Developments", "Pine Avenue Road", "Commercial", "2027", "Approved", 10, 60, 20, "Monthly", 2.5, 31000, 637, 1345, "/images/the-ark-cover.jpg"],
-  ["Curve – Pine Avenue Downtown", "HF Developers", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 24000, 225, 4800, "/images/curve.webp"],
+  ["Curve – Pine Avenue Downtown", "HF Developers", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "6-Monthly", 3, 26500, 225, 4800, "/images/curve.webp"],
   ["Zalmi X", "Zalmi Developments", "Pine Avenue Road", "Commercial", "2028", "Approved", 15, 55, 0, "Quarterly", 2.5, 30000, 729, 4671, "/images/zalmi-x-cover-wide.webp"],
-  ["Classic Atrium", "Classic Living", "Bahria Town", "Residential", "2030", "Approved", 10, 48, 13, "Monthly", 4, 20000, 350, 2500, "/images/classic-atrium.webp"],
-  ["Skyline Boulevard", "Brother Developers", "Raiwind Road", ["Commercial", "Residential"], "2030", "Approved", 15, 45, 15, "Monthly", 3.5, 15000, 100, 4668, "/images/skyline-boulevard.jpg"],
+  ["Classic Atrium", "Classic Living", "Bahria Town", "Residential", "2028", "Approved", 10, 48, 13, "Monthly", 4, 20000, 350, 2500, "/images/classic-atrium.webp"],
   ["Icon Mall & Tower 1", "Athar Associates", "Bahria Town", ["Commercial", "Residential"], "2031", "Approved", 10, 60, 20, "Monthly", 4.5, 19000, 318, 1318, "/images/icon-mall/aerial.webp"],
   ["Icon Mall & Tower 2", "Athar Associates", "Bahria Town", "Residential", "2031", "Approved", 10, 60, 20, "Monthly", 5, 16000, 343, 1182, "/images/icon-mall/aerial.webp"],
   ["Icon Avenue", "Athar Associates", "Pine Avenue Road", "Commercial", "2029", "Approved", 10, 60, 20, "Monthly", 2.5, 25000, 384, 4877, "/images/icon-avenue.jpg"],
@@ -225,12 +224,13 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { name: "2 BHK Apartment", rate: 30000, sizes: [690] },
     { name: "3 BHK Apartment", rate: 30000, sizes: [1200] },
   ],
+  // Curve · published rates and unit sizes from the 29 September 2026 payment plan.
   "Curve – Pine Avenue Downtown": [
-    { name: "Ground & Mezzanine", rate: 60000, sizes: [750, 825, 925, 1125] },
-    { name: "First Floor", rate: 34000, sizes: [225, 425, 525] },
-    { name: "Second Floor", rate: 32000, sizes: [225, 450, 525] },
-    { name: "Office (3 to 7 Floor)", rate: 24000, sizes: [750, 950, 1250, 2250] },
-    { name: "8th Floor (eArena)", rate: 40000, sizes: [1075, 1650, 2500, 4800] },
+    { name: "Ground & Mezzanine", rate: 64000, sizes: [750, 825, 925, 1125] },
+    { name: "First Floor", rate: 36000, sizes: [225, 300, 450, 525] },
+    { name: "Second Floor", rate: 34500, sizes: [225, 300, 450, 525] },
+    { name: "Office (3 to 7 Floor)", rate: 26500, sizes: [575, 825, 995, 1350, 2150] },
+    { name: "8th Floor (eArena)", rate: 44000, sizes: [1075, 1650, 2500, 4800] },
   ],
   // Zalmi X · sizes are the published covered areas of office stacks 301-901
   // through 306-906; the commercial outlet spans Ground + 1st + 2nd floor.
@@ -256,26 +256,6 @@ const CATEGORY_OVERRIDES: Record<string, Category[]> = {
     { name: "3 Bed Apartment", rate: 20000, sizes: [1100], plan: CLASSIC_ATRIUM_PLANS["3 Bed Apartment"] },
     { name: "3 Bed Lawn Apartment", rate: 20000, sizes: [1650], plan: CLASSIC_ATRIUM_PLANS["3 Bed Lawn Apartment"] },
     { name: "3 Bed Penthouse", rate: 20000, sizes: [2500], plan: CLASSIC_ATRIUM_PLANS["3 Bed Penthouse"] },
-  ],
-  // Skyline Boulevard · Brother Developers, Al Kabir Downtown, Main Raiwind Road.
-  // Rates shown are the general per-sqft rates published per floor; corner /
-  // premium ("category") units carry a higher rate (see plan note). Sizes are
-  // the gross areas from the developer's payment plan. Ground-floor kiosks and
-  // shops are quoted at their own per-sqft rates.
-  "Skyline Boulevard": [
-    { group: "Lower Ground", name: "Kiosk", rate: 22000, sizes: [100] },
-    { group: "Lower Ground", name: "Shops", rate: 22000, sizes: [113, 150, 204, 246, 286, 345] },
-
-    { group: "Ground Floor", name: "Kiosk", rate: 44000, sizes: [110] },
-    { group: "Ground Floor", name: "Shops (Facing Downtown)", rate: 40000, sizes: [250, 310, 368, 406, 442, 557, 614] },
-    { group: "Ground Floor", name: "Triple-Height Premium Outlets (Main Boulevard)", rate: 35000, sizes: [2255, 2329, 4668] },
-
-    { group: "1st & 2nd Floor", name: "Kiosk", rate: 25000, sizes: [113] },
-    { group: "1st & 2nd Floor", name: "Shops", rate: 25000, sizes: [260, 318, 343, 383, 425, 478] },
-
-    { group: "Luxury Apartments", name: "1 Bed", rate: 15000, sizes: [431, 445, 481, 495, 533, 548, 555, 570, 586, 621, 680] },
-    { group: "Luxury Apartments", name: "2 Bed", rate: 15000, sizes: [851, 937, 1004] },
-    { group: "Luxury Apartments", name: "3 Bed", rate: 15000, sizes: [1381] },
   ],
   // Icon Mall & Tower 1 · Athar Associates, Bahria Town Lahore. Commercial floors
   // are quoted at a flat per-sqft rate per floor; Tower 1 apartments price by
@@ -491,31 +471,6 @@ const PLAN_OVERRIDES: Record<string, Plan> = {
   // monthlyInstallmentFraction) read — correct as-is, since the studio is also
   // the project's cheapest ("entry") unit.
   "Classic Atrium": CLASSIC_ATRIUM_PLANS["Studio Apartment"],
-  // Skyline Boulevard: 15 booking + 15 confirmation + (42 monthly = 25%)
-  // + (half-yearly after every 6 months = 20% over 7 payments) + 10 grey
-  // structure + 15 possession = 100%. Pay over 3.5 years, possession in 3 years.
-  "Skyline Boulevard": {
-    milestones: [
-      { label: "Booking", pct: 15 },
-      { label: "Confirmation (within 45 days)", pct: 15 },
-      { label: "On grey structure", pct: 10 },
-      { label: "On possession", pct: 15 },
-    ],
-    installments: [
-      {
-        label: "Monthly installment",
-        pct: 25 / 42,
-        count: 42,
-        note: "42 monthly installments (25%)",
-      },
-      {
-        label: "Half-yearly installment",
-        pct: 20 / 7,
-        count: 7,
-        note: "after every 6 months (20%)",
-      },
-    ],
-  },
   // Icon Mall & Tower 1: 10 booking + 10 confirmation (after 2 months)
   // + (54 monthly = 60%) + 20 completion = 100%. Pay over 4.5 years (54 months).
   "Icon Mall & Tower 1": {
@@ -663,13 +618,13 @@ const PLAN_NOTES: Record<string, string> = {
     "Rates shown are the discounted launch rates, with each sub-category's location, corner and atrium premiums already included. Final availability is confirmed by the developer.",
   "Emirates Mall & Residency":
     "A +10% corner factor and +10% Main-Boulevard factor apply to applicable units, so corner / main-boulevard prices may be higher than shown.",
+  "Curve – Pine Avenue Downtown":
+    "Prime location charges apply where applicable. Prices are subject to change without prior notice. Actual areas of showrooms, shops, offices and restaurants will be measured after completion, and prices adjusted accordingly.",
   "Zalmi X":
     "Corner corporate offices (stacks 303-903 & 304-904) are charged 5% extra. 5% discount on full cash payment. Prices are exclusive of taxes and government dues.",
   "The Ark":
     "A 5% premium factor applies to corner units and a further 5% to front-facing units. Prices are subject to change without prior notice.",
   "Classic Atrium": "Tipu Sultan Block, Bahria Town Lahore.",
-  "Skyline Boulevard":
-    "LDA approved · Al Kabir Downtown, Main Raiwind Road, Lahore, by Brother Developers. Pay over 3.5 years with possession in 3 years. Rates shown are the general per-sqft rates published per floor; corner and premium (“category”) units carry a higher rate — Lower Ground 24,200, Ground Floor shops 44,000, 1st & 2nd Floor 27,500, and apartments 16,500 per sq ft. Triple-height main-boulevard premium outlets are quoted at 35,000 (up to 49,500 for prime positions). The schedule runs as 15% booking, 15% on confirmation within 45 days, 42 monthly installments (25%), a half-yearly installment after every 6 months (20%), 10% on grey structure, and 15% on possession. Areas are gross & approximate and prices are subject to availability of units.",
   "Icon Mall & Tower 1":
     "LDA approved · Bahria Town Lahore, by Athar Associates; delivery in 2031. The 4.5-year payment plan is the same across all floors: 10% booking, 10% confirmation (after 2 months), 54 monthly installments (60%), and 20% on completion. Commercial units are sold at a flat per-sqft rate per floor — Ground 75,000, First 45,000, Second 37,500, and Third-floor food court 65,000. Tower 1 apartments (non-furnished) are 19,000/sq ft for standard studios and 20,500/sq ft for courtyard-view, ring-road and pool-view units. Areas are net & approximate and prices are subject to availability of units.",
   "Icon Mall & Tower 2":
@@ -924,11 +879,11 @@ const ABOUT_OVERRIDES: Record<string, About> = {
   },
   "Classic Atrium": {
     description:
-      "Classic Atrium is a residential high-rise by Classic Living in the Tipu Sultan Block of Bahria Town, Lahore. The tower offers a full range of homes — from studio and one-bed apartments to spacious two- and three-bed residences, lawn apartments and duplex penthouses — each finished at a flat PKR 20,000 per sq ft and scheduled for possession in 2030. Floors are arranged around a central atrium with capsule glass lifts and landscaped terraces, blending luxury and comfort into everyday living.",
+      "Classic Atrium is a residential high-rise by Classic Living in the Tipu Sultan Block of Bahria Town, Lahore. The tower offers a full range of homes — from studio and one-bed apartments to spacious two- and three-bed residences, lawn apartments and duplex penthouses — each finished at a flat PKR 20,000 per sq ft and scheduled for possession in 2028. Floors are arranged around a central atrium with capsule glass lifts and landscaped terraces, blending luxury and comfort into everyday living.",
     highlights: [
       "Tipu Sultan Block, Bahria Town Lahore",
       "LDA approved",
-      "Possession in 2030",
+      "Possession in 2028",
       "Flat PKR 20,000 / sq ft",
       "Studio to 3-bed duplex penthouse",
       "Central atrium & landscaped terraces",
