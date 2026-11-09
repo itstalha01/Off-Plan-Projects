@@ -86,14 +86,20 @@ export function sectionsOf(p: Project): SectionKey[] {
   return SECTION_ORDER.filter((key) => hasSection(p, key));
 }
 
+export function isStandaloneSearchSection(key: SectionKey): boolean {
+  // The About tab repeats the project description and highlights from the overview.
+  return key !== "about";
+}
+
 /** Per-section page metadata (title + description) for `generateMetadata`. */
 export function sectionMetadata(p: Project, key: SectionKey) {
   const m = SECTION_META[key];
+  const overviewUrl = `https://clearstoreys.com/projects/${slugOf(p)}`;
   return {
     title: `${m.title} · ${p.name} | Clearstoreys`,
     description: `${m.title} for ${p.name} by ${p.dev} — ${p.area}, ${p.city}. ${m.blurb}.`,
     alternates: {
-      canonical: `https://clearstoreys.com/projects/${slugOf(p)}/${m.segment}`,
+      canonical: isStandaloneSearchSection(key) ? `${overviewUrl}/${m.segment}` : overviewUrl,
     },
   };
 }
