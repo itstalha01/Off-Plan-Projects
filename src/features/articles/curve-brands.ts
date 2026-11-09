@@ -1,7 +1,7 @@
 export const CURVE_ARTICLE_PATH = "/articles/curve-brands-pine-avenue";
 export const CURVE_PROJECT_PATH = "/projects/curve-pine-avenue-downtown";
-export const CURVE_ARTICLE_TITLE = "Five brands. One Curve. A vote of confidence in Pine Avenue.";
-export const CURVE_ARTICLE_DESCRIPTION = "Rina’s Kitchenette, Bagh, BonBird, JS Bank and Contra Coffee: a look at Curve’s MOU lineup and the appeal of its Pine Avenue address in Lahore.";
+export const CURVE_ARTICLE_TITLE = "Curve Pine Avenue Lahore: 5 Major Brands Sign MOUs (Project Review)";
+export const CURVE_ARTICLE_DESCRIPTION = "Review Curve Pine Avenue Lahore by HF Developers: its five-brand MOU lineup, planned food outlets, location and access from nearby residential communities.";
 
 // Original brand assets, downloaded from each official site or its linked CDN.
 // Keep the visible credits and asset provenance together when updating a logo.
@@ -64,6 +64,7 @@ export const CURVE_BRANDS = [
 ] as const;
 
 export const CURVE_SOURCES = {
+  developer: "https://hfdevelopers.com/about/",
   project: "https://hfdevelopers.com/projects/curve/",
   location: "https://hfdevelopers.com/pine-avenue/",
   tenants: "https://hfdevelopers.com/why-you-should-open-your-business-in-hf-tower-2/",

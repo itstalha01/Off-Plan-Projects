@@ -9,6 +9,28 @@ import { CURVE_ARTICLE_DESCRIPTION, CURVE_ARTICLE_PATH, CURVE_ARTICLE_TITLE, CUR
 import styles from "./article.module.css";
 
 const url = `https://clearstoreys.com${CURVE_ARTICLE_PATH}`;
+const publishedTime = "2026-11-06T00:00:00+05:00";
+const modifiedTime = "2026-11-07T00:00:00+05:00";
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "@id": `${url}#article`,
+      headline: CURVE_ARTICLE_TITLE,
+      description: CURVE_ARTICLE_DESCRIPTION,
+      url,
+      mainEntityOfPage: url,
+      image: "https://clearstoreys.com/images/curve/gallery/01-facade-dusk.webp",
+      author: { "@type": "Person", name: ARTICLE_AUTHOR },
+      publisher: { "@type": "Organization", name: "Clearstoreys", url: "https://clearstoreys.com" },
+      datePublished: publishedTime,
+      dateModified: modifiedTime,
+      inLanguage: "en",
+    },
+  ],
+};
 
 export const metadata: Metadata = {
   title: `${CURVE_ARTICLE_TITLE} | Clearstoreys`,
@@ -16,7 +38,7 @@ export const metadata: Metadata = {
   authors: [{ name: ARTICLE_AUTHOR }],
   alternates: { canonical: url },
   openGraph: {
-    type: "article", url, title: CURVE_ARTICLE_TITLE, authors: [ARTICLE_AUTHOR],
+    type: "article", url, title: CURVE_ARTICLE_TITLE, authors: [ARTICLE_AUTHOR], publishedTime, modifiedTime,
     description: CURVE_ARTICLE_DESCRIPTION,
     images: [{ url: "/images/curve/gallery/01-facade-dusk.webp", width: 2560, height: 1440, alt: "Architectural render of Curve on Pine Avenue, Lahore" }],
   },
@@ -26,6 +48,10 @@ export const metadata: Metadata = {
 export default function CurveBrandsArticle() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }}
+      />
       <header className={styles.header}>
         <Link href="/" aria-label="Clearstoreys home"><Logo className="flex items-center gap-2.5" /></Link>
         <Link href="/articles">The Journal <ArrowUpRight size={15} aria-hidden="true" /></Link>
@@ -35,10 +61,10 @@ export default function CurveBrandsArticle() {
           <div className={styles.masthead}>
             <p>THE CLEARSTOREYS JOURNAL <span>01 / THE CURVE EDITION</span></p>
             <div className={styles.kicker}><span>Places &amp; people</span><span><MapPin size={13} aria-hidden="true" /> Pine Avenue, Lahore</span></div>
-            <h1>Five brands.<br />One <em>Curve.</em></h1>
+            <h1>{CURVE_ARTICLE_TITLE}</h1>
             <div className={styles.introRow}>
-              <p className={styles.deck}>A vote of confidence in Pine Avenue.<br />The names joining Curve’s story, before the doors open.</p>
-              <div className={styles.byline}>By {ARTICLE_AUTHOR}<br /><time dateTime="2026-11-06">6 November 2026</time> <span>· 4 min read</span></div>
+              <p className={styles.deck}>Five brands. One Curve.<br />A vote of confidence in Pine Avenue.</p>
+              <div className={styles.byline}>By {ARTICLE_AUTHOR}<br /><time dateTime="2026-11-06">6 November 2026</time> <span>· 5 min read</span><br />Updated <time dateTime="2026-11-07">7 November 2026</time></div>
             </div>
           </div>
 
@@ -70,9 +96,10 @@ export default function CurveBrandsArticle() {
           <section className={styles.location} aria-labelledby="location-title">
             <div className={styles.locationText}>
               <p className={styles.sectionLabel}>01 / THE ADDRESS</p>
-              <h2 id="location-title">The location<br />speaks for itself.</h2>
+              <h2 id="location-title">Curve Project Location &amp; Pine Avenue Connectivity</h2>
               <p>A brand’s address becomes part of its identity. Being easy to find, visible from the street and close to customers helps set the scene for the experience inside.</p>
               <p><a href={CURVE_SOURCES.project}>HF Developers describes Curve</a> as occupying a prominent bend on Pine Avenue, with a layout planned around commercial frontage. Its <a href={CURVE_SOURCES.location}>Pine Avenue overview</a> places the corridor within reach of Ring Road and residential communities including Lake City, Valencia, DHA Rahbar and Khayaban-e-Amin.</p>
+              <p>Because of its Pine Avenue location, Curve is positioned to serve residents looking for commercial facilities near Lake City Lahore, Valencia and DHA Rahbar, with Khayaban-e-Amin also part of the surrounding catchment.</p>
               <p>That combination is the heart of the appeal: an address where visibility, access and an established residential catchment can work together.</p>
             </div>
             <figure className={styles.diagram}>
@@ -93,7 +120,7 @@ export default function CurveBrandsArticle() {
           </section>
 
           <section id="the-lineup" className={styles.lineup} aria-labelledby="lineup-title">
-            <div className={styles.sectionHeading}><div><p className={styles.sectionLabel}>02 / THE BRAND MIX</p><h2 id="lineup-title">Different names.<br />A shared destination.</h2></div><p>Five identities that could help shape<br />how people use Curve.</p></div>
+            <div className={styles.sectionHeading}><div><p className={styles.sectionLabel}>02 / THE BRAND MIX</p><h2 id="lineup-title">Brand Lineup &amp; Food Outlets at Curve Lahore</h2></div><p>Five identities that could help shape<br />how people use Curve.</p></div>
             <div className={styles.brandGrid}>
               {CURVE_BRANDS.map((brand, index) => (
                 <section key={brand.id} id={brand.id} className={styles.brandCard}>
@@ -114,7 +141,7 @@ export default function CurveBrandsArticle() {
 
           <div className={styles.cta}><div><p className={styles.sectionLabel}>EXPLORE THE ADDRESS</p><h2>Take a closer look at Curve.</h2><p>Discover the project, layouts and listed payment plans.</p></div><Link href={CURVE_PROJECT_PATH}>Explore Curve <ArrowUpRight size={19} aria-hidden="true" /></Link></div>
 
-          <section className={styles.credits} aria-labelledby="credits-title"><p className={styles.sectionLabel}>THE SOURCE NOTES</p><h2 id="credits-title">References &amp; visual credits</h2><p>The five-brand MOU lineup was supplied to Clearstoreys for this article. HF Developers’ <a href={CURVE_SOURCES.tenants}>published Curve article</a> independently names Bagh and Contra as tenants. Separate public MOU announcements for Rina’s Kitchenette, BonBird and JS Bank were not located during this research. No signing dates or outlet opening dates are asserted here.</p><p>{BRAND_LOGO_CREDIT}</p><ul>{CURVE_BRANDS.map((brand) => <li key={brand.id}><a href={brand.website}>{brand.name} — official website</a></li>)}</ul><p>Project and location information: <a href={CURVE_SOURCES.project}>HF Developers — Curve</a> and <a href={CURVE_SOURCES.location}>Pine Avenue</a>. Architectural images: HF Developers’ Curve brochure, as held in the project gallery. Diagram and article design: Clearstoreys. Sources checked 6 November 2026.</p></section>
+          <section className={styles.credits} aria-labelledby="credits-title"><p className={styles.sectionLabel}>THE SOURCE NOTES</p><h2 id="credits-title">References &amp; visual credits</h2><p>The five-brand MOU lineup was supplied to Clearstoreys for this article. HF Developers’ <a href={CURVE_SOURCES.tenants}>published Curve article</a> independently names Bagh and Contra as tenants. Separate public MOU announcements for Rina’s Kitchenette, BonBird and JS Bank were not located during the original research. No signing dates or outlet opening dates are asserted here.</p><p>{BRAND_LOGO_CREDIT}</p><ul>{CURVE_BRANDS.map((brand) => <li key={brand.id}><a href={brand.website}>{brand.name} — official website</a></li>)}</ul><p>Project and location information: <a href={CURVE_SOURCES.project}>HF Developers — Curve</a>, <a href={CURVE_SOURCES.location}>Pine Avenue</a> and <a href={CURVE_SOURCES.developer}>about the developer</a>. Architectural images: HF Developers’ Curve brochure, as held in the project gallery. Diagram and article design: Clearstoreys. Brand sources checked 6 November 2026; developer and project sources checked 7 November 2026.</p></section>
         </article>
       </main>
       <SiteFooter />

@@ -4,6 +4,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@utility whatsapp-chat {
+  background-color: #25d366;
+  color: #fff;
+  @apply transition-colors;
+
+  &:hover,
+  &:focus-visible {
+    background-color: #08783f;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #08783f;
+    outline-offset: 2px;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

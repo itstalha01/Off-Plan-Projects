@@ -17,7 +17,7 @@ export function ProjectGrid() {
     : PROJECTS.length;
 
   return (
-    <section id="projects" className="mx-auto w-full max-w-7xl px-5 py-14 sm:px-8">
+    <section id="projects" className="mx-auto w-full max-w-7xl scroll-mt-20 px-5 py-14 sm:px-8">
       <p className="text-sm font-medium text-brown">
         Showing{" "}
         <span className="font-semibold text-ink">{projects.length}</span> of{" "}

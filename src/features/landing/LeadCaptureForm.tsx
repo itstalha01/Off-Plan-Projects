@@ -81,12 +81,12 @@ export function LeadCaptureForm() {
           <MessageCircle className="size-4" />
           Open WhatsApp
         </a>
-        <a
+        <Link
           href="/"
           className="text-sm font-semibold text-ink underline-offset-4 hover:underline"
         >
           Browse all projects instead
-        </a>
+        </Link>
       </div>
     );
   }

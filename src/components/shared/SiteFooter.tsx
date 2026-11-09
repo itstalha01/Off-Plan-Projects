@@ -6,7 +6,7 @@ import { whatsappLink } from "@/lib/whatsapp";
 import { brandName } from "@/features/partners/partners";
 import { usePartner } from "@/features/partners/usePartner";
 
-export function SiteFooter() {
+export function SiteFooter({ whatsappMessage }: { whatsappMessage?: string } = {}) {
   const partner = usePartner();
   const brand = brandName(partner);
 
@@ -35,12 +35,12 @@ export function SiteFooter() {
         </div>
         <a
           href={whatsappLink(
-            `Hi ${brand}, I'd like to talk about Pakistan off-plan investment options.`,
+            whatsappMessage ?? `Hi ${brand}, I'd like to talk about Pakistan off-plan investment options.`,
             partner?.whatsapp
           )}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-full bg-gold px-5 py-2.5 text-sm font-semibold text-ink transition-colors hover:bg-gold-deep hover:text-paper"
+          className="whatsapp-chat inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold"
         >
           <MessageCircle className="size-4" />
           Chat on WhatsApp

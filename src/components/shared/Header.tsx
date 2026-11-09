@@ -9,24 +9,21 @@ import { Logo } from "@/components/shared/Logo";
 import { basePathFor, brandName } from "@/features/partners/partners";
 import { usePartner } from "@/features/partners/usePartner";
 
-const isExternal = (href: string) => href.startsWith("http");
-
-export function Header() {
+export function Header({ whatsappMessage }: { whatsappMessage?: string } = {}) {
   const [open, setOpen] = useState(false);
   const partner = usePartner();
   const home = basePathFor(partner) || "/";
   const brand = brandName(partner);
 
   const ADVISOR_WHATSAPP = whatsappLink(
-    `Hi ${brand}, I'd like to speak to an advisor about Pakistan off-plan investments.`,
+    whatsappMessage ?? `Hi ${brand}, I'd like to speak to an advisor about Pakistan off-plan investments.`,
     partner?.whatsapp
   );
 
-  const NAV_LINKS = [
-    { label: "Projects", href: "#projects" },
-    { label: "Areas", href: "#areas" },
-    { label: "Contact", href: ADVISOR_WHATSAPP },
-  ];
+  const navLinks = [{ label: "HighRise Projects", href: `${home}#projects` }];
+  if (!partner) {
+    navLinks.push({ label: "Plazas", href: "/commercial-plazas/lahore" });
+  }
 
   return (
     <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur-md">
@@ -47,18 +44,15 @@ export function Header() {
           )}
         </Link>
 
-        <nav className="hidden items-center gap-8 md:flex">
-          {NAV_LINKS.map((link) => (
-            <a
+        <nav aria-label="Main navigation" className="hidden items-center gap-8 md:flex">
+          {navLinks.map((link) => (
+            <Link
               key={link.label}
               href={link.href}
-              {...(isExternal(link.href)
-                ? { target: "_blank", rel: "noopener noreferrer" }
-                : {})}
               className="text-sm font-medium text-brown transition-colors hover:text-ink"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 
@@ -66,7 +60,7 @@ export function Header() {
           href={ADVISOR_WHATSAPP}
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-gold-deep md:inline-flex"
+          className="whatsapp-chat hidden items-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold md:inline-flex"
         >
           <MessageCircle className="size-4" />
           Chat on WhatsApp
@@ -84,36 +78,36 @@ export function Header() {
       </div>
 
       <div
+        inert={!open}
         className={cn(
           "overflow-hidden border-t border-ink/10 bg-paper transition-[max-height] duration-300 md:hidden",
           open ? "max-h-80" : "max-h-0 border-t-0"
         )}
       >
-        <nav className="flex flex-col gap-1 px-5 py-4">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              {...(isExternal(link.href)
-                ? { target: "_blank", rel: "noopener noreferrer" }
-                : {})}
-              onClick={() => setOpen(false)}
-              className="rounded-lg px-3 py-2.5 text-sm font-medium text-brown transition-colors hover:bg-cream hover:text-ink"
-            >
-              {link.label}
-            </a>
-          ))}
+        <div className="flex flex-col gap-1 px-5 py-4">
+          <nav aria-label="Main navigation" className="flex flex-col gap-1">
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-brown transition-colors hover:bg-cream hover:text-ink"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
           <a
             href={ADVISOR_WHATSAPP}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setOpen(false)}
-            className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-2.5 text-center text-sm font-medium text-paper transition-colors hover:bg-gold-deep"
+            className="whatsapp-chat mt-2 inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-center text-sm font-semibold"
           >
             <MessageCircle className="size-4" />
             Chat on WhatsApp
           </a>
-        </nav>
+        </div>
       </div>
     </header>
   );
