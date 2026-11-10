@@ -33,7 +33,7 @@ export default function LahorePlazasPage() {
               href={lahorePlazaPath(plaza.slug)}
               className="group flex flex-col overflow-hidden rounded-2xl border border-ink/15 bg-paper shadow-sm transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gold-deep"
             >
-              <PlazaArtwork photo={plaza.photo} logo={plaza.logo} />
+              <PlazaArtwork photo={plaza.photo} />
               <div className="p-5 sm:p-6">
                 <p className="text-xs font-semibold uppercase tracking-wider text-ink/65">{plaza.area}</p>
                 <h2 className="mt-2 font-serif text-2xl font-semibold">{plaza.name}</h2>

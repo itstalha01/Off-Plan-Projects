@@ -9,7 +9,7 @@ import { Logo } from "@/components/shared/Logo";
 import { basePathFor, brandName } from "@/features/partners/partners";
 import { usePartner } from "@/features/partners/usePartner";
 
-export function Header({ whatsappMessage }: { whatsappMessage?: string } = {}) {
+export function Header({ whatsappMessage, whatsappNumber }: { whatsappMessage?: string; whatsappNumber?: string } = {}) {
   const [open, setOpen] = useState(false);
   const partner = usePartner();
   const home = basePathFor(partner) || "/";
@@ -17,7 +17,7 @@ export function Header({ whatsappMessage }: { whatsappMessage?: string } = {}) {
 
   const ADVISOR_WHATSAPP = whatsappLink(
     whatsappMessage ?? `Hi ${brand}, I'd like to speak to an advisor about Pakistan off-plan investments.`,
-    partner?.whatsapp
+    whatsappNumber ?? partner?.whatsapp
   );
 
   const navLinks = [{ label: "HighRise Projects", href: `${home}#projects` }];

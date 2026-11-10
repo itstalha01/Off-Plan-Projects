@@ -41,30 +41,36 @@ export default async function PlazaPage({ params }: PlazaPageProps) {
 
   const { min, max } = plaza.monthlyRentEstimatePkr;
   const plazaValue = formatCroreLakh(plaza.askingPricePkr).replace(" Cr", " crore");
-  const rentalPotential = `PKR ${min / 100_000}–${max / 100_000} lakh`;
+  const rentalPotential = min === max
+    ? formatCroreLakh(min).replace(" Lakh", " lakh")
+    : `PKR ${min / 100_000}–${max / 100_000} lakh`;
   const whatsappMessage = `Hi Clearstoreys, I’m interested in ${plaza.name} in ${plaza.area}. Please share the latest asking price and site visit options.`;
   const shareUrl = lahorePlazaUrl(slug);
 
   return (
     <>
-      <Header whatsappMessage={whatsappMessage} />
+      <Header whatsappMessage={whatsappMessage} whatsappNumber={plaza.whatsappNumber} />
       <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-8 sm:px-8 sm:py-12">
         <Link href={LAHORE_PLAZAS_PATH} className="inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline">
           <ArrowLeft className="size-4" aria-hidden="true" /> All Lahore plazas
         </Link>
         <article className="mt-5 overflow-hidden rounded-2xl border border-ink/15 bg-ink text-paper shadow-xl shadow-ink/10">
-          <PlazaArtwork photo={plaza.photo} logo={plaza.logo} />
           <div className="border-t border-gold/40 px-5 py-6 sm:px-8 sm:py-7">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold">Commercial plaza for sale</p>
             <h1 className="mt-2 font-serif text-3xl font-semibold leading-tight tracking-tight sm:text-5xl">{plaza.name}</h1>
-            <p className="mt-3 text-sm font-semibold text-paper">{plaza.floors} floors · {plaza.sizeMarla} marla</p>
+            <p className="mt-3 text-sm font-semibold text-paper">
+              {plaza.floors && `${plaza.floors} floors · `}{plaza.sizeMarla} marla
+            </p>
+            {plaza.description && <p className="mt-3 text-sm leading-relaxed text-paper/85">{plaza.description}</p>}
             <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-paper/85">
               <a href={plaza.mapUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 underline-offset-4 hover:underline">
                 <MapPin className="size-4 text-gold" aria-hidden="true" /> {plaza.area}
               </a>
-              <a href={plaza.videoUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 underline-offset-4 hover:underline">
-                <Play className="size-4 text-gold" aria-hidden="true" /> Watch on YouTube
-              </a>
+              {plaza.videoUrl && (
+                <a href={plaza.videoUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 underline-offset-4 hover:underline">
+                  <Play className="size-4 text-gold" aria-hidden="true" /> Watch on YouTube
+                </a>
+              )}
             </div>
           </div>
           <dl className="grid grid-cols-2 divide-x divide-ink/15 bg-cream text-ink">
@@ -78,9 +84,10 @@ export default async function PlazaPage({ params }: PlazaPageProps) {
               <dd className="mt-0.5 text-xs text-ink/70">Estimated per month</dd>
             </div>
           </dl>
+          <PlazaArtwork photo={plaza.photo} detail />
         </article>
         <div className="mt-6 flex flex-wrap items-center gap-3">
-          <a href={whatsappLink(whatsappMessage)} target="_blank" rel="noopener noreferrer" className="whatsapp-chat inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold">
+          <a href={whatsappLink(whatsappMessage, plaza.whatsappNumber)} target="_blank" rel="noopener noreferrer" className="whatsapp-chat inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold">
             <MessageCircle className="size-4" aria-hidden="true" /> Chat on WhatsApp
           </a>
           <a href={whatsappShareLink(`${plaza.name} · ${plaza.area}\n${shareUrl}`)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-ink/20 px-5 py-3 text-sm font-semibold hover:bg-cream">
@@ -88,7 +95,7 @@ export default async function PlazaPage({ params }: PlazaPageProps) {
           </a>
         </div>
       </main>
-      <SiteFooter whatsappMessage={whatsappMessage} />
+      <SiteFooter whatsappMessage={whatsappMessage} whatsappNumber={plaza.whatsappNumber} />
     </>
   );
 }

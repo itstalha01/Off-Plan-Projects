@@ -6,7 +6,7 @@ import { whatsappLink } from "@/lib/whatsapp";
 import { brandName } from "@/features/partners/partners";
 import { usePartner } from "@/features/partners/usePartner";
 
-export function SiteFooter({ whatsappMessage }: { whatsappMessage?: string } = {}) {
+export function SiteFooter({ whatsappMessage, whatsappNumber }: { whatsappMessage?: string; whatsappNumber?: string } = {}) {
   const partner = usePartner();
   const brand = brandName(partner);
 
@@ -36,7 +36,7 @@ export function SiteFooter({ whatsappMessage }: { whatsappMessage?: string } = {
         <a
           href={whatsappLink(
             whatsappMessage ?? `Hi ${brand}, I'd like to talk about Pakistan off-plan investment options.`,
-            partner?.whatsapp
+            whatsappNumber ?? partner?.whatsapp
           )}
           target="_blank"
           rel="noopener noreferrer"
