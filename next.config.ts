@@ -10,6 +10,9 @@ const PARTNER_FRAME_ANCESTORS = [
 ].join(" ");
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [{ source: "/explore", destination: "/", permanent: true }];
+  },
   async headers() {
     return [
       {
